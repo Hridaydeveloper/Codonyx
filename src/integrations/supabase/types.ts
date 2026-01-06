@@ -52,52 +52,88 @@ export type Database = {
           approval_status: Database["public"]["Enums"]["approval_status"]
           avatar_url: string | null
           bio: string | null
+          company_size: string | null
+          company_type: string | null
           contact_number: string | null
           created_at: string
+          education: string | null
           email: string
+          expertise: string | null
+          founded_year: number | null
           full_name: string
           headline: string | null
           id: string
+          industry_expertise: string | null
           invite_token_id: string | null
+          languages: string | null
+          linkedin_url: string | null
           location: string | null
+          mentoring_areas: string | null
           organisation: string | null
+          research_areas: string | null
+          services: string | null
           updated_at: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
+          website_url: string | null
         }
         Insert: {
           approval_status?: Database["public"]["Enums"]["approval_status"]
           avatar_url?: string | null
           bio?: string | null
+          company_size?: string | null
+          company_type?: string | null
           contact_number?: string | null
           created_at?: string
+          education?: string | null
           email: string
+          expertise?: string | null
+          founded_year?: number | null
           full_name: string
           headline?: string | null
           id?: string
+          industry_expertise?: string | null
           invite_token_id?: string | null
+          languages?: string | null
+          linkedin_url?: string | null
           location?: string | null
+          mentoring_areas?: string | null
           organisation?: string | null
+          research_areas?: string | null
+          services?: string | null
           updated_at?: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
+          website_url?: string | null
         }
         Update: {
           approval_status?: Database["public"]["Enums"]["approval_status"]
           avatar_url?: string | null
           bio?: string | null
+          company_size?: string | null
+          company_type?: string | null
           contact_number?: string | null
           created_at?: string
+          education?: string | null
           email?: string
+          expertise?: string | null
+          founded_year?: number | null
           full_name?: string
           headline?: string | null
           id?: string
+          industry_expertise?: string | null
           invite_token_id?: string | null
+          languages?: string | null
+          linkedin_url?: string | null
           location?: string | null
+          mentoring_areas?: string | null
           organisation?: string | null
+          research_areas?: string | null
+          services?: string | null
           updated_at?: string
           user_id?: string
           user_type?: Database["public"]["Enums"]["user_type"]
+          website_url?: string | null
         }
         Relationships: [
           {

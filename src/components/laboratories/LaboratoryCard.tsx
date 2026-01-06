@@ -7,9 +7,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { MapPin, Linkedin, GraduationCap, Briefcase, Globe, BookOpen } from "lucide-react";
+import { MapPin, Linkedin, Building2, Users, Calendar, Globe, Beaker, Wrench } from "lucide-react";
 
-interface AdvisorCardProps {
+interface LaboratoryCardProps {
   fullName: string;
   headline?: string | null;
   bio?: string | null;
@@ -17,14 +17,15 @@ interface AdvisorCardProps {
   organisation?: string | null;
   avatarUrl?: string | null;
   linkedinUrl?: string | null;
-  education?: string | null;
-  expertise?: string | null;
-  mentoringAreas?: string | null;
-  languages?: string | null;
-  industryExpertise?: string | null;
+  companyType?: string | null;
+  companySize?: string | null;
+  foundedYear?: number | null;
+  websiteUrl?: string | null;
+  services?: string | null;
+  researchAreas?: string | null;
 }
 
-export function AdvisorCard({
+export function LaboratoryCard({
   fullName,
   headline,
   bio,
@@ -32,12 +33,13 @@ export function AdvisorCard({
   organisation,
   avatarUrl,
   linkedinUrl,
-  education,
-  expertise,
-  mentoringAreas,
-  languages,
-  industryExpertise,
-}: AdvisorCardProps) {
+  companyType,
+  companySize,
+  foundedYear,
+  websiteUrl,
+  services,
+  researchAreas,
+}: LaboratoryCardProps) {
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -47,7 +49,7 @@ export function AdvisorCard({
       .slice(0, 2);
   };
 
-  const hasExtendedInfo = education || expertise || mentoringAreas || languages || industryExpertise || linkedinUrl;
+  const hasExtendedInfo = companyType || companySize || foundedYear || websiteUrl || services || researchAreas || linkedinUrl;
 
   const cardContent = (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 border-divider bg-background cursor-pointer">
@@ -75,6 +77,15 @@ export function AdvisorCard({
           >
             <MapPin className="w-3 h-3 mr-1" />
             {location}
+          </Badge>
+        )}
+
+        {companyType && (
+          <Badge 
+            variant="outline" 
+            className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm text-foreground border-primary/30"
+          >
+            {companyType}
           </Badge>
         )}
       </div>
@@ -130,71 +141,87 @@ export function AdvisorCard({
           </div>
 
           <div className="space-y-2 text-sm">
-            {education && (
+            {companyType && (
               <div className="flex items-start gap-2">
-                <GraduationCap className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <Building2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Education</p>
-                  <p className="text-foreground">{education}</p>
+                  <p className="text-xs text-muted-foreground">Company Type</p>
+                  <p className="text-foreground">{companyType}</p>
                 </div>
               </div>
             )}
 
-            {expertise && (
+            {companySize && (
               <div className="flex items-start gap-2">
-                <BookOpen className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <Users className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Expertise</p>
-                  <p className="text-foreground line-clamp-2">{expertise}</p>
+                  <p className="text-xs text-muted-foreground">Team Size</p>
+                  <p className="text-foreground">{companySize} employees</p>
                 </div>
               </div>
             )}
 
-            {mentoringAreas && (
+            {foundedYear && (
               <div className="flex items-start gap-2">
-                <Briefcase className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <Calendar className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Mentoring Areas</p>
-                  <p className="text-foreground">{mentoringAreas}</p>
+                  <p className="text-xs text-muted-foreground">Founded</p>
+                  <p className="text-foreground">{foundedYear}</p>
                 </div>
               </div>
             )}
 
-            {industryExpertise && (
+            {services && (
               <div className="flex items-start gap-2">
-                <Briefcase className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <Wrench className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Industry</p>
-                  <p className="text-foreground">{industryExpertise}</p>
+                  <p className="text-xs text-muted-foreground">Services</p>
+                  <p className="text-foreground line-clamp-2">{services}</p>
                 </div>
               </div>
             )}
 
-            {languages && (
+            {researchAreas && (
               <div className="flex items-start gap-2">
-                <Globe className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <Beaker className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Languages</p>
-                  <p className="text-foreground">{languages}</p>
+                  <p className="text-xs text-muted-foreground">Research Areas</p>
+                  <p className="text-foreground line-clamp-2">{researchAreas}</p>
                 </div>
               </div>
             )}
           </div>
 
-          {linkedinUrl && (
-            <Button
-              variant="primary"
-              size="sm"
-              className="w-full mt-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(linkedinUrl, '_blank');
-              }}
-            >
-              <Linkedin className="h-4 w-4 mr-2" />
-              Connect on LinkedIn
-            </Button>
-          )}
+          <div className="flex gap-2 mt-3">
+            {websiteUrl && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(websiteUrl, '_blank');
+                }}
+              >
+                <Globe className="h-4 w-4 mr-2" />
+                Website
+              </Button>
+            )}
+            {linkedinUrl && (
+              <Button
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(linkedinUrl, '_blank');
+                }}
+              >
+                <Linkedin className="h-4 w-4 mr-2" />
+                Connect
+              </Button>
+            )}
+          </div>
         </div>
       </HoverCardContent>
     </HoverCard>
