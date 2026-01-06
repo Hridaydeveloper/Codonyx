@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
-import { AdvisorCard } from "@/components/advisors/AdvisorCard";
+import { LaboratoryCard } from "@/components/laboratories/LaboratoryCard";
 import { AdvisorFilters } from "@/components/advisors/AdvisorFilters";
 import { Loader2, Building2 } from "lucide-react";
 
@@ -15,6 +15,13 @@ interface Laboratory {
   location: string | null;
   organisation: string | null;
   avatar_url: string | null;
+  linkedin_url: string | null;
+  company_type: string | null;
+  company_size: string | null;
+  founded_year: number | null;
+  website_url: string | null;
+  services: string | null;
+  research_areas: string | null;
 }
 
 export default function LaboratoriesPage() {
@@ -45,10 +52,10 @@ export default function LaboratoriesPage() {
         return;
       }
 
-      // Load approved laboratories
+      // Load approved laboratories with new fields
       const { data: laboratoriesData } = await supabase
         .from("profiles")
-        .select("id, full_name, headline, bio, location, organisation, avatar_url")
+        .select("id, full_name, headline, bio, location, organisation, avatar_url, linkedin_url, company_type, company_size, founded_year, website_url, services, research_areas")
         .eq("user_type", "laboratory")
         .eq("approval_status", "approved")
         .order("full_name");
@@ -150,7 +157,7 @@ export default function LaboratoriesPage() {
           {filteredLaboratories.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredLaboratories.map((lab) => (
-                <AdvisorCard
+                <LaboratoryCard
                   key={lab.id}
                   fullName={lab.full_name}
                   headline={lab.headline}
@@ -158,6 +165,13 @@ export default function LaboratoriesPage() {
                   location={lab.location}
                   organisation={lab.organisation}
                   avatarUrl={lab.avatar_url}
+                  linkedinUrl={lab.linkedin_url}
+                  companyType={lab.company_type}
+                  companySize={lab.company_size}
+                  foundedYear={lab.founded_year}
+                  websiteUrl={lab.website_url}
+                  services={lab.services}
+                  researchAreas={lab.research_areas}
                 />
               ))}
             </div>

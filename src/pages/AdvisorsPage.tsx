@@ -15,6 +15,12 @@ interface Advisor {
   location: string | null;
   organisation: string | null;
   avatar_url: string | null;
+  linkedin_url: string | null;
+  education: string | null;
+  expertise: string | null;
+  mentoring_areas: string | null;
+  languages: string | null;
+  industry_expertise: string | null;
 }
 
 export default function AdvisorsPage() {
@@ -45,10 +51,10 @@ export default function AdvisorsPage() {
         return;
       }
 
-      // Load approved advisors
+      // Load approved advisors with new fields
       const { data: advisorsData } = await supabase
         .from("profiles")
-        .select("id, full_name, headline, bio, location, organisation, avatar_url")
+        .select("id, full_name, headline, bio, location, organisation, avatar_url, linkedin_url, education, expertise, mentoring_areas, languages, industry_expertise")
         .eq("user_type", "advisor")
         .eq("approval_status", "approved")
         .order("full_name");
@@ -158,6 +164,12 @@ export default function AdvisorsPage() {
                   location={advisor.location}
                   organisation={advisor.organisation}
                   avatarUrl={advisor.avatar_url}
+                  linkedinUrl={advisor.linkedin_url}
+                  education={advisor.education}
+                  expertise={advisor.expertise}
+                  mentoringAreas={advisor.mentoring_areas}
+                  languages={advisor.languages}
+                  industryExpertise={advisor.industry_expertise}
                 />
               ))}
             </div>

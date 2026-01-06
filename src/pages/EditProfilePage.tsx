@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Save, User } from "lucide-react";
+import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
 interface Profile {
   full_name: string;
@@ -21,6 +22,20 @@ interface Profile {
   contact_number: string | null;
   avatar_url: string | null;
   user_type: string;
+  created_at: string;
+  linkedin_url: string | null;
+  education: string | null;
+  expertise: string | null;
+  mentoring_areas: string | null;
+  languages: string | null;
+  industry_expertise: string | null;
+  // Laboratory specific
+  company_type: string | null;
+  company_size: string | null;
+  founded_year: number | null;
+  website_url: string | null;
+  services: string | null;
+  research_areas: string | null;
 }
 
 export default function EditProfilePage() {
@@ -28,14 +43,33 @@ export default function EditProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form state
+  // Form state - common fields
   const [fullName, setFullName] = useState("");
   const [headline, setHeadline] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [organisation, setOrganisation] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  // Advisor specific fields
+  const [education, setEducation] = useState("");
+  const [expertise, setExpertise] = useState("");
+  const [mentoringAreas, setMentoringAreas] = useState("");
+  const [languages, setLanguages] = useState("");
+  const [industryExpertise, setIndustryExpertise] = useState("");
+
+  // Laboratory specific fields
+  const [companyType, setCompanyType] = useState("");
+  const [companySize, setCompanySize] = useState("");
+  const [foundedYear, setFoundedYear] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [services, setServices] = useState("");
+  const [researchAreas, setResearchAreas] = useState("");
 
   useEffect(() => {
     const checkAuthAndLoadProfile = async () => {
@@ -48,18 +82,33 @@ export default function EditProfilePage() {
 
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name, email, headline, bio, location, organisation, contact_number, avatar_url, user_type")
+        .select("*")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
       if (profileData) {
-        setProfile(profileData);
+        setProfile(profileData as Profile);
         setFullName(profileData.full_name || "");
         setHeadline(profileData.headline || "");
         setBio(profileData.bio || "");
         setLocation(profileData.location || "");
         setOrganisation(profileData.organisation || "");
         setContactNumber(profileData.contact_number || "");
+        setLinkedinUrl(profileData.linkedin_url || "");
+        setAvatarUrl(profileData.avatar_url);
+        // Advisor fields
+        setEducation(profileData.education || "");
+        setExpertise(profileData.expertise || "");
+        setMentoringAreas(profileData.mentoring_areas || "");
+        setLanguages(profileData.languages || "");
+        setIndustryExpertise(profileData.industry_expertise || "");
+        // Laboratory fields
+        setCompanyType(profileData.company_type || "");
+        setCompanySize(profileData.company_size || "");
+        setFoundedYear(profileData.founded_year?.toString() || "");
+        setWebsiteUrl(profileData.website_url || "");
+        setServices(profileData.services || "");
+        setResearchAreas(profileData.research_areas || "");
       }
       setIsLoading(false);
     };
@@ -77,6 +126,73 @@ export default function EditProfilePage() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${session.user.id}/avatar.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Add cache buster
+      const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
+      setAvatarUrl(urlWithCacheBuster);
+
+      // Update profile with new avatar URL
+      await supabase
+        .from("profiles")
+        .update({ avatar_url: urlWithCacheBuster })
+        .eq("user_id", session.user.id);
+
+      toast({
+        title: "Success",
+        description: "Profile photo uploaded successfully.",
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload profile photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
 
@@ -86,16 +202,38 @@ export default function EditProfilePage() {
       return;
     }
 
+    const updateData: Record<string, unknown> = {
+      full_name: fullName.trim(),
+      headline: headline.trim() || null,
+      bio: bio.trim() || null,
+      location: location.trim() || null,
+      organisation: organisation.trim() || null,
+      contact_number: contactNumber.trim() || null,
+      linkedin_url: linkedinUrl.trim() || null,
+    };
+
+    // Add advisor-specific fields
+    if (profile?.user_type === 'advisor') {
+      updateData.education = education.trim() || null;
+      updateData.expertise = expertise.trim() || null;
+      updateData.mentoring_areas = mentoringAreas.trim() || null;
+      updateData.languages = languages.trim() || null;
+      updateData.industry_expertise = industryExpertise.trim() || null;
+    }
+
+    // Add laboratory-specific fields
+    if (profile?.user_type === 'laboratory') {
+      updateData.company_type = companyType.trim() || null;
+      updateData.company_size = companySize.trim() || null;
+      updateData.founded_year = foundedYear ? parseInt(foundedYear) : null;
+      updateData.website_url = websiteUrl.trim() || null;
+      updateData.services = services.trim() || null;
+      updateData.research_areas = researchAreas.trim() || null;
+    }
+
     const { error } = await supabase
       .from("profiles")
-      .update({
-        full_name: fullName.trim(),
-        headline: headline.trim() || null,
-        bio: bio.trim() || null,
-        location: location.trim() || null,
-        organisation: organisation.trim() || null,
-        contact_number: contactNumber.trim() || null,
-      })
+      .update(updateData)
       .eq("user_id", session.user.id);
 
     if (error) {
@@ -131,6 +269,9 @@ export default function EditProfilePage() {
     );
   }
 
+  const isAdvisor = profile?.user_type === 'advisor';
+  const isLaboratory = profile?.user_type === 'laboratory';
+
   return (
     <div className="min-h-screen bg-muted">
       <DashboardNavbar />
@@ -150,24 +291,53 @@ export default function EditProfilePage() {
 
             {/* Profile Card */}
             <div className="bg-background rounded-2xl border border-divider p-8">
-              {/* Avatar Section */}
-              <div className="flex items-center gap-4 mb-8 pb-8 border-b border-divider">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={profile?.avatar_url || undefined} alt={fullName} />
-                  <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                    {fullName ? getInitials(fullName) : <User className="h-8 w-8" />}
-                  </AvatarFallback>
-                </Avatar>
+              {/* Avatar Section with Upload */}
+              <div className="flex items-center gap-6 mb-8 pb-8 border-b border-divider">
+                <div className="relative">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src={avatarUrl || undefined} alt={fullName} />
+                    <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
+                      {fullName ? getInitials(fullName) : <User className="h-8 w-8" />}
+                    </AvatarFallback>
+                  </Avatar>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
                 <div>
                   <p className="font-medium text-foreground">{profile?.email}</p>
-                  <p className="text-sm text-muted-foreground capitalize">
+                  <p className="text-sm text-muted-foreground capitalize mb-2">
                     {profile?.user_type}
                   </p>
+                  {profile?.created_at && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      Member since {format(new Date(profile.created_at), 'MMMM yyyy')}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Form */}
               <div className="space-y-6">
+                {/* Common Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name *</Label>
@@ -213,14 +383,28 @@ export default function EditProfilePage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="contactNumber">Contact Number</Label>
-                  <Input
-                    id="contactNumber"
-                    value={contactNumber}
-                    onChange={(e) => setContactNumber(e.target.value)}
-                    placeholder="Your phone number"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="contactNumber">Contact Number</Label>
+                    <Input
+                      id="contactNumber"
+                      value={contactNumber}
+                      onChange={(e) => setContactNumber(e.target.value)}
+                      placeholder="Your phone number"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="linkedinUrl" className="flex items-center gap-1">
+                      <Linkedin className="h-4 w-4" /> LinkedIn URL
+                    </Label>
+                    <Input
+                      id="linkedinUrl"
+                      value={linkedinUrl}
+                      onChange={(e) => setLinkedinUrl(e.target.value)}
+                      placeholder="https://linkedin.com/in/yourprofile"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -230,9 +414,147 @@ export default function EditProfilePage() {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell others about yourself, your experience, and expertise..."
-                    rows={5}
+                    rows={4}
                   />
                 </div>
+
+                {/* Advisor Specific Fields */}
+                {isAdvisor && (
+                  <>
+                    <div className="pt-4 border-t border-divider">
+                      <h3 className="font-medium text-foreground mb-4">Advisor Details</h3>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="education">Education Institute</Label>
+                      <Input
+                        id="education"
+                        value={education}
+                        onChange={(e) => setEducation(e.target.value)}
+                        placeholder="e.g., Harvard University, MIT"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="expertise">Deep Area of Expertise</Label>
+                      <Textarea
+                        id="expertise"
+                        value={expertise}
+                        onChange={(e) => setExpertise(e.target.value)}
+                        placeholder="Your specialized areas of knowledge..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="mentoringAreas">Function Area for Mentoring</Label>
+                      <Input
+                        id="mentoringAreas"
+                        value={mentoringAreas}
+                        onChange={(e) => setMentoringAreas(e.target.value)}
+                        placeholder="e.g., Strategy, Product, Engineering"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="languages">Languages</Label>
+                        <Input
+                          id="languages"
+                          value={languages}
+                          onChange={(e) => setLanguages(e.target.value)}
+                          placeholder="e.g., English, Spanish, German"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="industryExpertise">Industry Expertise</Label>
+                        <Input
+                          id="industryExpertise"
+                          value={industryExpertise}
+                          onChange={(e) => setIndustryExpertise(e.target.value)}
+                          placeholder="e.g., Biotech, Fintech, Healthcare"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Laboratory Specific Fields */}
+                {isLaboratory && (
+                  <>
+                    <div className="pt-4 border-t border-divider">
+                      <h3 className="font-medium text-foreground mb-4">Company Details</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="companyType">Company Type</Label>
+                        <Input
+                          id="companyType"
+                          value={companyType}
+                          onChange={(e) => setCompanyType(e.target.value)}
+                          placeholder="e.g., Startup, Research Lab, Corporation"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="companySize">Company Size</Label>
+                        <Input
+                          id="companySize"
+                          value={companySize}
+                          onChange={(e) => setCompanySize(e.target.value)}
+                          placeholder="e.g., 1-10, 11-50, 51-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="foundedYear">Founded Year</Label>
+                        <Input
+                          id="foundedYear"
+                          type="number"
+                          value={foundedYear}
+                          onChange={(e) => setFoundedYear(e.target.value)}
+                          placeholder="e.g., 2020"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="websiteUrl">Website URL</Label>
+                        <Input
+                          id="websiteUrl"
+                          value={websiteUrl}
+                          onChange={(e) => setWebsiteUrl(e.target.value)}
+                          placeholder="https://yourcompany.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="services">Services Offered</Label>
+                      <Textarea
+                        id="services"
+                        value={services}
+                        onChange={(e) => setServices(e.target.value)}
+                        placeholder="Describe the services your company offers..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="researchAreas">Research Areas / Focus</Label>
+                      <Textarea
+                        id="researchAreas"
+                        value={researchAreas}
+                        onChange={(e) => setResearchAreas(e.target.value)}
+                        placeholder="Key research areas and focus of your company..."
+                        rows={3}
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="flex justify-end pt-4">
                   <Button
