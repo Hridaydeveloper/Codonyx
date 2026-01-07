@@ -21,8 +21,8 @@ export function Navbar() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-display text-2xl font-semibold text-foreground tracking-tight">
-              AdvisorNet
+            <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
+              Codonyx
             </span>
           </Link>
 

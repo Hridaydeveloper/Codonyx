@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TagInput } from "@/components/ui/tag-input";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,7 +30,6 @@ interface Profile {
   mentoring_areas: string | null;
   languages: string | null;
   industry_expertise: string | null;
-  // Laboratory specific
   company_type: string | null;
   company_size: string | null;
   founded_year: number | null;
@@ -167,11 +167,9 @@ export default function EditProfilePage() {
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Add cache buster
       const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
       setAvatarUrl(urlWithCacheBuster);
 
-      // Update profile with new avatar URL
       await supabase
         .from("profiles")
         .update({ avatar_url: urlWithCacheBuster })
@@ -212,7 +210,6 @@ export default function EditProfilePage() {
       linkedin_url: linkedinUrl.trim() || null,
     };
 
-    // Add advisor-specific fields
     if (profile?.user_type === 'advisor') {
       updateData.education = education.trim() || null;
       updateData.expertise = expertise.trim() || null;
@@ -221,7 +218,6 @@ export default function EditProfilePage() {
       updateData.industry_expertise = industryExpertise.trim() || null;
     }
 
-    // Add laboratory-specific fields
     if (profile?.user_type === 'laboratory') {
       updateData.company_type = companyType.trim() || null;
       updateData.company_size = companySize.trim() || null;
@@ -281,7 +277,7 @@ export default function EditProfilePage() {
           <div className="max-w-2xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="font-display text-3xl font-medium text-foreground mb-2">
+              <h1 className="font-heading text-3xl font-semibold text-foreground mb-2">
                 Edit Profile
               </h1>
               <p className="text-muted-foreground">
@@ -422,60 +418,57 @@ export default function EditProfilePage() {
                 {isAdvisor && (
                   <>
                     <div className="pt-4 border-t border-divider">
-                      <h3 className="font-medium text-foreground mb-4">Advisor Details</h3>
+                      <h3 className="font-heading font-semibold text-foreground mb-4">Advisor Details</h3>
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="education">Education Institute</Label>
-                      <Input
+                      <TagInput
                         id="education"
                         value={education}
-                        onChange={(e) => setEducation(e.target.value)}
-                        placeholder="e.g., Harvard University, MIT"
+                        onChange={setEducation}
+                        placeholder="Add education (e.g., Harvard University)"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="expertise">Deep Area of Expertise</Label>
-                      <Textarea
+                      <TagInput
                         id="expertise"
                         value={expertise}
-                        onChange={(e) => setExpertise(e.target.value)}
-                        placeholder="Your specialized areas of knowledge..."
-                        rows={3}
+                        onChange={setExpertise}
+                        placeholder="Add expertise (e.g., Machine Learning)"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="mentoringAreas">Function Area for Mentoring</Label>
-                      <Input
+                      <Label htmlFor="mentoringAreas">Functional Areas for Mentoring</Label>
+                      <TagInput
                         id="mentoringAreas"
                         value={mentoringAreas}
-                        onChange={(e) => setMentoringAreas(e.target.value)}
-                        placeholder="e.g., Strategy, Product, Engineering"
+                        onChange={setMentoringAreas}
+                        placeholder="Add area (e.g., Strategy)"
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="languages">Languages</Label>
-                        <Input
-                          id="languages"
-                          value={languages}
-                          onChange={(e) => setLanguages(e.target.value)}
-                          placeholder="e.g., English, Spanish, German"
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="languages">Languages</Label>
+                      <TagInput
+                        id="languages"
+                        value={languages}
+                        onChange={setLanguages}
+                        placeholder="Add language (e.g., English)"
+                      />
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="industryExpertise">Industry Expertise</Label>
-                        <Input
-                          id="industryExpertise"
-                          value={industryExpertise}
-                          onChange={(e) => setIndustryExpertise(e.target.value)}
-                          placeholder="e.g., Biotech, Fintech, Healthcare"
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="industryExpertise">Industry Expertise</Label>
+                      <TagInput
+                        id="industryExpertise"
+                        value={industryExpertise}
+                        onChange={setIndustryExpertise}
+                        placeholder="Add industry (e.g., Healthcare)"
+                      />
                     </div>
                   </>
                 )}
@@ -484,7 +477,7 @@ export default function EditProfilePage() {
                 {isLaboratory && (
                   <>
                     <div className="pt-4 border-t border-divider">
-                      <h3 className="font-medium text-foreground mb-4">Company Details</h3>
+                      <h3 className="font-heading font-semibold text-foreground mb-4">Company Details</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -494,7 +487,7 @@ export default function EditProfilePage() {
                           id="companyType"
                           value={companyType}
                           onChange={(e) => setCompanyType(e.target.value)}
-                          placeholder="e.g., Startup, Research Lab, Corporation"
+                          placeholder="e.g., Startup, Research Lab"
                         />
                       </div>
 
@@ -504,7 +497,7 @@ export default function EditProfilePage() {
                           id="companySize"
                           value={companySize}
                           onChange={(e) => setCompanySize(e.target.value)}
-                          placeholder="e.g., 1-10, 11-50, 51-200"
+                          placeholder="e.g., 1-10, 11-50"
                         />
                       </div>
                     </div>
@@ -534,23 +527,21 @@ export default function EditProfilePage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="services">Services Offered</Label>
-                      <Textarea
+                      <TagInput
                         id="services"
                         value={services}
-                        onChange={(e) => setServices(e.target.value)}
-                        placeholder="Describe the services your company offers..."
-                        rows={3}
+                        onChange={setServices}
+                        placeholder="Add service (e.g., Gene Sequencing)"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="researchAreas">Research Areas / Focus</Label>
-                      <Textarea
+                      <TagInput
                         id="researchAreas"
                         value={researchAreas}
-                        onChange={(e) => setResearchAreas(e.target.value)}
-                        placeholder="Key research areas and focus of your company..."
-                        rows={3}
+                        onChange={setResearchAreas}
+                        placeholder="Add research area (e.g., Oncology)"
                       />
                     </div>
                   </>
