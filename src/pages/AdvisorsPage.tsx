@@ -158,18 +158,13 @@ export default function AdvisorsPage() {
               {filteredAdvisors.map((advisor) => (
                 <AdvisorCard
                   key={advisor.id}
+                  id={advisor.id}
                   fullName={advisor.full_name}
                   headline={advisor.headline}
                   bio={advisor.bio}
                   location={advisor.location}
                   organisation={advisor.organisation}
                   avatarUrl={advisor.avatar_url}
-                  linkedinUrl={advisor.linkedin_url}
-                  education={advisor.education}
-                  expertise={advisor.expertise}
-                  mentoringAreas={advisor.mentoring_areas}
-                  languages={advisor.languages}
-                  industryExpertise={advisor.industry_expertise}
                 />
               ))}
             </div>

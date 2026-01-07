@@ -1,0 +1,378 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
+import { Footer } from "@/components/layout/Footer";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  Loader2, 
+  ArrowLeft, 
+  MapPin, 
+  Linkedin, 
+  Mail, 
+  Phone, 
+  Building2, 
+  GraduationCap,
+  Briefcase,
+  Globe,
+  Users,
+  Calendar,
+  Beaker,
+  Wrench
+} from "lucide-react";
+
+interface Profile {
+  id: string;
+  full_name: string;
+  email: string;
+  headline: string | null;
+  bio: string | null;
+  location: string | null;
+  organisation: string | null;
+  contact_number: string | null;
+  avatar_url: string | null;
+  user_type: string;
+  created_at: string;
+  linkedin_url: string | null;
+  education: string | null;
+  expertise: string | null;
+  mentoring_areas: string | null;
+  languages: string | null;
+  industry_expertise: string | null;
+  company_type: string | null;
+  company_size: string | null;
+  founded_year: number | null;
+  website_url: string | null;
+  services: string | null;
+  research_areas: string | null;
+}
+
+export default function ProfileDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!id) return;
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error || !data) {
+        navigate(-1);
+        return;
+      }
+
+      setProfile(data as Profile);
+      setIsLoading(false);
+    };
+
+    loadProfile();
+  }, [id, navigate]);
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const renderTags = (value: string | null) => {
+    if (!value) return null;
+    const tags = value.split(",").map(t => t.trim()).filter(Boolean);
+    return (
+      <div className="flex flex-wrap gap-2">
+        {tags.map((tag, index) => (
+          <Badge key={index} variant="secondary" className="bg-primary/10 text-primary">
+            {tag}
+          </Badge>
+        ))}
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!profile) return null;
+
+  const isAdvisor = profile.user_type === "advisor";
+  const isLaboratory = profile.user_type === "laboratory";
+
+  return (
+    <div className="min-h-screen bg-muted">
+      <DashboardNavbar />
+
+      <main className="pt-24 pb-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* Back Button */}
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="mb-6 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+
+            {/* Profile Header */}
+            <div className="bg-background rounded-2xl border border-divider overflow-hidden">
+              {/* Cover / Header Section */}
+              <div className="h-32 bg-gradient-to-r from-primary/20 to-primary/5" />
+              
+              <div className="px-8 pb-8">
+                {/* Avatar & Basic Info */}
+                <div className="flex flex-col md:flex-row gap-6 -mt-16">
+                  <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
+                    <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
+                    <AvatarFallback className="text-4xl bg-primary text-primary-foreground">
+                      {getInitials(profile.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex-1 pt-4 md:pt-16">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                      <div>
+                        <h1 className="font-heading text-3xl font-semibold text-foreground">
+                          {profile.full_name}
+                        </h1>
+                        {profile.headline && (
+                          <p className="text-lg text-primary font-medium mt-1">
+                            {profile.headline}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap items-center gap-4 mt-2 text-muted-foreground">
+                          {profile.location && (
+                            <span className="flex items-center gap-1 text-sm">
+                              <MapPin className="h-4 w-4" />
+                              {profile.location}
+                            </span>
+                          )}
+                          {profile.organisation && (
+                            <span className="flex items-center gap-1 text-sm">
+                              <Building2 className="h-4 w-4" />
+                              {profile.organisation}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {profile.linkedin_url && (
+                        <Button
+                          variant="primary"
+                          onClick={() => window.open(profile.linkedin_url!, '_blank')}
+                          className="gap-2"
+                        >
+                          <Linkedin className="h-4 w-4" />
+                          Connect on LinkedIn
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Info */}
+                <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-divider">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    {profile.email}
+                  </div>
+                  {profile.contact_number && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-4 w-4" />
+                      {profile.contact_number}
+                    </div>
+                  )}
+                  {isLaboratory && profile.website_url && (
+                    <a 
+                      href={profile.website_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <Globe className="h-4 w-4" />
+                      Website
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Bio Section */}
+            {profile.bio && (
+              <div className="bg-background rounded-2xl border border-divider p-8 mt-6">
+                <h2 className="font-heading text-xl font-semibold text-foreground mb-4">About</h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                  {profile.bio}
+                </p>
+              </div>
+            )}
+
+            {/* Advisor Details */}
+            {isAdvisor && (
+              <div className="bg-background rounded-2xl border border-divider p-8 mt-6">
+                <h2 className="font-heading text-xl font-semibold text-foreground mb-6">Professional Details</h2>
+                
+                <div className="grid gap-6">
+                  {profile.education && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <GraduationCap className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Education</p>
+                        {renderTags(profile.education)}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.expertise && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Briefcase className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Deep Areas of Expertise</p>
+                        {renderTags(profile.expertise)}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.mentoring_areas && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Functional Areas for Mentoring</p>
+                        {renderTags(profile.mentoring_areas)}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.industry_expertise && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Building2 className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Industry Expertise</p>
+                        {renderTags(profile.industry_expertise)}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.languages && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Globe className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Languages</p>
+                        {renderTags(profile.languages)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Laboratory Details */}
+            {isLaboratory && (
+              <div className="bg-background rounded-2xl border border-divider p-8 mt-6">
+                <h2 className="font-heading text-xl font-semibold text-foreground mb-6">Company Details</h2>
+                
+                <div className="grid gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {profile.company_type && (
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Building2 className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Company Type</p>
+                          <p className="font-medium text-foreground">{profile.company_type}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {profile.company_size && (
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Users className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Team Size</p>
+                          <p className="font-medium text-foreground">{profile.company_size}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {profile.founded_year && (
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Calendar className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Founded</p>
+                          <p className="font-medium text-foreground">{profile.founded_year}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {profile.services && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Wrench className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Services</p>
+                        {renderTags(profile.services)}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.research_areas && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Beaker className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Research Areas</p>
+                        {renderTags(profile.research_areas)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

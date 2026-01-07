@@ -1,7 +1,7 @@
-@import url('@fontsource/playfair-display/400.css');
-@import url('@fontsource/playfair-display/500.css');
-@import url('@fontsource/playfair-display/600.css');
-@import url('@fontsource/playfair-display/700.css');
+@import url('@fontsource/poppins/400.css');
+@import url('@fontsource/poppins/500.css');
+@import url('@fontsource/poppins/600.css');
+@import url('@fontsource/poppins/700.css');
 @import url('@fontsource/inter/400.css');
 @import url('@fontsource/inter/500.css');
 @import url('@fontsource/inter/600.css');
@@ -126,16 +126,16 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Poppins', system-ui, sans-serif;
   }
 }
 
 @layer components {
-  .text-display {
-    font-family: 'Playfair Display', Georgia, serif;
+  .font-heading {
+    font-family: 'Poppins', system-ui, sans-serif;
   }
 
-  .text-body {
+  .font-body {
     font-family: 'Inter', system-ui, sans-serif;
   }
 }

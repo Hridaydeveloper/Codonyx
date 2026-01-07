@@ -28,8 +28,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <Link to="/" className="inline-block">
-              <span className="font-display text-2xl font-semibold text-foreground tracking-tight">
-                AdvisorNet
+              <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
+                Codonyx
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
@@ -98,7 +98,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-divider flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            Copyright © {new Date().getFullYear()} AdvisorNet. All rights reserved.
+            Copyright © {new Date().getFullYear()} Codonyx. All rights reserved.
           </p>
           <Link
             to="/privacy"

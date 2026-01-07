@@ -159,19 +159,14 @@ export default function LaboratoriesPage() {
               {filteredLaboratories.map((lab) => (
                 <LaboratoryCard
                   key={lab.id}
+                  id={lab.id}
                   fullName={lab.full_name}
                   headline={lab.headline}
                   bio={lab.bio}
                   location={lab.location}
                   organisation={lab.organisation}
                   avatarUrl={lab.avatar_url}
-                  linkedinUrl={lab.linkedin_url}
                   companyType={lab.company_type}
-                  companySize={lab.company_size}
-                  foundedYear={lab.founded_year}
-                  websiteUrl={lab.website_url}
-                  services={lab.services}
-                  researchAreas={lab.research_areas}
                 />
               ))}
             </div>

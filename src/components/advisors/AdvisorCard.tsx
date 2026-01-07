@@ -1,43 +1,30 @@
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { MapPin, Linkedin, GraduationCap, Briefcase, Globe, BookOpen } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 interface AdvisorCardProps {
+  id: string;
   fullName: string;
   headline?: string | null;
   bio?: string | null;
   location?: string | null;
   organisation?: string | null;
   avatarUrl?: string | null;
-  linkedinUrl?: string | null;
-  education?: string | null;
-  expertise?: string | null;
-  mentoringAreas?: string | null;
-  languages?: string | null;
-  industryExpertise?: string | null;
 }
 
 export function AdvisorCard({
+  id,
   fullName,
   headline,
   bio,
   location,
   organisation,
   avatarUrl,
-  linkedinUrl,
-  education,
-  expertise,
-  mentoringAreas,
-  languages,
-  industryExpertise,
 }: AdvisorCardProps) {
+  const navigate = useNavigate();
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -47,10 +34,11 @@ export function AdvisorCard({
       .slice(0, 2);
   };
 
-  const hasExtendedInfo = education || expertise || mentoringAreas || languages || industryExpertise || linkedinUrl;
-
-  const cardContent = (
-    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 border-divider bg-background cursor-pointer">
+  return (
+    <Card 
+      className="group overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-divider bg-background cursor-pointer"
+      onClick={() => navigate(`/profile/${id}`)}
+    >
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
         {avatarUrl ? (
           <img
@@ -80,7 +68,7 @@ export function AdvisorCard({
       </div>
 
       <CardContent className="p-5">
-        <h3 className="font-display text-xl font-semibold text-foreground mb-1 line-clamp-1">
+        <h3 className="font-heading text-xl font-semibold text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
           {fullName}
         </h3>
         
@@ -103,100 +91,5 @@ export function AdvisorCard({
         )}
       </CardContent>
     </Card>
-  );
-
-  if (!hasExtendedInfo) {
-    return cardContent;
-  }
-
-  return (
-    <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger asChild>
-        {cardContent}
-      </HoverCardTrigger>
-      <HoverCardContent className="w-80 p-4" side="right" align="start">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={avatarUrl || undefined} alt={fullName} />
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {getInitials(fullName)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h4 className="font-semibold text-foreground">{fullName}</h4>
-              {headline && <p className="text-xs text-muted-foreground">{headline}</p>}
-            </div>
-          </div>
-
-          <div className="space-y-2 text-sm">
-            {education && (
-              <div className="flex items-start gap-2">
-                <GraduationCap className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Education</p>
-                  <p className="text-foreground">{education}</p>
-                </div>
-              </div>
-            )}
-
-            {expertise && (
-              <div className="flex items-start gap-2">
-                <BookOpen className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Expertise</p>
-                  <p className="text-foreground line-clamp-2">{expertise}</p>
-                </div>
-              </div>
-            )}
-
-            {mentoringAreas && (
-              <div className="flex items-start gap-2">
-                <Briefcase className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Mentoring Areas</p>
-                  <p className="text-foreground">{mentoringAreas}</p>
-                </div>
-              </div>
-            )}
-
-            {industryExpertise && (
-              <div className="flex items-start gap-2">
-                <Briefcase className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Industry</p>
-                  <p className="text-foreground">{industryExpertise}</p>
-                </div>
-              </div>
-            )}
-
-            {languages && (
-              <div className="flex items-start gap-2">
-                <Globe className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Languages</p>
-                  <p className="text-foreground">{languages}</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {linkedinUrl && (
-            <Button
-              variant="primary"
-              size="sm"
-              className="w-full mt-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(linkedinUrl, '_blank');
-              }}
-            >
-              <Linkedin className="h-4 w-4 mr-2" />
-              Connect on LinkedIn
-            </Button>
-          )}
-        </div>
-      </HoverCardContent>
-    </HoverCard>
   );
 }
