@@ -167,6 +167,8 @@ export default function LaboratoriesPage() {
                   organisation={lab.organisation}
                   avatarUrl={lab.avatar_url}
                   companyType={lab.company_type}
+                  services={lab.services}
+                  linkedinUrl={lab.linkedin_url}
                 />
               ))}
             </div>

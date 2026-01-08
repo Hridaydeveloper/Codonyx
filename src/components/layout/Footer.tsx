@@ -10,7 +10,7 @@ const footerLinks = {
   company: [
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
-    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
   ],
 };
 
@@ -101,7 +101,7 @@ export function Footer() {
             Copyright © {new Date().getFullYear()} Codonyx. All rights reserved.
           </p>
           <Link
-            to="/privacy"
+            to="/privacy-policy"
             className="text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             Privacy Policy

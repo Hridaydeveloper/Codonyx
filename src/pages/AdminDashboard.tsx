@@ -15,6 +15,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PendingUser {
   id: string;
@@ -28,6 +31,9 @@ interface PendingUser {
   location: string | null;
   headline: string | null;
   bio: string | null;
+  approval_status: "pending" | "approved" | "rejected";
+  avatar_url: string | null;
+  company_type: string | null;
 }
 
 interface InviteConfig {
@@ -43,13 +49,18 @@ const FIXED_INVITE_PATH = "/register?invite=advisornet-invite-2024";
 
 const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
+  const [allAdvisors, setAllAdvisors] = useState<PendingUser[]>([]);
+  const [allLabs, setAllLabs] = useState<PendingUser[]>([]);
   const [inviteConfig, setInviteConfig] = useState<InviteConfig | null>(null);
   const [loading, setLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [expirationDate, setExpirationDate] = useState<Date>(addDays(new Date(), 7));
   const [saving, setSaving] = useState(false);
+  const [advisorStatusFilter, setAdvisorStatusFilter] = useState<string>("all");
+  const [labStatusFilter, setLabStatusFilter] = useState<string>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -83,6 +94,27 @@ const AdminDashboard = () => {
     setIsAdmin(true);
     fetchPendingUsers();
     fetchInviteConfig();
+    fetchAllUsers();
+  };
+
+  const fetchAllUsers = async () => {
+    setUsersLoading(true);
+    
+    const { data: advisors } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_type", "advisor")
+      .order("full_name");
+    
+    const { data: labs } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_type", "laboratory")
+      .order("full_name");
+    
+    setAllAdvisors(advisors || []);
+    setAllLabs(labs || []);
+    setUsersLoading(false);
   };
 
   const fetchInviteConfig = async () => {
@@ -274,6 +306,8 @@ const AdminDashboard = () => {
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="pending">Pending Users</TabsTrigger>
+            <TabsTrigger value="advisors">Advisors</TabsTrigger>
+            <TabsTrigger value="labs">Laboratories</TabsTrigger>
             <TabsTrigger value="invites">Invite Link</TabsTrigger>
           </TabsList>
 
@@ -369,6 +403,150 @@ const AdminDashboard = () => {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* Advisors Tab */}
+          <TabsContent value="advisors">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Advisors</CardTitle>
+                    <CardDescription>Manage all advisor accounts</CardDescription>
+                  </div>
+                  <Select value={advisorStatusFilter} onValueChange={setAdvisorStatusFilter}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {usersLoading ? (
+                  <p className="text-muted-foreground text-center py-8">Loading advisors...</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Organisation</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Joined</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allAdvisors
+                        .filter(a => advisorStatusFilter === "all" || a.approval_status === advisorStatusFilter)
+                        .map((advisor) => (
+                        <TableRow key={advisor.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/profile/${advisor.id}`)}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={advisor.avatar_url || undefined} />
+                                <AvatarFallback>{advisor.full_name.slice(0,2).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{advisor.full_name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{advisor.email}</TableCell>
+                          <TableCell>{advisor.organisation || "-"}</TableCell>
+                          <TableCell>{advisor.location || "-"}</TableCell>
+                          <TableCell>
+                            <Badge variant={
+                              advisor.approval_status === "approved" ? "default" :
+                              advisor.approval_status === "pending" ? "secondary" : "destructive"
+                            } className="capitalize">
+                              {advisor.approval_status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{format(new Date(advisor.created_at), "MMM d, yyyy")}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Laboratories Tab */}
+          <TabsContent value="labs">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Laboratories</CardTitle>
+                    <CardDescription>Manage all laboratory accounts</CardDescription>
+                  </div>
+                  <Select value={labStatusFilter} onValueChange={setLabStatusFilter}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {usersLoading ? (
+                  <p className="text-muted-foreground text-center py-8">Loading laboratories...</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Joined</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allLabs
+                        .filter(l => labStatusFilter === "all" || l.approval_status === labStatusFilter)
+                        .map((lab) => (
+                        <TableRow key={lab.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/profile/${lab.id}`)}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={lab.avatar_url || undefined} />
+                                <AvatarFallback>{lab.full_name.slice(0,2).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{lab.full_name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{lab.email}</TableCell>
+                          <TableCell>{lab.company_type || "-"}</TableCell>
+                          <TableCell>{lab.location || "-"}</TableCell>
+                          <TableCell>
+                            <Badge variant={
+                              lab.approval_status === "approved" ? "default" :
+                              lab.approval_status === "pending" ? "secondary" : "destructive"
+                            } className="capitalize">
+                              {lab.approval_status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{format(new Date(lab.created_at), "MMM d, yyyy")}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="invites">
