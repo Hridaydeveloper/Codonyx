@@ -12,6 +12,7 @@ interface AdvisorCardProps {
   location?: string | null;
   organisation?: string | null;
   avatarUrl?: string | null;
+  mentoringAreas?: string | null;
 }
 
 export function AdvisorCard({
@@ -22,6 +23,7 @@ export function AdvisorCard({
   location,
   organisation,
   avatarUrl,
+  mentoringAreas,
 }: AdvisorCardProps) {
   const navigate = useNavigate();
 
@@ -33,6 +35,13 @@ export function AdvisorCard({
       .toUpperCase()
       .slice(0, 2);
   };
+
+  // Parse mentoring areas into array
+  const mentoringTags = mentoringAreas
+    ? mentoringAreas.split(",").map((t) => t.trim()).filter(Boolean)
+    : [];
+  const displayTags = mentoringTags.slice(0, 3);
+  const remainingCount = mentoringTags.length - 3;
 
   return (
     <Card 
@@ -88,6 +97,33 @@ export function AdvisorCard({
           <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
             {bio}
           </p>
+        )}
+
+        {mentoringTags.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-divider">
+            <p className="text-xs text-muted-foreground mb-2 font-medium">
+              Functional Areas for Mentoring
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {displayTags.map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="text-xs px-2 py-0.5 bg-primary/10 text-primary hover:bg-primary/20"
+                >
+                  {tag}
+                </Badge>
+              ))}
+              {remainingCount > 0 && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-2 py-0.5"
+                >
+                  +{remainingCount}
+                </Badge>
+              )}
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

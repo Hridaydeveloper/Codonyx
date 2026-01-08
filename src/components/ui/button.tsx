@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // Custom AdvisorNet variants
+        // Custom Codonyx variants
         primary: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm",
         hero: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg px-8 py-3 text-base font-semibold",
         "outline-dark": "border-2 border-foreground bg-transparent text-foreground hover:bg-foreground hover:text-background",

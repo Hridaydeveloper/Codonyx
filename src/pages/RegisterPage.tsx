@@ -224,7 +224,7 @@ export default function RegisterPage() {
             Registration Submitted
           </h1>
           <p className="text-muted-foreground mb-2">
-            Thank you for registering with AdvisorNet.
+            Thank you for registering with Codonyx.
           </p>
           <p className="text-muted-foreground mb-6">
             Your request is currently <span className="text-amber-600 font-medium">pending admin approval</span>. 
@@ -262,7 +262,7 @@ export default function RegisterPage() {
           </Link>
 
           <h1 className="font-display text-3xl lg:text-4xl font-medium text-foreground mb-2">
-            Join AdvisorNet
+            Join Codonyx
           </h1>
           <p className="text-muted-foreground font-body mb-8">
             Complete your registration to join the network.

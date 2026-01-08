@@ -45,7 +45,7 @@ interface InviteConfig {
   used_by: string | null;
 }
 
-const FIXED_INVITE_PATH = "/register?invite=advisornet-invite-2024";
+const FIXED_INVITE_PATH = "/register?invite=codonyx-invite-2024";
 
 const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
     const { data, error } = await supabase
       .from("invite_tokens")
       .select("*")
-      .eq("token", "advisornet-invite-2024")
+      .eq("token", "codonyx-invite-2024")
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -209,7 +209,7 @@ const AdminDashboard = () => {
         .from("invite_tokens")
         .insert({ 
           created_by: user?.id,
-          token: "advisornet-invite-2024",
+          token: "codonyx-invite-2024",
           expires_at: expirationDate.toISOString(),
           is_active: true
         })

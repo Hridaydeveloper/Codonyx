@@ -32,7 +32,7 @@ export default function ContactPage() {
                   Contact Us
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-body animate-fade-in-delayed">
-                  Have questions about AdvisorNet? We'd love to hear from you.
+                  Have questions about Codonyx? We'd love to hear from you.
                 </p>
               </div>
 
@@ -45,7 +45,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-medium text-foreground mb-1">Email</h3>
-                      <p className="text-muted-foreground font-body">contact@advisornet.com</p>
+                      <p className="text-muted-foreground font-body">contact@codonyx.com</p>
                     </div>
                   </div>
 

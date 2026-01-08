@@ -12,7 +12,7 @@
 
 @layer base {
   :root {
-    /* AdvisorNet Premium Theme - Green, Black, White */
+    /* Codonyx Premium Theme - Green, Black, White */
     --background: 0 0% 100%;
     --foreground: 0 0% 8%;
 
@@ -47,7 +47,7 @@
 
     --radius: 0.5rem;
 
-    /* Custom AdvisorNet tokens */
+    /* Custom Codonyx tokens */
     --surface-elevated: 0 0% 98%;
     --text-subtle: 0 0% 55%;
     --divider: 0 0% 92%;
