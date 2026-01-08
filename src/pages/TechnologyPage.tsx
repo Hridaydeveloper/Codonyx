@@ -37,7 +37,7 @@ export default function TechnologyPage() {
                 Technology
               </h1>
               <p className="text-lg text-muted-foreground font-body animate-fade-in-delayed">
-                Built with security, privacy, and performance at its core. AdvisorNet 
+                Built with security, privacy, and performance at its core. Codonyx 
                 uses cutting-edge technology to protect your professional connections.
               </p>
             </div>
@@ -67,7 +67,7 @@ export default function TechnologyPage() {
                 Compliance & Certifications
               </h2>
               <p className="text-muted-foreground font-body">
-                AdvisorNet is compliant with GDPR, SOC 2 Type II, and ISO 27001 standards. 
+                Codonyx is compliant with GDPR, SOC 2 Type II, and ISO 27001 standards. 
                 We take your privacy seriously and maintain the highest security standards.
               </p>
             </div>

@@ -10,11 +10,11 @@ export default function AboutPage() {
           <div className="container mx-auto px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
               <h1 className="font-display text-4xl lg:text-5xl font-medium text-foreground mb-6 animate-fade-in">
-                About AdvisorNet
+                About Codonyx
               </h1>
               <div className="prose prose-lg max-w-none font-body text-muted-foreground space-y-6 animate-fade-in-delayed">
                 <p className="text-xl leading-relaxed">
-                  AdvisorNet is an exclusive, invite-only platform connecting elite advisors 
+                  Codonyx is an exclusive, invite-only platform connecting elite advisors 
                   with pioneering laboratories across the globe.
                 </p>
                 <p>
@@ -24,7 +24,7 @@ export default function AboutPage() {
                   knowledge and creating meaningful impact.
                 </p>
                 <p>
-                  Unlike traditional networking platforms, AdvisorNet operates on trust and 
+                  Unlike traditional networking platforms, Codonyx operates on trust and 
                   exclusivity. Every member is verified, every connection is meaningful, and 
                   every collaboration has the potential to change industries.
                 </p>

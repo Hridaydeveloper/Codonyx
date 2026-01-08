@@ -20,7 +20,7 @@ export default function InvestmentsPage() {
                 Our Investments
               </h1>
               <p className="text-lg text-muted-foreground font-body animate-fade-in-delayed">
-                AdvisorNet connects laboratories with strategic investors and advisors 
+                Codonyx connects laboratories with strategic investors and advisors 
                 who bring more than capital—they bring expertise, networks, and vision.
               </p>
             </div>

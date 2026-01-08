@@ -165,6 +165,7 @@ export default function AdvisorsPage() {
                   location={advisor.location}
                   organisation={advisor.organisation}
                   avatarUrl={advisor.avatar_url}
+                  mentoringAreas={advisor.mentoring_areas}
                 />
               ))}
             </div>

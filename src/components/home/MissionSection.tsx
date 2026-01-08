@@ -23,7 +23,7 @@ export function MissionSection() {
             Building bridges between expertise and innovation
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed font-body">
-            AdvisorNet connects elite advisors with pioneering laboratories, 
+            Codonyx connects elite advisors with pioneering laboratories, 
             creating a private ecosystem where knowledge flows freely and 
             groundbreaking partnerships are formed.
           </p>

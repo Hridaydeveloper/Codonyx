@@ -37,7 +37,7 @@ export default function ProductPage() {
                 The Platform
               </h1>
               <p className="text-lg text-muted-foreground font-body animate-fade-in-delayed">
-                AdvisorNet is a private, secure platform designed for meaningful professional 
+                Codonyx is a private, secure platform designed for meaningful professional 
                 connections between advisors and laboratories.
               </p>
             </div>
