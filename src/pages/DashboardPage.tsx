@@ -77,53 +77,55 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Quick Links - Enhanced */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link to="/advisors">
-                <Card className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="flex items-center gap-5 p-6">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 transition-all duration-300">
-                        <Users className="w-8 h-8 text-primary" />
+            {/* Quick Links - Show only relevant section based on user type */}
+            <div className="grid grid-cols-1 gap-6">
+              {profile?.user_type === "advisor" ? (
+                <Link to="/laboratories">
+                  <Card className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="flex items-center gap-5 p-6">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 transition-all duration-300">
+                          <Building2 className="w-8 h-8 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                            Laboratory Network
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Browse and connect with laboratories
+                          </p>
+                        </div>
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                          <ArrowRight className="w-5 h-5" />
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                          Advisor Network
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          Browse and connect with advisors
-                        </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ) : (
+                <Link to="/advisors">
+                  <Card className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="flex items-center gap-5 p-6">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 transition-all duration-300">
+                          <Users className="w-8 h-8 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                            Advisor Network
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Browse and connect with advisors
+                          </p>
+                        </div>
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                          <ArrowRight className="w-5 h-5" />
+                        </div>
                       </div>
-                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                        <ArrowRight className="w-5 h-5" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              <Link to="/laboratories">
-                <Card className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="flex items-center gap-5 p-6">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 transition-all duration-300">
-                        <Building2 className="w-8 h-8 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                          Laboratory Network
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          Browse and connect with laboratories
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                        <ArrowRight className="w-5 h-5" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    </CardContent>
+                  </Card>
+                </Link>
+              )}
             </div>
           </div>
         </div>

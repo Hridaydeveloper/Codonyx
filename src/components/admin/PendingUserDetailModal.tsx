@@ -23,6 +23,7 @@ interface PendingUser {
   linkedin_url: string | null;
   education: string | null;
   expertise: string | null;
+  experience: string | null;
   mentoring_areas: string | null;
   languages: string | null;
   industry_expertise: string | null;
@@ -161,17 +162,6 @@ export function PendingUserDetailModal({
                   {user.contact_number}
                 </div>
               )}
-              {user.linkedin_url && (
-                <a 
-                  href={user.linkedin_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-primary hover:underline"
-                >
-                  <Linkedin className="h-4 w-4" />
-                  LinkedIn Profile
-                </a>
-              )}
               {isLaboratory && user.website_url && (
                 <a 
                   href={user.website_url} 
@@ -184,6 +174,20 @@ export function PendingUserDetailModal({
                 </a>
               )}
             </div>
+            
+            {/* LinkedIn Button */}
+            {user.linkedin_url && (
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(user.linkedin_url!, '_blank')}
+                  className="gap-2 w-full"
+                >
+                  <Linkedin className="h-4 w-4" />
+                  View LinkedIn Profile
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Bio Section */}
@@ -202,14 +206,14 @@ export function PendingUserDetailModal({
               <h3 className="font-heading text-lg font-semibold text-foreground mb-4">Professional Details</h3>
               
               <div className="grid gap-4">
-                {user.education && (
+                {user.experience && (
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <GraduationCap className="h-4 w-4 text-primary" />
+                      <Briefcase className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Education</p>
-                      {renderTags(user.education)}
+                      <p className="text-sm text-muted-foreground mb-1">Experience</p>
+                      {renderTags(user.experience)}
                     </div>
                   </div>
                 )}
@@ -217,7 +221,7 @@ export function PendingUserDetailModal({
                 {user.expertise && (
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Briefcase className="h-4 w-4 text-primary" />
+                      <GraduationCap className="h-4 w-4 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Deep Areas of Expertise</p>

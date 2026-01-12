@@ -38,6 +38,7 @@ interface PendingUser {
   linkedin_url: string | null;
   education: string | null;
   expertise: string | null;
+  experience: string | null;
   mentoring_areas: string | null;
   languages: string | null;
   industry_expertise: string | null;
