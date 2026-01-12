@@ -228,7 +228,7 @@ export default function RegisterPage() {
 
       const advisorFields = userType === "advisor" ? {
         expertise: expertise || null,
-        education: experience || null,
+        experience: experience || null,
       } : {};
 
       const labFields = userType === "laboratory" ? {

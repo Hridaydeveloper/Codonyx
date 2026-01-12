@@ -38,6 +38,7 @@ interface Profile {
   linkedin_url: string | null;
   education: string | null;
   expertise: string | null;
+  experience: string | null;
   mentoring_areas: string | null;
   languages: string | null;
   industry_expertise: string | null;
@@ -250,14 +251,14 @@ export default function ProfileDetailPage() {
                 <h2 className="font-heading text-xl font-semibold text-foreground mb-6">Professional Details</h2>
                 
                 <div className="grid gap-6">
-                  {profile.education && (
+                  {profile.experience && (
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <GraduationCap className="h-5 w-5 text-primary" />
+                        <Briefcase className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">Education</p>
-                        {renderTags(profile.education)}
+                        <p className="text-sm text-muted-foreground mb-1">Experience</p>
+                        {renderTags(profile.experience)}
                       </div>
                     </div>
                   )}
@@ -265,7 +266,7 @@ export default function ProfileDetailPage() {
                   {profile.expertise && (
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Briefcase className="h-5 w-5 text-primary" />
+                        <GraduationCap className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground mb-1">Deep Areas of Expertise</p>

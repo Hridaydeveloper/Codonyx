@@ -58,6 +58,7 @@ export type Database = {
           created_at: string
           education: string | null
           email: string
+          experience: string | null
           expertise: string | null
           founded_year: number | null
           full_name: string
@@ -87,6 +88,7 @@ export type Database = {
           created_at?: string
           education?: string | null
           email: string
+          experience?: string | null
           expertise?: string | null
           founded_year?: number | null
           full_name: string
@@ -116,6 +118,7 @@ export type Database = {
           created_at?: string
           education?: string | null
           email?: string
+          experience?: string | null
           expertise?: string | null
           founded_year?: number | null
           full_name?: string
