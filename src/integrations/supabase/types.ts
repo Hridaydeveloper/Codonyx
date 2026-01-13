@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      connections: {
+        Row: {
+          created_at: string
+          id: string
+          receiver_id: string
+          sender_id: string
+          status: Database["public"]["Enums"]["connection_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receiver_id: string
+          sender_id: string
+          status?: Database["public"]["Enums"]["connection_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+          status?: Database["public"]["Enums"]["connection_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connections_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connections_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invite_tokens: {
         Row: {
           created_at: string
@@ -183,6 +225,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       approval_status: "pending" | "approved" | "rejected"
+      connection_status: "pending" | "accepted" | "rejected"
       user_type: "advisor" | "laboratory"
     }
     CompositeTypes: {
@@ -313,6 +356,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       approval_status: ["pending", "approved", "rejected"],
+      connection_status: ["pending", "accepted", "rejected"],
       user_type: ["advisor", "laboratory"],
     },
   },

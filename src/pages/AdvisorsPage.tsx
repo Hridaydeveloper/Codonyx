@@ -166,6 +166,7 @@ export default function AdvisorsPage() {
                   organisation={advisor.organisation}
                   avatarUrl={advisor.avatar_url}
                   mentoringAreas={advisor.mentoring_areas}
+                  linkedinUrl={advisor.linkedin_url}
                 />
               ))}
             </div>
