@@ -472,7 +472,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="country" className="text-xs uppercase tracking-wider font-medium">
-                  Country
+                  Country *
                 </Label>
                 <Input
                   id="country"
@@ -481,12 +481,13 @@ export default function RegisterPage() {
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                   className="h-12"
+                  required
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="city" className="text-xs uppercase tracking-wider font-medium">
-                  City
+                  City *
                 </Label>
                 <Input
                   id="city"
@@ -495,13 +496,14 @@ export default function RegisterPage() {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   className="h-12"
+                  required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="contactNumber" className="text-xs uppercase tracking-wider font-medium">
-                Contact Number
+                Contact Number *
               </Label>
               <Input
                 id="contactNumber"
@@ -510,12 +512,13 @@ export default function RegisterPage() {
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
                 className="h-12"
+                required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">
-                Organisation / Company
+                Organisation / Company *
               </Label>
               <Input
                 id="organisation"
@@ -524,12 +527,13 @@ export default function RegisterPage() {
                 value={organisation}
                 onChange={(e) => setOrganisation(e.target.value)}
                 className="h-12"
+                required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">
-                LinkedIn Profile
+                LinkedIn Profile *
               </Label>
               <Input
                 id="linkedinUrl"
@@ -538,12 +542,13 @@ export default function RegisterPage() {
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
                 className="h-12"
+                required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">
-                Bio
+                Bio *
               </Label>
               <Textarea
                 id="bio"
@@ -551,6 +556,7 @@ export default function RegisterPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 className="min-h-[100px]"
+                required
               />
             </div>
 
@@ -586,7 +592,7 @@ export default function RegisterPage() {
                 </h3>
                 <div className="space-y-2">
                   <Label htmlFor="expertise" className="text-xs uppercase tracking-wider font-medium">
-                    Areas of Expertise
+                    Areas of Expertise *
                   </Label>
                   <Input
                     id="expertise"
@@ -595,11 +601,12 @@ export default function RegisterPage() {
                     value={expertise}
                     onChange={(e) => setExpertise(e.target.value)}
                     className="h-12"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">
-                    Experience / Background
+                    Experience / Background *
                   </Label>
                   <Textarea
                     id="experience"
@@ -607,6 +614,7 @@ export default function RegisterPage() {
                     value={experience}
                     onChange={(e) => setExperience(e.target.value)}
                     className="min-h-[80px]"
+                    required
                   />
                 </div>
               </div>
@@ -620,7 +628,7 @@ export default function RegisterPage() {
                 </h3>
                 <div className="space-y-2">
                   <Label htmlFor="companyType" className="text-xs uppercase tracking-wider font-medium">
-                    Company Type
+                    Company Type *
                   </Label>
                   <Input
                     id="companyType"
@@ -629,11 +637,12 @@ export default function RegisterPage() {
                     value={companyType}
                     onChange={(e) => setCompanyType(e.target.value)}
                     className="h-12"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="websiteUrl" className="text-xs uppercase tracking-wider font-medium">
-                    Company Website
+                    Company Website *
                   </Label>
                   <Input
                     id="websiteUrl"
@@ -642,11 +651,12 @@ export default function RegisterPage() {
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
                     className="h-12"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="researchAreas" className="text-xs uppercase tracking-wider font-medium">
-                    Research Areas
+                    Research Areas *
                   </Label>
                   <Input
                     id="researchAreas"
@@ -655,11 +665,12 @@ export default function RegisterPage() {
                     value={researchAreas}
                     onChange={(e) => setResearchAreas(e.target.value)}
                     className="h-12"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="services" className="text-xs uppercase tracking-wider font-medium">
-                    Services Offered
+                    Services Offered *
                   </Label>
                   <Textarea
                     id="services"
@@ -667,6 +678,7 @@ export default function RegisterPage() {
                     value={services}
                     onChange={(e) => setServices(e.target.value)}
                     className="min-h-[80px]"
+                    required
                   />
                 </div>
               </div>

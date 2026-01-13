@@ -6,6 +6,8 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ConnectButton } from "@/components/connections/ConnectButton";
+import { ConnectionsSection } from "@/components/connections/ConnectionsSection";
 import { 
   Loader2, 
   ArrowLeft, 
@@ -33,7 +35,7 @@ interface Profile {
   organisation: string | null;
   contact_number: string | null;
   avatar_url: string | null;
-  user_type: string;
+  user_type: "advisor" | "laboratory";
   created_at: string;
   linkedin_url: string | null;
   education: string | null;
@@ -50,11 +52,18 @@ interface Profile {
   research_areas: string | null;
 }
 
+interface CurrentUserProfile {
+  id: string;
+  user_type: "advisor" | "laboratory";
+}
+
 export default function ProfileDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState<CurrentUserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -66,6 +75,19 @@ export default function ProfileDetailPage() {
         return;
       }
 
+      // Get current user's profile
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("id, user_type")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (currentProfile) {
+        setCurrentUserProfile(currentProfile as CurrentUserProfile);
+        setIsOwnProfile(currentProfile.id === id);
+      }
+
+      // Get the profile being viewed
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -194,16 +216,27 @@ export default function ProfileDetailPage() {
                         </div>
                       </div>
 
-                      {profile.linkedin_url && (
-                        <Button
-                          variant="primary"
-                          onClick={() => window.open(profile.linkedin_url!, '_blank')}
-                          className="gap-2"
-                        >
-                          <Linkedin className="h-4 w-4" />
-                          Connect on LinkedIn
-                        </Button>
-                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {/* Connect Button - only show if not own profile */}
+                        {!isOwnProfile && currentUserProfile && (
+                          <ConnectButton
+                            currentProfileId={currentUserProfile.id}
+                            targetProfileId={profile.id}
+                          />
+                        )}
+                        
+                        {/* LinkedIn Button */}
+                        {profile.linkedin_url && (
+                          <Button
+                            variant="outline"
+                            onClick={() => window.open(profile.linkedin_url!, '_blank')}
+                            className="gap-2"
+                          >
+                            <Linkedin className="h-4 w-4" />
+                            LinkedIn
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -382,6 +415,16 @@ export default function ProfileDetailPage() {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Connections Section - only show on own profile */}
+            {isOwnProfile && currentUserProfile && (
+              <div className="mt-6">
+                <ConnectionsSection
+                  currentProfileId={currentUserProfile.id}
+                  userType={currentUserProfile.user_type}
+                />
               </div>
             )}
           </div>
