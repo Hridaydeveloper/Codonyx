@@ -12,6 +12,7 @@ import AdvisorsPage from "./pages/AdvisorsPage";
 import LaboratoriesPage from "./pages/LaboratoriesPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import ProfileDetailPage from "./pages/ProfileDetailPage";
+import ConnectionsPage from "./pages/ConnectionsPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import InvestmentsPage from "./pages/InvestmentsPage";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/advisors" element={<AdvisorsPage />} />
           <Route path="/laboratories" element={<LaboratoriesPage />} />
           <Route path="/edit-profile" element={<EditProfilePage />} />
+          <Route path="/connections" element={<ConnectionsPage />} />
           <Route path="/profile/:id" element={<ProfileDetailPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
