@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Menu, X, LogOut, User, Shield } from "lucide-react";
+import { Menu, X, LogOut, User, Shield, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -140,6 +140,12 @@ export function DashboardNavbar() {
                     Edit Profile
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/connections" className="cursor-pointer">
+                    <Users className="mr-2 h-4 w-4" />
+                    Connections
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -179,6 +185,14 @@ export function DashboardNavbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Edit Profile
+            </Link>
+            <Link
+              to="/connections"
+              className="flex items-center gap-2 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-primary transition-colors py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Users className="h-4 w-4" />
+              Connections
             </Link>
             {isAdmin && (
               <Link
