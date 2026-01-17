@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Linkedin, Twitter, Youtube } from "lucide-react";
+import codonyxLogo from "@/assets/codonyx_logo.png";
 
 const footerLinks = {
   platform: [
@@ -11,6 +12,7 @@ const footerLinks = {
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
     { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms & Conditions", href: "/terms" },
   ],
 };
 
@@ -27,7 +29,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <Link to="/" className="inline-block">
+            <Link to="/" className="flex items-center gap-3">
+              <img src={codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" />
               <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
                 Codonyx
               </span>
