@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import codonyxLogo from "@/assets/codonyx_logo.png";
 
 const navLinks = [
   { name: "Investments", href: "/investments" },
@@ -20,7 +21,8 @@ export function Navbar() {
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-3">
+            <img src={codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" />
             <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
               Codonyx
             </span>

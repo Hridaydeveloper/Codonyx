@@ -334,7 +334,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-12 bg-background overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex flex-col px-8 lg:px-16 xl:px-24 py-12 bg-background overflow-y-auto max-h-screen">
         <div className="max-w-md mx-auto w-full">
           {/* Logo */}
           <Link to="/" className="inline-block mb-8">
@@ -712,8 +712,8 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Right Panel - Features */}
-      <div className="hidden lg:flex w-1/2 bg-foreground text-background p-12 xl:p-16 flex-col justify-center">
+      {/* Right Panel - Features (Fixed) */}
+      <div className="hidden lg:flex w-1/2 bg-foreground text-background p-12 xl:p-16 flex-col justify-center fixed right-0 top-0 bottom-0">
         <div className="max-w-md">
           <div className="space-y-8">
             {features.map((feature, index) => (
