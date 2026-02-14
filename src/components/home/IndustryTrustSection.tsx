@@ -54,7 +54,7 @@ export function IndustryTrustSection() {
               </Button>
             </Link>
             <Link to="/about">
-              <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+              <Button variant="outline" size="xl" className="border-white/30 text-black hover:bg-white/10 hover:text-white">
                 Learn About Us
               </Button>
             </Link>
