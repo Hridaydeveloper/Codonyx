@@ -37,12 +37,12 @@ export function HeroSection() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delayed">
               <Link to="/product">
-                <Button variant="hero" size="xl" className="bg-white text-foreground hover:bg-white/90">
+                <Button variant="hero" size="xl" className="bg-primary text-primary-foreground hover:bg-primary-hover">
                   Explore Our Solutions
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" size="xl" className="bg-white text-foreground hover:bg-white/90">
+                <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
                   Partner With Us
                 </Button>
               </Link>
