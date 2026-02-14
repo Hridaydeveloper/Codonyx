@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { Linkedin, Twitter, Youtube } from "lucide-react";
+import { Linkedin, Mail } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
 
 const footerLinks = {
-  platform: [
+  solutions: [
     { name: "Investments", href: "/investments" },
     { name: "Product", href: "/product" },
     { name: "Technology", href: "/technology" },
@@ -11,47 +11,57 @@ const footerLinks = {
   company: [
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
+  ],
+  compliance: [
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Terms & Conditions", href: "/terms" },
   ],
 };
 
-const socialLinks = [
-  { name: "LinkedIn", icon: Linkedin, href: "#" },
-  { name: "Twitter", icon: Twitter, href: "#" },
-  { name: "YouTube", icon: Youtube, href: "#" },
-];
-
 export function Footer() {
   return (
-    <footer className="bg-background border-t border-divider">
-      <div className="container mx-auto px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Brand Column */}
-          <div className="lg:col-span-1">
+    <footer className="bg-navy border-t border-white/10">
+      <div className="container mx-auto px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
+          {/* Brand */}
+          <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-3">
               <img src={codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" />
-              <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
+              <span className="font-heading text-2xl font-semibold text-white tracking-tight">
                 Codonyx
               </span>
             </Link>
-            <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
-              A private network connecting elite advisors and laboratories worldwide.
+            <p className="mt-4 text-sm text-white/50 leading-relaxed max-w-sm font-body">
+              A global molecular science and AI healthcare company connecting elite 
+              advisors and pioneering laboratories to shape the future of life sciences.
             </p>
+            <div className="flex gap-3 mt-6">
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin size={18} />
+              </a>
+              <a
+                href="mailto:contact@codonyx.org"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label="Email"
+              >
+                <Mail size={18} />
+              </a>
+            </div>
           </div>
 
-          {/* Platform Links */}
+          {/* Solutions */}
           <div>
-            <h4 className="font-body text-sm font-semibold uppercase tracking-wider text-foreground mb-4">
-              Platform
+            <h4 className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">
+              Solutions
             </h4>
             <ul className="space-y-3">
-              {footerLinks.platform.map((link) => (
+              {footerLinks.solutions.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                  <Link to={link.href} className="text-sm text-white/60 hover:text-emerald-glow transition-colors font-body">
                     {link.name}
                   </Link>
                 </li>
@@ -59,18 +69,15 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Company */}
           <div>
-            <h4 className="font-body text-sm font-semibold uppercase tracking-wider text-foreground mb-4">
+            <h4 className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">
               Company
             </h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                  <Link to={link.href} className="text-sm text-white/60 hover:text-emerald-glow transition-colors font-body">
                     {link.name}
                   </Link>
                 </li>
@@ -78,37 +85,31 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter / Social */}
+          {/* Compliance */}
           <div>
-            <h4 className="font-body text-sm font-semibold uppercase tracking-wider text-foreground mb-4">
-              Connect
+            <h4 className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-white/40 mb-4">
+              Compliance
             </h4>
-            <div className="flex gap-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                  aria-label={social.name}
-                >
-                  <social.icon size={18} />
-                </a>
+            <ul className="space-y-3">
+              {footerLinks.compliance.map((link) => (
+                <li key={link.name}>
+                  <Link to={link.href} className="text-sm text-white/60 hover:text-emerald-glow transition-colors font-body">
+                    {link.name}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-divider flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            Copyright © {new Date().getFullYear()} Codonyx. All rights reserved.
+        {/* Bottom */}
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-white/40 font-body">
+            © {new Date().getFullYear()} Codonyx. All rights reserved.
           </p>
-          <Link
-            to="/privacy-policy"
-            className="text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            Privacy Policy
-          </Link>
+          <p className="text-xs text-white/30 font-body">
+            Molecular Science · AI Healthcare · Global Impact
+          </p>
         </div>
       </div>
     </footer>

@@ -12,46 +12,48 @@
 
 @layer base {
   :root {
-    /* Codonyx Premium Theme - Green, Black, White */
+    /* CODONYX Enterprise Theme — Deep Navy + Emerald Green */
     --background: 0 0% 100%;
-    --foreground: 0 0% 8%;
+    --foreground: 220 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card-foreground: 220 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
+    --popover-foreground: 220 30% 10%;
 
-    /* Deep Forest Green - Primary Brand Color */
-    --primary: 160 70% 18%;
+    /* Emerald Green — Primary Brand Color */
+    --primary: 160 84% 29%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 160 80% 34%;
 
-    /* Lighter green for hover states */
-    --primary-hover: 160 65% 22%;
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 220 30% 10%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 8%;
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 10% 45%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-
-    --accent: 160 70% 18%;
+    --accent: 160 84% 29%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 160 70% 18%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 160 84% 29%;
 
     --radius: 0.5rem;
 
-    /* Custom Codonyx tokens */
-    --surface-elevated: 0 0% 98%;
-    --text-subtle: 0 0% 55%;
-    --divider: 0 0% 92%;
-    
+    /* Custom CODONYX tokens */
+    --navy: 220 40% 13%;
+    --navy-light: 220 35% 20%;
+    --navy-medium: 220 30% 25%;
+    --emerald-glow: 160 80% 45%;
+    --surface-elevated: 220 15% 97%;
+    --text-subtle: 220 10% 55%;
+    --divider: 220 15% 92%;
+
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -59,59 +61,63 @@
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.08);
 
-    /* Sidebar (keeping for compatibility) */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 8%;
-    --sidebar-primary: 160 70% 18%;
+    /* Sidebar */
+    --sidebar-background: 220 15% 97%;
+    --sidebar-foreground: 220 30% 10%;
+    --sidebar-primary: 160 84% 29%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 8%;
-    --sidebar-border: 0 0% 92%;
-    --sidebar-ring: 160 70% 18%;
+    --sidebar-accent: 220 15% 95%;
+    --sidebar-accent-foreground: 220 30% 10%;
+    --sidebar-border: 220 15% 92%;
+    --sidebar-ring: 160 84% 29%;
   }
 
   .dark {
-    --background: 0 0% 6%;
+    --background: 220 40% 6%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 8%;
+    --card: 220 35% 9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 8%;
+    --popover: 220 35% 9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 160 60% 40%;
+    --primary: 160 70% 42%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 160 55% 45%;
+    --primary-hover: 160 65% 48%;
 
-    --secondary: 0 0% 14%;
+    --secondary: 220 30% 14%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 25% 14%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 0 0% 14%;
+    --accent: 220 25% 14%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 160 60% 40%;
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 160 70% 42%;
 
-    --surface-elevated: 0 0% 10%;
-    --text-subtle: 0 0% 50%;
-    --divider: 0 0% 18%;
+    --navy: 220 40% 8%;
+    --navy-light: 220 35% 15%;
+    --navy-medium: 220 30% 20%;
+    --emerald-glow: 160 80% 50%;
+    --surface-elevated: 220 30% 10%;
+    --text-subtle: 220 10% 50%;
+    --divider: 220 25% 18%;
 
-    --sidebar-background: 0 0% 8%;
+    --sidebar-background: 220 35% 9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 160 60% 40%;
+    --sidebar-primary: 160 70% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 14%;
+    --sidebar-accent: 220 25% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 160 60% 40%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 160 70% 42%;
   }
 }
 
@@ -158,34 +164,36 @@
     animation: scaleIn 0.5s ease-out forwards;
   }
 
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
   }
 }
