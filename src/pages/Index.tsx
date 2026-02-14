@@ -1,8 +1,11 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
-import { StatsSection } from "@/components/home/StatsSection";
-import { MissionSection } from "@/components/home/MissionSection";
+import { PhilosophySection } from "@/components/home/PhilosophySection";
+import { CoreCapabilitiesSection } from "@/components/home/CoreCapabilitiesSection";
+import { TinyGiantsSection } from "@/components/home/TinyGiantsSection";
+import { AIIntegrationSection } from "@/components/home/AIIntegrationSection";
+import { IndustryTrustSection } from "@/components/home/IndustryTrustSection";
 
 const Index = () => {
   return (
@@ -10,8 +13,11 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSection />
-        <StatsSection />
-        <MissionSection />
+        <PhilosophySection />
+        <CoreCapabilitiesSection />
+        <TinyGiantsSection />
+        <AIIntegrationSection />
+        <IndustryTrustSection />
       </main>
       <Footer />
     </div>

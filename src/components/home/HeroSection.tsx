@@ -1,35 +1,61 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-forest.jpg";
-export function HeroSection() {
-  return <section className="relative min-h-screen flex items-center">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img src={heroImage} alt="Forest aerial view representing growth and connection" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 via-foreground/40 to-transparent" />
-      </div>
+import heroLabImage from "@/assets/hero-lab.jpg";
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 lg:px-8 pt-20">
-        <div className="max-w-2xl">
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-medium text-background leading-tight mb-4 animate-fade-in">
-            Connect. Collaborate.
-            <br />
-            <span className="italic">Innovate.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-background/80 mb-2 animate-fade-in-delayed font-body">Since 2026</p>
-          <p className="text-base md:text-lg text-background/70 mb-8 animate-fade-in-delayed font-body max-w-lg">
-            An exclusive network uniting world-class advisors and cutting-edge laboratories 
-            to drive breakthrough innovations.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delayed">
-            <Link to="/about">
-              <Button variant="hero" size="xl">
-                Learn More
-              </Button>
-            </Link>
+export function HeroSection() {
+  return (
+    <section className="relative min-h-screen bg-navy">
+      <div className="container mx-auto px-6 lg:px-8 pt-28 pb-16 lg:pt-32 lg:pb-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[70vh]">
+          {/* Left Content */}
+          <div className="relative z-10">
+            <p className="text-emerald-glow font-body text-sm font-semibold tracking-[0.2em] uppercase mb-6 animate-fade-in">
+              Molecular Science · AI Healthcare · Global Impact
+            </p>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.15] mb-6 animate-fade-in">
+              Where Life's Code Meets Planetary{" "}
+              <span className="italic text-emerald-glow">Responsibility.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-white/70 mb-10 animate-fade-in-delayed font-body max-w-lg leading-relaxed">
+              CODONYX blends molecular biology, artificial intelligence, and 
+              Earth-conscious innovation to shape the future of life sciences.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delayed">
+              <Link to="/product">
+                <Button variant="hero" size="xl" className="bg-primary text-primary-foreground hover:bg-primary-hover">
+                  Explore Our Solutions
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+                  Partner With Us
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Image */}
+          <div className="relative animate-fade-in hidden lg:block">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <img
+                src={heroLabImage}
+                alt="Modern biotech laboratory with scientists"
+                className="w-full h-[500px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
+            </div>
+            {/* Decorative floating elements */}
+            <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full border border-emerald-glow/20 animate-float" />
+            <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-primary/10 animate-pulse-glow" />
           </div>
         </div>
       </div>
-    </section>;
+
+      {/* Subtle background molecular pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-emerald-glow blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-primary blur-[80px]" />
+      </div>
+    </section>
+  );
 }
