@@ -20,7 +20,7 @@ export function TinyGiantsSection() {
         <p className="text-white/70 text-lg font-body max-w-2xl mx-auto leading-relaxed mb-12">
           At the molecular level, the smallest building blocks of life hold the power to 
           transform entire healthcare systems. CODONYX harnesses these tiny giants — codons, 
-          proteins, and molecular signals — to engineer solutions that scale from laboratory 
+          proteins and molecular signals — to engineer solutions that scale from laboratory 
           benches to global populations.
         </p>
         <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
