@@ -42,7 +42,7 @@ export function HeroSection() {
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" size="xl" className="bg-white text-foreground hover:bg-white/90 border-white">
+                <Button variant="outline" size="xl" className="bg-white text-foreground hover:bg-white/90">
                   Partner With Us
                 </Button>
               </Link>
