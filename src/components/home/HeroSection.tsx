@@ -1,8 +1,23 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import heroLabImage from "@/assets/hero-lab.jpg";
+import heroHealthcare1 from "@/assets/hero-healthcare-1.jpg";
+import heroHealthcare2 from "@/assets/hero-healthcare-2.jpg";
+import heroHealthcare3 from "@/assets/hero-healthcare-3.jpg";
+
+const heroImages = [heroLabImage, heroHealthcare1, heroHealthcare2, heroHealthcare3];
 
 export function HeroSection() {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative min-h-screen bg-navy">
       <div className="container mx-auto px-6 lg:px-8 pt-28 pb-16 lg:pt-32 lg:pb-24">
@@ -22,26 +37,31 @@ export function HeroSection() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delayed">
               <Link to="/product">
-                <Button variant="hero" size="xl" className="bg-primary text-primary-foreground hover:bg-primary-hover">
+                <Button variant="hero" size="xl" className="bg-white text-foreground hover:bg-white/90">
                   Explore Our Solutions
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+                <Button variant="outline" size="xl" className="bg-white text-foreground hover:bg-white/90 border-white">
                   Partner With Us
                 </Button>
               </Link>
             </div>
           </div>
 
-          {/* Right Image */}
+          {/* Right Image - Auto-rotating */}
           <div className="relative animate-fade-in hidden lg:block">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src={heroLabImage}
-                alt="Modern biotech laboratory with scientists"
-                className="w-full h-[500px] object-cover"
-              />
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[500px]">
+              {heroImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`AI healthcare technology ${index + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                    index === currentImage ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              ))}
               <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
             </div>
             {/* Decorative floating elements */}

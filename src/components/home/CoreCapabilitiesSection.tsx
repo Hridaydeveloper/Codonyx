@@ -1,33 +1,38 @@
-import { Dna, Brain, Factory, ShieldCheck, ArrowLeftRight, Globe } from "lucide-react";
+import capGenomics from "@/assets/cap-genomics.jpg";
+import capAiDiagnostics from "@/assets/cap-ai-diagnostics.jpg";
+import capGmp from "@/assets/cap-gmp.jpg";
+import capRegulatory from "@/assets/cap-regulatory.jpg";
+import capTechTransfer from "@/assets/cap-tech-transfer.jpg";
+import capPartnerships from "@/assets/cap-partnerships.jpg";
 
 const capabilities = [
   {
-    icon: Dna,
+    image: capGenomics,
     title: "Molecular Biology & Genomics",
     description: "Advanced genomic analysis and molecular engineering for precision therapeutics.",
   },
   {
-    icon: Brain,
+    image: capAiDiagnostics,
     title: "AI-Driven Diagnostics",
     description: "Machine learning models that accelerate disease detection and patient outcomes.",
   },
   {
-    icon: Factory,
+    image: capGmp,
     title: "GMP Manufacturing",
     description: "Scalable, compliant production of biologics and advanced therapy products.",
   },
   {
-    icon: ShieldCheck,
+    image: capRegulatory,
     title: "Regulatory & Compliance Strategy",
     description: "Global regulatory navigation ensuring market readiness across jurisdictions.",
   },
   {
-    icon: ArrowLeftRight,
+    image: capTechTransfer,
     title: "Technology Transfer",
     description: "Seamless transition from lab-scale innovation to commercial-scale production.",
   },
   {
-    icon: Globe,
+    image: capPartnerships,
     title: "Global Scientific Partnerships",
     description: "Cross-border collaborations connecting research institutions and industry leaders.",
   },
@@ -53,17 +58,23 @@ export function CoreCapabilitiesSection() {
           {capabilities.map((cap) => (
             <div
               key={cap.title}
-              className="group p-8 rounded-xl border border-divider bg-card hover:border-primary/30 hover:shadow-card transition-all duration-300"
+              className="group rounded-xl border border-divider bg-card hover:border-primary/30 hover:shadow-card transition-all duration-300 overflow-hidden"
             >
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-                <cap.icon className="w-6 h-6 text-primary" />
+              <div className="h-48 overflow-hidden">
+                <img
+                  src={cap.image}
+                  alt={cap.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
-              <h3 className="font-heading text-lg font-semibold text-card-foreground mb-3">
-                {cap.title}
-              </h3>
-              <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                {cap.description}
-              </p>
+              <div className="p-6">
+                <h3 className="font-heading text-lg font-semibold text-card-foreground mb-3">
+                  {cap.title}
+                </h3>
+                <p className="text-muted-foreground font-body text-sm leading-relaxed">
+                  {cap.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>
