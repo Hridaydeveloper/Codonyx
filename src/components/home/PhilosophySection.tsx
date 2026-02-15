@@ -1,8 +1,10 @@
 import chromosomesImage from "@/assets/chromosomes.jpg";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 export function PhilosophySection() {
+  const { ref, isVisible } = useScrollAnimation();
   return (
-    <section className="relative py-24 lg:py-32 bg-navy-light overflow-hidden">
+    <section ref={ref} className={`relative py-24 lg:py-32 bg-navy-light overflow-hidden transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
       {/* Subtle molecular bg */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-glow blur-[150px]" />

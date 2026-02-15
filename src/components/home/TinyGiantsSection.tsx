@@ -1,8 +1,10 @@
 import dnaHelixBg from "@/assets/dna-helix-bg.jpg";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 export function TinyGiantsSection() {
+  const { ref, isVisible } = useScrollAnimation();
   return (
-    <section className="relative py-24 lg:py-32 overflow-hidden">
+    <section ref={ref} className={`relative py-24 lg:py-32 overflow-hidden transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
       {/* Background */}
       <div className="absolute inset-0">
         <img src={dnaHelixBg} alt="" className="w-full h-full object-cover" aria-hidden="true" />

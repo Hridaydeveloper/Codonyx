@@ -1,8 +1,10 @@
 import aiMolecularImage from "@/assets/ai-molecular.jpg";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 export function AIIntegrationSection() {
+  const { ref, isVisible } = useScrollAnimation();
   return (
-    <section className="py-24 lg:py-32 bg-background">
+    <section ref={ref} className={`py-24 lg:py-32 bg-background transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Image */}

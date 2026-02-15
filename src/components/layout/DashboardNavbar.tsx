@@ -16,6 +16,7 @@ interface Profile {
   full_name: string;
   avatar_url: string | null;
   user_type: "advisor" | "laboratory";
+  email: string;
 }
 
 export function DashboardNavbar() {
@@ -39,7 +40,7 @@ export function DashboardNavbar() {
       if (session) {
         const { data } = await supabase
           .from("profiles")
-          .select("full_name, avatar_url, user_type")
+          .select("full_name, avatar_url, user_type, email")
           .eq("user_id", session.user.id)
           .maybeSingle();
         if (data) {
@@ -131,6 +132,7 @@ export function DashboardNavbar() {
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
                     <p className="font-medium">{profile?.full_name}</p>
+                    <p className="text-xs text-muted-foreground">{profile?.email}</p>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
@@ -175,6 +177,21 @@ export function DashboardNavbar() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-background border-t border-divider animate-fade-in">
           <div className="container mx-auto px-6 py-4 space-y-4">
+            {/* Profile info in mobile menu */}
+            {profile && (
+              <div className="flex items-center gap-3 pb-4 border-b border-divider">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {getInitials(profile.full_name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <p className="font-medium text-sm text-foreground">{profile.full_name}</p>
+                  <p className="text-xs text-muted-foreground">{profile.email}</p>
+                </div>
+              </div>
+            )}
             {navLinks.map((link) => (
               <Link
                 key={link.name}
