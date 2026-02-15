@@ -4,7 +4,7 @@ import capGmp from "@/assets/cap-gmp.jpg";
 import capRegulatory from "@/assets/cap-regulatory.jpg";
 import capTechTransfer from "@/assets/cap-tech-transfer.jpg";
 import capPartnerships from "@/assets/cap-partnerships.jpg";
-
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 const capabilities = [
   {
     image: capGenomics,
@@ -39,8 +39,9 @@ const capabilities = [
 ];
 
 export function CoreCapabilitiesSection() {
+  const { ref, isVisible } = useScrollAnimation();
   return (
-    <section className="py-24 lg:py-32 bg-background">
+    <section ref={ref} className={`py-24 lg:py-32 bg-background transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
       <div className="container mx-auto px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-primary font-body text-sm font-semibold tracking-[0.2em] uppercase mb-4">

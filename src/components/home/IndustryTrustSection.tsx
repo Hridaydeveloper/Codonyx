@@ -1,7 +1,7 @@
 import { ShieldCheck, Scale, Globe, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 const trustBadges = [
   { icon: ShieldCheck, label: "Ethical AI" },
   { icon: Scale, label: "Regulatory Compliance" },
@@ -10,8 +10,9 @@ const trustBadges = [
 ];
 
 export function IndustryTrustSection() {
+  const { ref, isVisible } = useScrollAnimation();
   return (
-    <section className="py-24 lg:py-32 bg-navy">
+    <section ref={ref} className={`py-24 lg:py-32 bg-navy transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
       <div className="container mx-auto px-6 lg:px-8">
         {/* Trust Badges */}
         <div className="text-center mb-20">
