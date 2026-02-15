@@ -45,7 +45,7 @@ export function IndustryTrustSection() {
             Let's Shape the Future Together
           </h3>
           <p className="text-white/60 font-body text-lg max-w-2xl mx-auto mb-8">
-            We invite laboratories, healthcare systems, and research institutions 
+            We invite laboratories, healthcare systems and research institutions 
             worldwide to explore partnership opportunities with CODONYX.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
