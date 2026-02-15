@@ -32,7 +32,7 @@ export function HeroSection() {
               <span className="italic text-emerald-glow">Responsibility.</span>
             </h1>
             <p className="text-lg md:text-xl text-white/70 mb-10 animate-fade-in-delayed font-body max-w-lg leading-relaxed">
-              CODONYX blends molecular biology, artificial intelligence, and 
+              CODONYX blends molecular biology, artificial intelligence and 
               Earth-conscious innovation to shape the future of life sciences.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delayed">
