@@ -29,11 +29,11 @@ export function PhilosophySection() {
               </p>
               <p>
                 <strong className="text-white">Onyx</strong> — symbolizing Earth's strength, 
-                mystery, and the resilient foundation upon which all biological systems depend.
+                mystery and the resilient foundation upon which all biological systems depend.
               </p>
               <p>
                 The embedded <strong className="text-emerald-glow">"YX"</strong> reflects sex chromosomes — 
-                honoring biological diversity, balance, and the fundamental blueprint 
+                honoring biological diversity, balance and the fundamental blueprint 
                 that differentiates and unites all life.
               </p>
             </div>
