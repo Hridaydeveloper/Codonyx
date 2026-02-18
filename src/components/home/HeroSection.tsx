@@ -54,15 +54,25 @@ export function HeroSection() {
               CODONYX blends molecular biology, artificial intelligence and 
               Earth-conscious innovation to shape the future of life sciences.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delayed">
-              <Link to="/product">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 animate-fade-in-delayed">
+              <Link to="/services">
                 <Button variant="hero" size="xl" className="bg-primary text-primary-foreground hover:bg-primary-hover shadow-2xl">
                   Explore Our Solutions
                 </Button>
               </Link>
+              <Link to="/become-advisor">
+                <Button variant="outline" size="xl" className="border-white/50 bg-white text-foreground hover:bg-white/90 backdrop-blur-sm shadow-xl">
+                  Become an Advisor
+                </Button>
+              </Link>
+              <Link to="/register-laboratory">
+                <Button variant="outline" size="xl" className="border-white/50 bg-white text-foreground hover:bg-white/90 backdrop-blur-sm shadow-xl">
+                  Register as Laboratory
+                </Button>
+              </Link>
               <Link to="/contact">
-                <Button variant="outline" size="xl" className="border-white/50 text-black hover:bg-white/20 hover:text-white backdrop-blur-sm shadow-xl">
-                  Partner With Us
+                <Button variant="outline" size="xl" className="border-white/50 bg-white text-foreground hover:bg-white/90 backdrop-blur-sm shadow-xl">
+                  Our Distribution Partner
                 </Button>
               </Link>
             </div>
