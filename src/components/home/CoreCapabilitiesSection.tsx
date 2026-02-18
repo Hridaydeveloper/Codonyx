@@ -48,7 +48,7 @@ export function CoreCapabilitiesSection() {
             What We Do
           </p>
           <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
-            Core Capabilities
+            Services
           </h2>
           <p className="text-muted-foreground text-lg font-body max-w-2xl mx-auto">
             Six integrated pillars driving molecular innovation from discovery to global deployment.

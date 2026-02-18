@@ -6,7 +6,7 @@ import codonyxLogo from "@/assets/codonyx_logo.png";
 
 const navLinks = [
   { name: "Investments", href: "/investments" },
-  { name: "Product", href: "/product" },
+  { name: "Services", href: "/services" },
   { name: "Technology", href: "/technology" },
   { name: "About Us", href: "/about" },
   { name: "Contact Us", href: "/contact" },
