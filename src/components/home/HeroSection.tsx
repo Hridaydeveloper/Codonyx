@@ -52,7 +52,7 @@ export function HeroSection() {
             </h1>
             <p className="text-lg md:text-xl text-white/90 mb-10 animate-fade-in-delayed font-body max-w-lg leading-relaxed drop-shadow-lg">
               CODONYX blends molecular biology, artificial intelligence and 
-              Earth-conscious innovation to shape the future of life sciences.
+              Earth-conscious innovation to shape the life.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 animate-fade-in-delayed">
               <Link to="/services">
