@@ -27,9 +27,9 @@ export function TinyGiantsSection() {
         </p>
         <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
           {[
-            { number: "400+", label: "Investments" },
-            { number: "70+", label: "Countries" },
-            { number: "1,000+", label: "Advisors" },
+            { number: "70–80%", label: "Clinical Decisions Influenced by Diagnostics" },
+            { number: "$150 B+", label: "Ai Healthcare Market by 2030" },
+            { number: "8+ Billion", label: "Lives Impacted Globally" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-4xl lg:text-5xl font-display font-bold text-emerald-glow mb-2">
