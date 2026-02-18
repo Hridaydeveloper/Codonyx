@@ -4,8 +4,7 @@ import codonyxLogo from "@/assets/codonyx_logo.png";
 
 const footerLinks = {
   solutions: [
-    { name: "Investments", href: "/investments" },
-    { name: "Product", href: "/product" },
+    { name: "Services", href: "/services" },
     { name: "Technology", href: "/technology" },
   ],
   company: [

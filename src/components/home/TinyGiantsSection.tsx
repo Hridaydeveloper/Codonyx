@@ -25,22 +25,6 @@ export function TinyGiantsSection() {
           proteins and molecular signals — to engineer solutions that scale from laboratory 
           benches to global populations.
         </p>
-        <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
-          {[
-            { number: "70–80%", label: "Clinical Decisions Influenced by Diagnostics" },
-            { number: "$150 B+", label: "Ai Healthcare Market by 2030" },
-            { number: "8+ Billion", label: "Lives Impacted Globally" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-4xl lg:text-5xl font-display font-bold text-emerald-glow mb-2">
-                {stat.number}
-              </div>
-              <div className="text-white/60 font-body text-sm uppercase tracking-wider">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

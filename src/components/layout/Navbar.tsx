@@ -1,11 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
 
 const navLinks = [
-  { name: "Investments", href: "/investments" },
   { name: "Services", href: "/services" },
   { name: "Technology", href: "/technology" },
   { name: "About Us", href: "/about" },
@@ -15,6 +14,13 @@ const navLinks = [
 export function Navbar() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleNavClick = useCallback((href: string) => {
+    if (location.pathname === href) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-navy/95 backdrop-blur-sm border-b border-white/10">
@@ -34,6 +40,7 @@ export function Navbar() {
               <Link
                 key={link.name}
                 to={link.href}
+                onClick={() => handleNavClick(link.href)}
                 className={`text-sm font-medium tracking-wide uppercase transition-colors hover:text-emerald-glow ${
                   location.pathname === link.href
                     ? "text-emerald-glow"
@@ -73,7 +80,7 @@ export function Navbar() {
                 key={link.name}
                 to={link.href}
                 className="block text-sm font-medium tracking-wide uppercase text-white/70 hover:text-emerald-glow transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => handleNavClick(link.href)}
               >
                 {link.name}
               </Link>
