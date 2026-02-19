@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, CheckCircle, Loader2, XCircle, Eye, EyeOff, Upload, User } from "lucide-react";
+import codonyxLogo from "@/assets/codonyx_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const features = [
@@ -338,20 +339,7 @@ export default function RegisterPage() {
         <div className="max-w-md mx-auto w-full">
           {/* Logo */}
           <Link to="/" className="inline-block mb-8">
-            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                className="w-6 h-6 text-primary-foreground"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 2L12 8" />
-                <path d="M12 8C8 8 5 11 5 15C5 19 8 22 12 22C16 22 19 19 19 15C19 11 16 8 12 8Z" />
-                <path d="M8 8L4 4" />
-                <path d="M16 8L20 4" />
-              </svg>
-            </div>
+            <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
           </Link>
 
           <h1 className="font-display text-3xl lg:text-4xl font-medium text-foreground mb-2">
