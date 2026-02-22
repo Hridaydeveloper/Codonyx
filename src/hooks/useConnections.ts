@@ -205,6 +205,42 @@ export function useConnections(currentProfileId: string | null) {
         return false;
       }
 
+      // Send acceptance notification email
+      try {
+        const connection = connections.find(c => c.id === connectionId);
+        if (connection && currentProfileId) {
+          const senderId = connection.sender_id;
+          
+          // Get acceptor's name
+          const { data: acceptorProfile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", currentProfileId)
+            .single();
+
+          // Get sender's email and name
+          const { data: senderProfile } = await supabase
+            .from("profiles")
+            .select("full_name, email")
+            .eq("id", senderId)
+            .single();
+
+          if (senderProfile?.email && acceptorProfile?.full_name) {
+            await supabase.functions.invoke("send-notification-email", {
+              body: {
+                type: "connection_accepted",
+                recipientEmail: senderProfile.email,
+                recipientName: senderProfile.full_name,
+                senderName: acceptorProfile.full_name,
+                loginUrl: window.location.origin + "/auth",
+              },
+            });
+          }
+        }
+      } catch (emailError) {
+        console.error("Error sending acceptance email:", emailError);
+      }
+
       toast({
         title: "Connection Accepted",
         description: "You are now connected.",
