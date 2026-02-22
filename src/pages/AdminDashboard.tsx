@@ -170,6 +170,9 @@ const AdminDashboard = () => {
   const handleApproval = async (userId: string, profileId: string, approve: boolean) => {
     setProcessingId(profileId);
     
+    // Get user details before updating
+    const targetUser = pendingUsers.find(u => u.id === profileId);
+    
     const { error } = await supabase
       .from("profiles")
       .update({ approval_status: approve ? "approved" : "rejected" })
@@ -182,11 +185,29 @@ const AdminDashboard = () => {
         variant: "destructive",
       });
     } else {
+      // Send notification email
+      if (targetUser) {
+        try {
+          await supabase.functions.invoke("send-notification-email", {
+            body: {
+              type: approve ? "registration_approved" : "registration_rejected",
+              recipientEmail: targetUser.email,
+              recipientName: targetUser.full_name,
+              userType: targetUser.user_type,
+              loginUrl: window.location.origin + "/auth",
+            },
+          });
+        } catch (emailError) {
+          console.error("Error sending notification email:", emailError);
+        }
+      }
+
       toast({
         title: "Success",
         description: `User has been ${approve ? "approved" : "rejected"}.`,
       });
       setPendingUsers(prev => prev.filter(u => u.id !== profileId));
+      fetchAllUsers();
       setIsModalOpen(false);
       setSelectedPendingUser(null);
     }

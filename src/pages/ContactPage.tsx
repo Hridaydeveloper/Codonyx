@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone, Loader2, CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,10 +16,36 @@ export default function ContactPage() {
     organisation: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Contact form submitted:", formData);
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.functions.invoke("send-contact-email", {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast({
+        title: "Message Sent",
+        description: "Thank you for reaching out. We'll get back to you soon.",
+      });
+      setFormData({ name: "", email: "", organisation: "", message: "" });
+    } catch (err: any) {
+      console.error("Contact form error:", err);
+      toast({
+        title: "Failed to send",
+        description: "Something went wrong. Please try again or email us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,7 +73,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-medium text-foreground mb-1">Email</h3>
-                      <p className="text-muted-foreground font-body">contact@codonyx.com</p>
+                      <p className="text-muted-foreground font-body">info@codonyx.org</p>
                     </div>
                   </div>
 
@@ -74,57 +102,72 @@ export default function ContactPage() {
                 </div>
 
                 {/* Contact Form */}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-4">
+                {isSubmitted ? (
+                  <div className="flex flex-col items-center justify-center text-center space-y-4 py-12">
+                    <CheckCircle className="w-16 h-16 text-primary" />
+                    <h3 className="font-display text-2xl font-medium text-foreground">Message Sent!</h3>
+                    <p className="text-muted-foreground font-body">We'll get back to you as soon as possible.</p>
+                    <Button variant="outline" onClick={() => setIsSubmitted(false)} className="mt-4">
+                      Send Another Message
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input
+                          id="name"
+                          placeholder="Your name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Your email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
+                      <Label htmlFor="organisation">Organisation</Label>
                       <Input
-                        id="name"
-                        placeholder="Your name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        id="organisation"
+                        placeholder="Your organisation"
+                        value={formData.organisation}
+                        onChange={(e) => setFormData({ ...formData, organisation: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea
+                        id="message"
+                        placeholder="How can we help you?"
+                        rows={5}
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Your email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="organisation">Organisation</Label>
-                    <Input
-                      id="organisation"
-                      placeholder="Your organisation"
-                      value={formData.organisation}
-                      onChange={(e) => setFormData({ ...formData, organisation: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea
-                      id="message"
-                      placeholder="How can we help you?"
-                      rows={5}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <Button type="submit" variant="primary" size="lg" className="w-full">
-                    Send Message
-                  </Button>
-                </form>
+                    <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending...</>
+                      ) : (
+                        "Send Message"
+                      )}
+                    </Button>
+                  </form>
+                )}
               </div>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, Loader2, Eye, EyeOff } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const features = [
   {
@@ -33,13 +34,14 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Check if user is approved
         const { data: profile } = await supabase
           .from("profiles")
           .select("approval_status")
@@ -61,11 +63,9 @@ export default function AuthPage() {
 
     checkAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === "SIGNED_IN" && session) {
-          // Check approval status
           setTimeout(async () => {
             const { data: profile } = await supabase
               .from("profiles")
@@ -109,7 +109,6 @@ export default function AuthPage() {
 
       if (error) {
         let errorMessage = error.message;
-        // Provide friendlier error messages
         if (error.message.includes("Invalid login credentials")) {
           errorMessage = "Invalid email or password. Please check your credentials and try again.";
         } else if (error.message.includes("Email not confirmed")) {
@@ -124,7 +123,6 @@ export default function AuthPage() {
       }
 
       if (data.user) {
-        // Check approval status
         const { data: profile } = await supabase
           .from("profiles")
           .select("approval_status")
@@ -160,7 +158,6 @@ export default function AuthPage() {
           return;
         }
 
-        // User is approved - navigate to dashboard
         navigate("/dashboard");
       }
     } catch (error) {
@@ -172,6 +169,59 @@ export default function AuthPage() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedEmail = forgotEmail.trim().toLowerCase();
+    if (!trimmedEmail) return;
+
+    setIsSendingReset(true);
+    try {
+      // Check if email exists in profiles
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", trimmedEmail)
+        .maybeSingle();
+
+      if (!profile) {
+        toast({
+          title: "Email not found",
+          description: "No account exists with this email address in our database.",
+          variant: "destructive",
+        });
+        setIsSendingReset(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Reset link sent",
+          description: "Check your email for a password reset link.",
+        });
+        setShowForgotPassword(false);
+        setForgotEmail("");
+      }
+    } catch {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingReset(false);
     }
   };
 
@@ -188,7 +238,6 @@ export default function AuthPage() {
       {/* Left Panel - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-12 bg-background">
         <div className="max-w-md mx-auto w-full">
-          {/* Logo */}
           <Link to="/" className="inline-block mb-12">
             <img src={codonyxLogo} alt="Codonyx" className="h-14 w-auto" />
           </Link>
@@ -202,9 +251,7 @@ export default function AuthPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs uppercase tracking-wider font-medium">
-                Email
-              </Label>
+              <Label htmlFor="email" className="text-xs uppercase tracking-wider font-medium">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -217,9 +264,7 @@ export default function AuthPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs uppercase tracking-wider font-medium">
-                Password
-              </Label>
+              <Label htmlFor="password" className="text-xs uppercase tracking-wider font-medium">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -243,6 +288,7 @@ export default function AuthPage() {
             <div className="text-right">
               <button
                 type="button"
+                onClick={() => setShowForgotPassword(true)}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors underline"
               >
                 Forgot password
@@ -256,10 +302,7 @@ export default function AuthPage() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
-                </>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Signing in...</>
               ) : (
                 "Sign In"
               )}
@@ -297,6 +340,39 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">Reset Password</DialogTitle>
+            <DialogDescription>
+              Enter your email address and we'll send you a password reset link.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleForgotPassword} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="Enter your email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                className="h-12"
+                required
+              />
+            </div>
+            <Button type="submit" variant="primary" className="w-full h-12" disabled={isSendingReset}>
+              {isSendingReset ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending...</>
+              ) : (
+                "Send Reset Link"
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
