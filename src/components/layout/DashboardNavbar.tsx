@@ -77,7 +77,7 @@ export function DashboardNavbar() {
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
               Codonyx
             </span>

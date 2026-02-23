@@ -179,14 +179,12 @@ export default function AuthPage() {
 
     setIsSendingReset(true);
     try {
-      // Check if email exists in profiles
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", trimmedEmail)
-        .maybeSingle();
+      // Check if email exists using SECURITY DEFINER function (bypasses RLS)
+      const { data: exists, error: checkError } = await supabase.rpc("check_email_exists", {
+        check_email: trimmedEmail,
+      });
 
-      if (!profile) {
+      if (checkError || !exists) {
         toast({
           title: "Email not found",
           description: "No account exists with this email address in our database.",

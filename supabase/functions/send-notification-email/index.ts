@@ -15,6 +15,9 @@ interface NotificationRequest {
   recipientEmail: string;
   recipientName: string;
   senderName?: string;
+  senderHeadline?: string;
+  senderOrganisation?: string;
+  senderUserType?: string;
   userType?: string;
   loginUrl?: string;
 }
@@ -56,9 +59,16 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
           `<p style="color:#475569;font-size:16px;line-height:1.6;margin:0 0 24px;">
             Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,
           </p>
-          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">
             <strong style="color:#059669;">${data.senderName}</strong> has accepted your connection request on Codonyx. You are now connected and can collaborate directly.
           </p>
+          ${data.senderHeadline || data.senderOrganisation || data.senderUserType ? `
+          <div style="background:#f1f5f9;border-radius:10px;padding:16px 20px;margin:0 0 24px;">
+            <p style="margin:0;color:#1e293b;font-weight:600;font-size:15px;">${data.senderName}</p>
+            ${data.senderUserType ? `<p style="margin:4px 0 0;color:#059669;font-size:13px;text-transform:capitalize;">${data.senderUserType}</p>` : ""}
+            ${data.senderHeadline ? `<p style="margin:4px 0 0;color:#475569;font-size:14px;">${data.senderHeadline}</p>` : ""}
+            ${data.senderOrganisation ? `<p style="margin:4px 0 0;color:#64748b;font-size:13px;">${data.senderOrganisation}</p>` : ""}
+          </div>` : ""}
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr><td align="center">
               <a href="${baseUrl.replace('/auth', '/connections')}" style="display:inline-block;background:linear-gradient(135deg,#059669 0%,#047857 100%);color:#ffffff;text-decoration:none;padding:16px 40px;border-radius:10px;font-size:16px;font-weight:600;">
