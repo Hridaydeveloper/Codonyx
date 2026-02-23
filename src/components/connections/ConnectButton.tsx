@@ -2,6 +2,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Clock, Check, X, Loader2 } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ConnectButtonProps {
   currentProfileId: string | null;
@@ -19,18 +29,19 @@ export function ConnectButton({
   className,
 }: ConnectButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const {
     getConnectionStatus,
     sendConnectionRequest,
     acceptConnection,
-    removeConnection,
+    withdrawConnection,
   } = useConnections(currentProfileId);
 
   if (!currentProfileId || currentProfileId === targetProfileId) {
     return null;
   }
 
-  const { status, connectionId } = getConnectionStatus(targetProfileId);
+  const { status, connectionId, cooldownUntil } = getConnectionStatus(targetProfileId);
 
   const handleConnect = async () => {
     setIsLoading(true);
@@ -51,11 +62,12 @@ export function ConnectButton({
     }
   };
 
-  const handleRemove = async () => {
+  const handleWithdraw = async () => {
     if (!connectionId) return;
+    setShowWithdrawDialog(false);
     setIsLoading(true);
     try {
-      await removeConnection(connectionId);
+      await withdrawConnection(connectionId);
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +81,17 @@ export function ConnectButton({
     );
   }
 
+  // Check cooldown
+  if (cooldownUntil && new Date(cooldownUntil) > new Date()) {
+    const daysLeft = Math.ceil((new Date(cooldownUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    return (
+      <Button variant="outline" size={size} disabled className={`gap-2 text-muted-foreground ${className}`}>
+        <Clock className="w-4 h-4" />
+        Wait {daysLeft}d
+      </Button>
+    );
+  }
+
   switch (status) {
     case "accepted":
       return (
@@ -76,7 +99,6 @@ export function ConnectButton({
           variant="outline"
           size={size}
           className={`gap-2 text-green-600 border-green-300 hover:bg-green-50 hover:text-green-700 ${className}`}
-          onClick={handleRemove}
         >
           <Check className="w-4 h-4" />
           Connected
@@ -85,15 +107,32 @@ export function ConnectButton({
 
     case "pending_sent":
       return (
-        <Button
-          variant="outline"
-          size={size}
-          className={`gap-2 text-amber-600 border-amber-300 hover:bg-amber-50 ${className}`}
-          onClick={handleRemove}
-        >
-          <Clock className="w-4 h-4" />
-          Pending
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            size={size}
+            className={`gap-2 text-amber-600 border-amber-300 hover:bg-amber-50 ${className}`}
+            onClick={() => setShowWithdrawDialog(true)}
+          >
+            <Clock className="w-4 h-4" />
+            Pending
+          </Button>
+
+          <AlertDialog open={showWithdrawDialog} onOpenChange={setShowWithdrawDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Withdraw invitation</AlertDialogTitle>
+                <AlertDialogDescription>
+                  If you withdraw now, you won't be able to resend to this person for up to 2 weeks.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleWithdraw}>Withdraw</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       );
 
     case "pending_received":

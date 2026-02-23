@@ -9,7 +9,7 @@ interface Connection {
   status: "pending" | "accepted" | "rejected";
   created_at: string;
   updated_at: string;
-  // Joined profile data
+  withdrawn_at: string | null;
   sender_profile?: {
     id: string;
     full_name: string;
@@ -28,6 +28,8 @@ interface Connection {
   };
 }
 
+const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+
 export function useConnections(currentProfileId: string | null) {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +41,6 @@ export function useConnections(currentProfileId: string | null) {
     }
 
     try {
-      // Fetch connections where user is sender
       const { data: sentData, error: sentError } = await supabase
         .from("connections")
         .select(`
@@ -48,7 +49,6 @@ export function useConnections(currentProfileId: string | null) {
         `)
         .eq("sender_id", currentProfileId);
 
-      // Fetch connections where user is receiver
       const { data: receivedData, error: receivedError } = await supabase
         .from("connections")
         .select(`
@@ -82,12 +82,26 @@ export function useConnections(currentProfileId: string | null) {
   const getConnectionStatus = useCallback((targetProfileId: string): { 
     status: "none" | "pending_sent" | "pending_received" | "accepted" | "rejected";
     connectionId?: string;
+    cooldownUntil?: string;
   } => {
     const connection = connections.find(
       c => c.sender_id === targetProfileId || c.receiver_id === targetProfileId
     );
 
     if (!connection) return { status: "none" };
+
+    // Check if this was a withdrawn connection with active cooldown
+    if (connection.withdrawn_at) {
+      const withdrawnDate = new Date(connection.withdrawn_at).getTime();
+      const cooldownEnd = withdrawnDate + TWO_WEEKS_MS;
+      if (Date.now() < cooldownEnd) {
+        return { 
+          status: "none", 
+          connectionId: connection.id,
+          cooldownUntil: new Date(cooldownEnd).toISOString(),
+        };
+      }
+    }
 
     if (connection.status === "accepted") {
       return { status: "accepted", connectionId: connection.id };
@@ -97,7 +111,6 @@ export function useConnections(currentProfileId: string | null) {
       return { status: "rejected", connectionId: connection.id };
     }
 
-    // Pending
     if (connection.sender_id === currentProfileId) {
       return { status: "pending_sent", connectionId: connection.id };
     }
@@ -108,7 +121,27 @@ export function useConnections(currentProfileId: string | null) {
     if (!currentProfileId) return false;
 
     try {
-      // First, insert the connection request
+      // Check for existing withdrawn connection with cooldown
+      const existingConn = connections.find(
+        c => (c.sender_id === currentProfileId && c.receiver_id === targetProfileId) ||
+             (c.sender_id === targetProfileId && c.receiver_id === currentProfileId)
+      );
+
+      if (existingConn?.withdrawn_at) {
+        const cooldownEnd = new Date(existingConn.withdrawn_at).getTime() + TWO_WEEKS_MS;
+        if (Date.now() < cooldownEnd) {
+          const daysLeft = Math.ceil((cooldownEnd - Date.now()) / (1000 * 60 * 60 * 24));
+          toast({
+            title: "Cooldown Active",
+            description: `You can resend a request in ${daysLeft} day(s).`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        // Cooldown expired, delete the old withdrawn record first
+        await supabase.from("connections").delete().eq("id", existingConn.id);
+      }
+
       const { error } = await supabase
         .from("connections")
         .insert({
@@ -126,52 +159,34 @@ export function useConnections(currentProfileId: string | null) {
         return false;
       }
 
-      // Fetch sender's profile data
+      // Send email notification to receiver
       const { data: senderProfile } = await supabase
         .from("profiles")
         .select("full_name, headline, organisation, bio")
         .eq("id", currentProfileId)
         .single();
 
-      // Fetch receiver's profile data (need email from auth.users via their profile)
       const { data: receiverProfile } = await supabase
         .from("profiles")
-        .select("full_name, user_id")
+        .select("full_name, user_id, email")
         .eq("id", targetProfileId)
         .single();
 
-      // Get receiver's email from auth
-      if (receiverProfile?.user_id && senderProfile) {
-        const { data: userData } = await supabase.auth.admin?.getUserById?.(receiverProfile.user_id) || {};
-        
-        // Use edge function to send email - get email from profiles or use a workaround
-        // We'll fetch the email from the profiles table if available, otherwise skip email
-        const { data: receiverEmail } = await supabase
-          .from("profiles")
-          .select("email")
-          .eq("id", targetProfileId)
-          .single();
-
-        if (receiverEmail?.email) {
-          const connectionPageUrl = `${window.location.origin}/connections`;
-          
-          try {
-            await supabase.functions.invoke("send-connection-email", {
-              body: {
-                recipientEmail: receiverEmail.email,
-                recipientName: receiverProfile.full_name || "User",
-                senderName: senderProfile.full_name || "A Codonyx user",
-                senderTitle: senderProfile.headline || "",
-                senderOrganization: senderProfile.organisation || "",
-                senderBio: senderProfile.bio || "",
-                connectionPageUrl,
-              },
-            });
-            console.log("Connection email sent successfully");
-          } catch (emailError) {
-            console.error("Error sending connection email:", emailError);
-            // Don't fail the connection request if email fails
-          }
+      if (receiverProfile?.email && senderProfile) {
+        try {
+          await supabase.functions.invoke("send-connection-email", {
+            body: {
+              recipientEmail: receiverProfile.email,
+              recipientName: receiverProfile.full_name || "User",
+              senderName: senderProfile.full_name || "A Codonyx user",
+              senderTitle: senderProfile.headline || "",
+              senderOrganization: senderProfile.organisation || "",
+              senderBio: senderProfile.bio || "",
+              connectionPageUrl: `${window.location.origin}/connections`,
+            },
+          });
+        } catch (emailError) {
+          console.error("Error sending connection email:", emailError);
         }
       }
 
@@ -205,20 +220,18 @@ export function useConnections(currentProfileId: string | null) {
         return false;
       }
 
-      // Send acceptance notification email
+      // Send acceptance notification email with details
       try {
         const connection = connections.find(c => c.id === connectionId);
         if (connection && currentProfileId) {
           const senderId = connection.sender_id;
           
-          // Get acceptor's name
           const { data: acceptorProfile } = await supabase
             .from("profiles")
-            .select("full_name")
+            .select("full_name, headline, organisation, user_type")
             .eq("id", currentProfileId)
             .single();
 
-          // Get sender's email and name
           const { data: senderProfile } = await supabase
             .from("profiles")
             .select("full_name, email")
@@ -232,6 +245,9 @@ export function useConnections(currentProfileId: string | null) {
                 recipientEmail: senderProfile.email,
                 recipientName: senderProfile.full_name,
                 senderName: acceptorProfile.full_name,
+                senderHeadline: acceptorProfile.headline || "",
+                senderOrganisation: acceptorProfile.organisation || "",
+                senderUserType: acceptorProfile.user_type || "",
                 loginUrl: window.location.origin + "/auth",
               },
             });
@@ -284,6 +300,40 @@ export function useConnections(currentProfileId: string | null) {
     }
   };
 
+  const withdrawConnection = async (connectionId: string) => {
+    try {
+      // Instead of deleting, set withdrawn_at timestamp for cooldown tracking
+      const { error } = await supabase
+        .from("connections")
+        .update({ 
+          status: "rejected" as any,
+          withdrawn_at: new Date().toISOString(),
+        })
+        .eq("id", connectionId);
+
+      if (error) {
+        console.error("Error withdrawing connection:", error);
+        toast({
+          title: "Error",
+          description: "Failed to withdraw connection request.",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      toast({
+        title: "Request Withdrawn",
+        description: "Your connection request has been withdrawn. You can resend after 2 weeks.",
+      });
+      
+      await fetchConnections();
+      return true;
+    } catch (error) {
+      console.error("Error withdrawing connection:", error);
+      return false;
+    }
+  };
+
   const removeConnection = async (connectionId: string) => {
     try {
       const { error } = await supabase
@@ -314,15 +364,10 @@ export function useConnections(currentProfileId: string | null) {
     }
   };
 
-  // Get accepted connections
   const acceptedConnections = connections.filter(c => c.status === "accepted");
-  
-  // Get pending sent requests
   const pendingSentRequests = connections.filter(
     c => c.status === "pending" && c.sender_id === currentProfileId
   );
-  
-  // Get pending received requests
   const pendingReceivedRequests = connections.filter(
     c => c.status === "pending" && c.receiver_id === currentProfileId
   );
@@ -337,6 +382,7 @@ export function useConnections(currentProfileId: string | null) {
     sendConnectionRequest,
     acceptConnection,
     rejectConnection,
+    withdrawConnection,
     removeConnection,
     refetch: fetchConnections,
   };

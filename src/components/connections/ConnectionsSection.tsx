@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, X, Clock, Users, UserPlus, Mail } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ConnectionsSectionProps {
   currentProfileId: string;
@@ -21,8 +32,10 @@ export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSe
     isLoading,
     acceptConnection,
     rejectConnection,
+    withdrawConnection,
     removeConnection,
   } = useConnections(currentProfileId);
+  const [withdrawDialogId, setWithdrawDialogId] = useState<string | null>(null);
 
   const getInitials = (name: string) => {
     return name
@@ -315,7 +328,7 @@ export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSe
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeConnection(connection.id)}
+                          onClick={() => setWithdrawDialogId(connection.id)}
                           className="text-muted-foreground hover:text-destructive"
                         >
                           <X className="w-4 h-4" />
@@ -328,6 +341,25 @@ export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSe
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Withdraw confirmation dialog */}
+        <AlertDialog open={!!withdrawDialogId} onOpenChange={() => setWithdrawDialogId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Withdraw invitation</AlertDialogTitle>
+              <AlertDialogDescription>
+                If you withdraw now, you won't be able to resend to this person for up to 2 weeks.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => {
+                if (withdrawDialogId) withdrawConnection(withdrawDialogId);
+                setWithdrawDialogId(null);
+              }}>Withdraw</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );
