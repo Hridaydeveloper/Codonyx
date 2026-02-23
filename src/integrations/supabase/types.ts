@@ -22,6 +22,7 @@ export type Database = {
           sender_id: string
           status: Database["public"]["Enums"]["connection_status"]
           updated_at: string
+          withdrawn_at: string | null
         }
         Insert: {
           created_at?: string
@@ -30,6 +31,7 @@ export type Database = {
           sender_id: string
           status?: Database["public"]["Enums"]["connection_status"]
           updated_at?: string
+          withdrawn_at?: string | null
         }
         Update: {
           created_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           sender_id?: string
           status?: Database["public"]["Enums"]["connection_status"]
           updated_at?: string
+          withdrawn_at?: string | null
         }
         Relationships: [
           {
@@ -257,6 +260,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_email_exists: { Args: { check_email: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
