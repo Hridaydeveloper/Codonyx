@@ -22,8 +22,8 @@ export default function AboutPage() {
           </div>
           <div
             ref={heroRef}
-            className={`container mx-auto px-6 lg:px-8 relative z-10 py-20 lg:py-32 transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+            className={`container mx-auto px-6 lg:px-8 relative z-10 py-20 lg:py-32 transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+
             <div className="max-w-3xl">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm mb-6">
                 <img src={codonyxLogo} alt="Codonyx" className="w-12 h-12 object-contain" />
@@ -32,7 +32,7 @@ export default function AboutPage() {
                 About <span className="text-emerald-glow">CODONYX</span>
               </h1>
               <p className="text-white/80 text-lg lg:text-xl font-body leading-relaxed max-w-2xl">
-                Blending science, mystery, and diverse innovation — where life's code meets planetary responsibility.
+                Blending science, mystery and diverse innovation — where life's code meets planetary responsibility.
               </p>
             </div>
           </div>
@@ -42,15 +42,15 @@ export default function AboutPage() {
         <section className="py-20 lg:py-28 bg-background">
           <div
             ref={philRef}
-            className={`container mx-auto px-6 lg:px-8 transition-all duration-700 ${philVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+            className={`container mx-auto px-6 lg:px-8 transition-all duration-700 ${philVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <p className="text-primary font-body text-sm font-semibold tracking-[0.2em] uppercase mb-4">
                   The Name
                 </p>
                 <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-8 leading-tight">
-                  ●CODONYX — blending science, mystery, and diverse innovation
+                  CODONYX — blending science, mystery and diverse innovation
                 </h2>
                 <div className="space-y-5 text-muted-foreground font-body text-lg leading-relaxed">
                   <p>
@@ -71,8 +71,8 @@ export default function AboutPage() {
                   <img
                     src={chromosomesImage}
                     alt="Scientific visualization of chromosomes"
-                    className="w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-2xl shadow-2xl"
-                  />
+                    className="w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-2xl shadow-2xl" />
+
                   <div className="absolute inset-0 rounded-2xl border border-primary/20" />
                 </div>
               </div>
@@ -88,8 +88,8 @@ export default function AboutPage() {
           </div>
           <div
             ref={toastRef}
-            className={`container mx-auto px-6 lg:px-8 relative z-10 max-w-3xl text-center transition-all duration-700 ${toastVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-          >
+            className={`container mx-auto px-6 lg:px-8 relative z-10 max-w-3xl text-center transition-all duration-700 ${toastVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+
             <p className="text-emerald-glow font-body text-sm font-semibold tracking-[0.2em] uppercase mb-4">
               Our Spirit
             </p>
@@ -109,6 +109,6 @@ export default function AboutPage() {
         </section>
       </main>
       <Footer />
-    </div>
-  );
+    </div>);
+
 }
