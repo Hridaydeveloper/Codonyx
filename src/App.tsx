@@ -1,34 +1,44 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
-import Index from "./pages/Index";
-import AuthPage from "./pages/AuthPage";
-import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdvisorsPage from "./pages/AdvisorsPage";
-import LaboratoriesPage from "./pages/LaboratoriesPage";
-import EditProfilePage from "./pages/EditProfilePage";
-import ProfileDetailPage from "./pages/ProfileDetailPage";
-import ConnectionsPage from "./pages/ConnectionsPage";
-import PublicationsPage from "./pages/PublicationsPage";
-import AboutPage from "./pages/AboutPage";
-import ContactPage from "./pages/ContactPage";
-import InvestmentsPage from "./pages/InvestmentsPage";
-import ProductPage from "./pages/ProductPage";
-import TechnologyPage from "./pages/TechnologyPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsConditionsPage from "./pages/TermsConditionsPage";
-import BecomeAdvisorPage from "./pages/BecomeAdvisorPage";
-import RegisterLaboratoryPage from "./pages/RegisterLaboratoryPage";
-import ServicesPage from "./pages/ServicesPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import NotFound from "./pages/NotFound";
+import { Loader2 } from "lucide-react";
+
+// Lazy-loaded pages for code splitting
+const Index = lazy(() => import("./pages/Index"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdvisorsPage = lazy(() => import("./pages/AdvisorsPage"));
+const LaboratoriesPage = lazy(() => import("./pages/LaboratoriesPage"));
+const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
+const ProfileDetailPage = lazy(() => import("./pages/ProfileDetailPage"));
+const ConnectionsPage = lazy(() => import("./pages/ConnectionsPage"));
+const PublicationsPage = lazy(() => import("./pages/PublicationsPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const InvestmentsPage = lazy(() => import("./pages/InvestmentsPage"));
+const ProductPage = lazy(() => import("./pages/ProductPage"));
+const TechnologyPage = lazy(() => import("./pages/TechnologyPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
+const BecomeAdvisorPage = lazy(() => import("./pages/BecomeAdvisorPage"));
+const RegisterLaboratoryPage = lazy(() => import("./pages/RegisterLaboratoryPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -37,33 +47,34 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/advisors" element={<AdvisorsPage />} />
-          <Route path="/laboratories" element={<LaboratoriesPage />} />
-          <Route path="/edit-profile" element={<EditProfilePage />} />
-          <Route path="/connections" element={<ConnectionsPage />} />
-          <Route path="/publications" element={<PublicationsPage />} />
-          <Route path="/profile/:id" element={<ProfileDetailPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/investments" element={<InvestmentsPage />} />
-          <Route path="/product" element={<ProductPage />} />
-          <Route path="/technology" element={<TechnologyPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/terms" element={<TermsConditionsPage />} />
-          <Route path="/become-advisor" element={<BecomeAdvisorPage />} />
-          <Route path="/register-laboratory" element={<RegisterLaboratoryPage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/terms" element={<TermsConditionsPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/advisors" element={<AdvisorsPage />} />
+            <Route path="/laboratories" element={<LaboratoriesPage />} />
+            <Route path="/edit-profile" element={<EditProfilePage />} />
+            <Route path="/connections" element={<ConnectionsPage />} />
+            <Route path="/publications" element={<PublicationsPage />} />
+            <Route path="/profile/:id" element={<ProfileDetailPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/investments" element={<InvestmentsPage />} />
+            <Route path="/product" element={<ProductPage />} />
+            <Route path="/technology" element={<TechnologyPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms" element={<TermsConditionsPage />} />
+            <Route path="/become-advisor" element={<BecomeAdvisorPage />} />
+            <Route path="/register-laboratory" element={<RegisterLaboratoryPage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
