@@ -1,8 +1,17 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useCallback } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { name: "Services", href: "/services" },
@@ -11,9 +20,61 @@ const navLinks = [
   { name: "Contact Us", href: "/contact" },
 ];
 
+interface UserProfile {
+  full_name: string;
+  avatar_url: string | null;
+}
+
 export function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data } = await supabase
+            .from("profiles")
+            .select("full_name, avatar_url")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+          if (data) {
+            setProfile(data);
+            setIsLoggedIn(true);
+          }
+        }
+      } catch {
+        // ignore
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("full_name, avatar_url")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        if (data) {
+          setProfile(data);
+          setIsLoggedIn(true);
+        }
+      } else if (event === "SIGNED_OUT") {
+        setProfile(null);
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleNavClick = useCallback((href: string) => {
     if (location.pathname === href) {
@@ -21,6 +82,14 @@ export function Navbar() {
     }
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
+  const getInitials = (name: string) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-navy/95 backdrop-blur-sm border-b border-white/10">
@@ -52,13 +121,45 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Sign In Button */}
+          {/* Auth Area */}
           <div className="hidden lg:flex items-center">
-            <Link to="/auth">
-              <Button variant="primary" size="lg">
-                Sign In
-              </Button>
-            </Link>
+            {isLoading ? null : isLoggedIn && profile ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {getInitials(profile.full_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-48" align="end">
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">{profile.full_name}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/auth">
+                <Button variant="primary" size="lg">
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -85,11 +186,25 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="primary" className="w-full mt-4">
-                Sign In
-              </Button>
-            </Link>
+            {isLoggedIn && profile ? (
+              <>
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="primary" className="w-full mt-4">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button variant="outline" className="w-full text-white border-white/20" onClick={handleSignOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="primary" className="w-full mt-4">
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       )}

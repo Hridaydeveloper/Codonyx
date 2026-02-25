@@ -109,7 +109,9 @@ export default function AuthPage() {
 
       if (error) {
         let errorMessage = error.message;
-        if (error.message.includes("Invalid login credentials")) {
+        if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+          errorMessage = "Network error. Please check your internet connection and try again.";
+        } else if (error.message.includes("Invalid login credentials")) {
           errorMessage = "Invalid email or password. Please check your credentials and try again.";
         } else if (error.message.includes("Email not confirmed")) {
           errorMessage = "Please check your email to confirm your account before signing in.";
@@ -160,11 +162,14 @@ export default function AuthPage() {
 
         navigate("/dashboard");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Sign in error:", error);
+      const isNetworkError = error?.message?.includes("Failed to fetch") || error?.message?.includes("NetworkError");
       toast({
         title: "Sign in failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: isNetworkError
+          ? "Network error. Please check your internet connection and try again."
+          : "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
