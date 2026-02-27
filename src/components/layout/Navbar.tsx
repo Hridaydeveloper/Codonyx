@@ -22,6 +22,7 @@ const navLinks = [
 
 interface UserProfile {
   full_name: string;
+  email: string;
   avatar_url: string | null;
 }
 
@@ -33,44 +34,37 @@ export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("full_name, avatar_url")
-            .eq("user_id", session.user.id)
-            .maybeSingle();
-          if (data) {
-            setProfile(data);
-            setIsLoggedIn(true);
-          }
-        }
-      } catch {
-        // ignore
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    checkAuth();
+  const fetchProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("full_name, email, avatar_url")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (data) {
+      setProfile(data);
+      setIsLoggedIn(true);
+    }
+  };
 
+  useEffect(() => {
+    // Set up listener FIRST (per Supabase best practices)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("full_name, avatar_url")
-          .eq("user_id", session.user.id)
-          .maybeSingle();
-        if (data) {
-          setProfile(data);
-          setIsLoggedIn(true);
-        }
+      if (session && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION")) {
+        await fetchProfile(session.user.id);
+        setIsLoading(false);
       } else if (event === "SIGNED_OUT") {
         setProfile(null);
         setIsLoggedIn(false);
+        setIsLoading(false);
       }
+    });
+
+    // Then check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        fetchProfile(session.user.id);
+      }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -135,9 +129,10 @@ export function Navbar() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48" align="end">
+                <DropdownMenuContent className="w-56" align="end">
                   <div className="px-2 py-1.5">
                     <p className="text-sm font-medium">{profile.full_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
