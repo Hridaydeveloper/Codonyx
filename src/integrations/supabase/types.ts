@@ -59,6 +59,90 @@ export type Database = {
           },
         ]
       }
+      deal_bids: {
+        Row: {
+          bid_amount: number
+          bid_status: string
+          created_at: string
+          deal_id: string
+          distributor_profile_id: string
+          id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          bid_amount: number
+          bid_status?: string
+          created_at?: string
+          deal_id: string
+          distributor_profile_id: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bid_amount?: number
+          bid_status?: string
+          created_at?: string
+          deal_id?: string
+          distributor_profile_id?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_bids_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_bids_distributor_profile_id_fkey"
+            columns: ["distributor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deal_status: string
+          description: string | null
+          id: string
+          raised_amount: number
+          target_amount: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deal_status?: string
+          description?: string | null
+          id?: string
+          raised_amount?: number
+          target_amount?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deal_status?: string
+          description?: string | null
+          id?: string
+          raised_amount?: number
+          target_amount?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invite_tokens: {
         Row: {
           created_at: string
@@ -92,6 +176,57 @@ export type Database = {
         }
         Relationships: []
       }
+      opportunity_submissions: {
+        Row: {
+          created_at: string
+          deal_id: string | null
+          description: string | null
+          estimated_value: number | null
+          id: string
+          submission_status: string
+          submitted_by: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deal_id?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          id?: string
+          submission_status?: string
+          submitted_by: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          id?: string
+          submission_status?: string
+          submitted_by?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunity_submissions_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunity_submissions_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           approval_status: Database["public"]["Enums"]["approval_status"]
@@ -101,6 +236,7 @@ export type Database = {
           company_type: string | null
           contact_number: string | null
           created_at: string
+          distribution_capacity: string | null
           education: string | null
           email: string
           experience: string | null
@@ -116,12 +252,14 @@ export type Database = {
           location: string | null
           mentoring_areas: string | null
           organisation: string | null
+          region: string | null
           research_areas: string | null
           services: string | null
           updated_at: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
           website_url: string | null
+          years_of_experience: number | null
         }
         Insert: {
           approval_status?: Database["public"]["Enums"]["approval_status"]
@@ -131,6 +269,7 @@ export type Database = {
           company_type?: string | null
           contact_number?: string | null
           created_at?: string
+          distribution_capacity?: string | null
           education?: string | null
           email: string
           experience?: string | null
@@ -146,12 +285,14 @@ export type Database = {
           location?: string | null
           mentoring_areas?: string | null
           organisation?: string | null
+          region?: string | null
           research_areas?: string | null
           services?: string | null
           updated_at?: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
           website_url?: string | null
+          years_of_experience?: number | null
         }
         Update: {
           approval_status?: Database["public"]["Enums"]["approval_status"]
@@ -161,6 +302,7 @@ export type Database = {
           company_type?: string | null
           contact_number?: string | null
           created_at?: string
+          distribution_capacity?: string | null
           education?: string | null
           email?: string
           experience?: string | null
@@ -176,12 +318,14 @@ export type Database = {
           location?: string | null
           mentoring_areas?: string | null
           organisation?: string | null
+          region?: string | null
           research_areas?: string | null
           services?: string | null
           updated_at?: string
           user_id?: string
           user_type?: Database["public"]["Enums"]["user_type"]
           website_url?: string | null
+          years_of_experience?: number | null
         }
         Relationships: [
           {

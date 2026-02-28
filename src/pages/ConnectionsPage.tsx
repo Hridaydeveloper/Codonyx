@@ -18,7 +18,7 @@ interface Profile {
   avatar_url: string | null;
   headline: string | null;
   organisation: string | null;
-  user_type: "advisor" | "laboratory";
+  user_type: "advisor" | "laboratory" | "distributor";
 }
 
 interface Connection {
@@ -36,7 +36,7 @@ export default function ConnectionsPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [currentProfileId, setCurrentProfileId] = useState<string | null>(null);
-  const [currentUserType, setCurrentUserType] = useState<"advisor" | "laboratory" | null>(null);
+  const [currentUserType, setCurrentUserType] = useState<"advisor" | "laboratory" | "distributor" | null>(null);
   const [acceptedConnections, setAcceptedConnections] = useState<Connection[]>([]);
   const [pendingReceived, setPendingReceived] = useState<Connection[]>([]);
   const [pendingSent, setPendingSent] = useState<Connection[]>([]);
