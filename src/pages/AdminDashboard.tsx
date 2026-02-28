@@ -419,13 +419,13 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="mb-6 flex-wrap">
-            <TabsTrigger value="pending">Pending Users</TabsTrigger>
-            <TabsTrigger value="advisors">Advisors</TabsTrigger>
-            <TabsTrigger value="labs">Laboratories</TabsTrigger>
-            <TabsTrigger value="distributors">Distributors</TabsTrigger>
-            <TabsTrigger value="deals">Deals</TabsTrigger>
-            <TabsTrigger value="invites">Invite Link</TabsTrigger>
+          <TabsList className="mb-6 flex-wrap h-auto gap-1">
+            <TabsTrigger value="pending" className="text-xs sm:text-sm">Pending Users</TabsTrigger>
+            <TabsTrigger value="advisors" className="text-xs sm:text-sm">Advisors</TabsTrigger>
+            <TabsTrigger value="labs" className="text-xs sm:text-sm">Laboratories</TabsTrigger>
+            <TabsTrigger value="distributors" className="text-xs sm:text-sm">Distributors</TabsTrigger>
+            <TabsTrigger value="deals" className="text-xs sm:text-sm">Deals</TabsTrigger>
+            <TabsTrigger value="invites" className="text-xs sm:text-sm">Invite Link</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
