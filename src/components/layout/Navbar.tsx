@@ -200,7 +200,7 @@ export function Navbar() {
                     Dashboard
                   </Button>
                 </Link>
-                <Button variant="outline" className="w-full text-white border-white/20" onClick={handleSignOut}>
+                <Button variant="outline" className="w-full text-foreground bg-white border-white/20 hover:bg-white/90" onClick={handleSignOut}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
                 </Button>
