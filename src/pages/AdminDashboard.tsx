@@ -751,7 +751,7 @@ const AdminDashboard = () => {
               {/* Deal Indicators */}
               {(() => {
                 const uniqueBidders = new Set(dealBids.map((b: any) => b.distributor_profile_id)).size;
-                const totalBidders = Math.max(uniqueBidders, 34);
+                const totalBidders = 34 + uniqueBidders;
                 const totalSubscription = dealBids.reduce((sum: number, b: any) => sum + Number(b.bid_amount || 0), 0);
                 const totalTarget = deals.reduce((sum: number, d: any) => sum + Number(d.target_amount || 0), 0);
                 const overCommitted = totalTarget > 0 ? Math.max(0, totalSubscription - totalTarget) : 0;
