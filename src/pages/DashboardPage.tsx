@@ -31,6 +31,11 @@ export default function DashboardPage() {
         data: profileData
       } = await supabase.from("profiles").select("full_name, email, user_type, organisation").eq("user_id", session.user.id).maybeSingle();
       if (profileData) {
+        // Redirect distributors to their dedicated dashboard
+        if (profileData.user_type === "distributor") {
+          navigate("/distributor-dashboard");
+          return;
+        }
         setProfile(profileData);
       }
       setIsLoading(false);

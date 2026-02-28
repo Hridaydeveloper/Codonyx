@@ -12,7 +12,7 @@ interface PendingUser {
   email: string;
   contact_number: string | null;
   organisation: string | null;
-  user_type: "advisor" | "laboratory";
+  user_type: "advisor" | "laboratory" | "distributor";
   created_at: string;
   location: string | null;
   headline: string | null;

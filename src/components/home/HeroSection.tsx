@@ -98,7 +98,7 @@ export function HeroSection() {
                 Register as Laboratory
               </Button>
             </Link>
-            <Link to="/contact" className="col-span-2 sm:col-span-1">
+            <Link to="/register-distributor" className="col-span-2 sm:col-span-1">
               <Button variant="outline" size="lg" className="w-full sm:w-auto border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm shadow-xl text-xs sm:text-sm px-4 sm:px-6 py-3 sm:py-4">
                 Our Distribution Partner
               </Button>

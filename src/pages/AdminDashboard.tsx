@@ -27,7 +27,7 @@ interface PendingUser {
   email: string;
   contact_number: string | null;
   organisation: string | null;
-  user_type: "advisor" | "laboratory";
+  user_type: "advisor" | "laboratory" | "distributor";
   created_at: string;
   location: string | null;
   headline: string | null;
@@ -64,7 +64,10 @@ const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
   const [allAdvisors, setAllAdvisors] = useState<PendingUser[]>([]);
   const [allLabs, setAllLabs] = useState<PendingUser[]>([]);
+  const [allDistributors, setAllDistributors] = useState<PendingUser[]>([]);
   const [inviteConfig, setInviteConfig] = useState<InviteConfig | null>(null);
+  const [deals, setDeals] = useState<any[]>([]);
+  const [dealBids, setDealBids] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -76,6 +79,10 @@ const AdminDashboard = () => {
   const [labStatusFilter, setLabStatusFilter] = useState<string>("all");
   const [selectedPendingUser, setSelectedPendingUser] = useState<PendingUser | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [distributorStatusFilter, setDistributorStatusFilter] = useState<string>("all");
+  const [newDealTitle, setNewDealTitle] = useState("");
+  const [newDealDescription, setNewDealDescription] = useState("");
+  const [newDealTarget, setNewDealTarget] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -110,6 +117,7 @@ const AdminDashboard = () => {
     fetchPendingUsers();
     fetchInviteConfig();
     fetchAllUsers();
+    fetchDeals();
   };
 
   const fetchAllUsers = async () => {
@@ -126,10 +134,72 @@ const AdminDashboard = () => {
       .select("*")
       .eq("user_type", "laboratory")
       .order("full_name");
+
+    const { data: distributors } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_type", "distributor" as any)
+      .order("full_name");
     
     setAllAdvisors(advisors || []);
     setAllLabs(labs || []);
+    setAllDistributors(distributors || []);
     setUsersLoading(false);
+  };
+
+  const fetchDeals = async () => {
+    const { data: dealsData } = await supabase
+      .from("deals")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setDeals(dealsData || []);
+
+    const { data: bidsData } = await supabase
+      .from("deal_bids")
+      .select("*, profiles:distributor_profile_id(full_name, organisation)")
+      .order("created_at", { ascending: false });
+    setDealBids(bidsData || []);
+  };
+
+  const handleCreateDeal = async () => {
+    if (!newDealTitle || !newDealTarget) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase.from("deals").insert({
+      title: newDealTitle,
+      description: newDealDescription || null,
+      target_amount: parseFloat(newDealTarget),
+      deal_status: "published",
+      created_by: user?.id,
+    });
+    if (error) {
+      toast({ title: "Error", description: "Failed to create deal.", variant: "destructive" });
+    } else {
+      toast({ title: "Deal created and published!" });
+      setNewDealTitle("");
+      setNewDealDescription("");
+      setNewDealTarget("");
+      fetchDeals();
+    }
+  };
+
+  const handleBidAction = async (bidId: string, action: "accepted" | "rejected") => {
+    const { error } = await supabase.from("deal_bids").update({ bid_status: action }).eq("id", bidId);
+    if (error) {
+      toast({ title: "Error", description: "Failed to update bid.", variant: "destructive" });
+    } else {
+      toast({ title: `Bid ${action}` });
+      fetchDeals();
+    }
+  };
+
+  const handleDealStatusChange = async (dealId: string, status: string) => {
+    const { error } = await supabase.from("deals").update({ deal_status: status }).eq("id", dealId);
+    if (error) {
+      toast({ title: "Error", description: "Failed to update deal.", variant: "destructive" });
+    } else {
+      toast({ title: `Deal status updated to ${status}` });
+      fetchDeals();
+    }
   };
 
   const fetchInviteConfig = async () => {
@@ -342,15 +412,17 @@ const AdminDashboard = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            Manage users and invite links
+            Manage users, deals, and invite links
           </p>
         </div>
 
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap">
             <TabsTrigger value="pending">Pending Users</TabsTrigger>
             <TabsTrigger value="advisors">Advisors</TabsTrigger>
             <TabsTrigger value="labs">Laboratories</TabsTrigger>
+            <TabsTrigger value="distributors">Distributors</TabsTrigger>
+            <TabsTrigger value="deals">Deals</TabsTrigger>
             <TabsTrigger value="invites">Invite Link</TabsTrigger>
           </TabsList>
 
@@ -595,6 +667,230 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Distributors Tab */}
+          <TabsContent value="distributors">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Distributors</CardTitle>
+                    <CardDescription>Manage all distributor accounts</CardDescription>
+                  </div>
+                  <Select value={distributorStatusFilter} onValueChange={setDistributorStatusFilter}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {usersLoading ? (
+                  <p className="text-muted-foreground text-center py-8">Loading distributors...</p>
+                ) : allDistributors.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">No distributors registered yet.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Region</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Joined</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allDistributors
+                        .filter(d => distributorStatusFilter === "all" || d.approval_status === distributorStatusFilter)
+                        .map((dist) => (
+                        <TableRow key={dist.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={dist.avatar_url || undefined} />
+                                <AvatarFallback>{dist.full_name.slice(0,2).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{dist.full_name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{dist.email}</TableCell>
+                          <TableCell>{dist.organisation || "-"}</TableCell>
+                          <TableCell>{(dist as any).region || "-"}</TableCell>
+                          <TableCell>
+                            <Badge variant={
+                              dist.approval_status === "approved" ? "default" :
+                              dist.approval_status === "pending" ? "secondary" : "destructive"
+                            } className="capitalize">
+                              {dist.approval_status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{format(new Date(dist.created_at), "MMM d, yyyy")}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Deals Tab */}
+          <TabsContent value="deals">
+            <div className="space-y-6">
+              {/* Create Deal */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create New Deal</CardTitle>
+                  <CardDescription>Publish a deal for distributors to bid on</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="space-y-2">
+                      <Label>Title *</Label>
+                      <Input placeholder="Deal title" value={newDealTitle} onChange={(e) => setNewDealTitle(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Target Amount (₹) *</Label>
+                      <Input type="number" placeholder="e.g. 10000000" value={newDealTarget} onChange={(e) => setNewDealTarget(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Input placeholder="Brief description" value={newDealDescription} onChange={(e) => setNewDealDescription(e.target.value)} />
+                    </div>
+                  </div>
+                  <Button className="mt-4" onClick={handleCreateDeal} disabled={!newDealTitle || !newDealTarget}>
+                    Create & Publish Deal
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Deals List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>All Deals</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {deals.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No deals created yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Target</TableHead>
+                          <TableHead>Raised</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Bids</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {deals.map((deal: any) => {
+                          const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id);
+                          return (
+                            <TableRow key={deal.id}>
+                              <TableCell className="font-medium">{deal.title}</TableCell>
+                              <TableCell>₹{Number(deal.target_amount).toLocaleString()}</TableCell>
+                              <TableCell>₹{Number(deal.raised_amount).toLocaleString()}</TableCell>
+                              <TableCell>
+                                <Badge className="capitalize" variant={deal.deal_status === "published" ? "default" : "secondary"}>
+                                  {deal.deal_status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{bidsForDeal.length}</TableCell>
+                              <TableCell>
+                                <Select value={deal.deal_status} onValueChange={(val) => handleDealStatusChange(deal.id, val)}>
+                                  <SelectTrigger className="w-[130px]">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="draft">Draft</SelectItem>
+                                    <SelectItem value="published">Published</SelectItem>
+                                    <SelectItem value="closed">Closed</SelectItem>
+                                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Bids Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>All Bids</CardTitle>
+                  <CardDescription>Review and manage distributor bids</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {dealBids.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No bids received yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Distributor</TableHead>
+                          <TableHead>Deal</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {dealBids.map((bid: any) => {
+                          const deal = deals.find((d: any) => d.id === bid.deal_id);
+                          return (
+                            <TableRow key={bid.id}>
+                              <TableCell className="font-medium">
+                                {bid.profiles?.full_name || "Unknown"}
+                                {bid.profiles?.organisation && <span className="text-muted-foreground text-xs ml-1">({bid.profiles.organisation})</span>}
+                              </TableCell>
+                              <TableCell>{deal?.title || "Unknown"}</TableCell>
+                              <TableCell>₹{Number(bid.bid_amount).toLocaleString()}</TableCell>
+                              <TableCell>
+                                <Badge className="capitalize" variant={
+                                  bid.bid_status === "accepted" ? "default" :
+                                  bid.bid_status === "rejected" ? "destructive" : "secondary"
+                                }>
+                                  {bid.bid_status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-muted-foreground">{format(new Date(bid.created_at), "MMM d, yyyy")}</TableCell>
+                              <TableCell>
+                                {bid.bid_status === "pending" && (
+                                  <div className="flex gap-2">
+                                    <Button size="sm" variant="default" onClick={() => handleBidAction(bid.id, "accepted")}>
+                                      <Check className="h-4 w-4 mr-1" /> Accept
+                                    </Button>
+                                    <Button size="sm" variant="destructive" onClick={() => handleBidAction(bid.id, "rejected")}>
+                                      <X className="h-4 w-4 mr-1" /> Reject
+                                    </Button>
+                                  </div>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="invites">
