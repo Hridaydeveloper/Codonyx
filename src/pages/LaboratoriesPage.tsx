@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { LaboratoryCard } from "@/components/laboratories/LaboratoryCard";
 import { AdvisorFilters } from "@/components/advisors/AdvisorFilters";
 import { Loader2, Building2 } from "lucide-react";
+import { BackButton } from "@/components/layout/BackButton";
 
 interface Laboratory {
   id: string;
@@ -125,6 +126,7 @@ export default function LaboratoriesPage() {
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          <BackButton />
           {/* Header */}
           <div className="mb-8">
             <h1 className="font-display text-3xl lg:text-4xl font-medium text-foreground mb-2">

@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AddPublicationDialog } from "@/components/publications/AddPublicationDialog";
 import { PublicationCard } from "@/components/publications/PublicationCard";
 import { Plus, FileText, Loader2 } from "lucide-react";
+import { BackButton } from "@/components/layout/BackButton";
 
 export interface Publication {
   id: string;
@@ -155,6 +156,7 @@ export default function PublicationsPage() {
       <DashboardNavbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
+          <BackButton />
           <div className="flex items-start justify-between mb-8">
             <div>
               <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
