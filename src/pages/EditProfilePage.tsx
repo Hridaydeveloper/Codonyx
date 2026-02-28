@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
+import { BackButton } from "@/components/layout/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 
@@ -274,6 +275,7 @@ export default function EditProfilePage() {
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          <BackButton />
           <div className="max-w-2xl mx-auto">
             {/* Header */}
             <div className="mb-8">

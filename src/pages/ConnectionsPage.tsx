@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, User, Users, Clock, UserCheck, Mail } from "lucide-react";
+import { BackButton } from "@/components/layout/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
@@ -336,6 +337,7 @@ export default function ConnectionsPage() {
       <DashboardNavbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
+          <BackButton />
           <div className="mb-8">
             <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
               Connections

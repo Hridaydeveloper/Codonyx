@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Users, Building2, ArrowRight } from "lucide-react";
+import { BackButton } from "@/components/layout/BackButton";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,6 +63,7 @@ export default function DashboardPage() {
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          <BackButton />
           <div className="max-w-4xl mx-auto">
             {/* Welcome Section - Enhanced */}
             <div className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-3xl p-8 md:p-10 mb-8 border border-divider relative overflow-hidden">

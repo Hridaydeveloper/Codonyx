@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
+import { BackButton } from "@/components/layout/BackButton";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -181,6 +182,7 @@ export default function DistributorDashboard() {
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          <BackButton />
           <div className="max-w-6xl mx-auto">
             {/* Welcome */}
             <div className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-3xl p-8 mb-8 border border-divider">
