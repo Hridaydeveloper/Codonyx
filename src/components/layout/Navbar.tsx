@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, User, LogOut } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,9 +32,12 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const profileFetched = useRef(false);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string) => {
+    if (profileFetched.current) return;
+    profileFetched.current = true;
     const { data } = await supabase
       .from("profiles")
       .select("full_name, email, avatar_url")
@@ -44,31 +47,28 @@ export function Navbar() {
       setProfile(data);
       setIsLoggedIn(true);
     }
-  };
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
-    // Set up listener FIRST (per Supabase best practices)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION")) {
         await fetchProfile(session.user.id);
-        setIsLoading(false);
       } else if (event === "SIGNED_OUT") {
+        profileFetched.current = false;
         setProfile(null);
         setIsLoggedIn(false);
-        setIsLoading(false);
       }
     });
 
-    // Then check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         fetchProfile(session.user.id);
       }
-      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchProfile]);
 
   const handleNavClick = useCallback((href: string) => {
     if (location.pathname === href) {
@@ -117,7 +117,7 @@ export function Navbar() {
 
           {/* Auth Area */}
           <div className="hidden lg:flex items-center">
-            {isLoading ? null : isLoggedIn && profile ? (
+            {isLoggedIn && profile ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -183,8 +183,20 @@ export function Navbar() {
             ))}
             {isLoggedIn && profile ? (
               <>
+                <div className="flex items-center gap-3 py-3 border-t border-white/10 mt-2 pt-4">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {getInitials(profile.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{profile.full_name}</p>
+                    <p className="text-xs text-white/50 truncate">{profile.email}</p>
+                  </div>
+                </div>
                 <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="primary" className="w-full mt-4">
+                  <Button variant="primary" className="w-full mt-3">
                     Dashboard
                   </Button>
                 </Link>
