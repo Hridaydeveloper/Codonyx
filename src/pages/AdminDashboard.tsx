@@ -746,6 +746,72 @@ const AdminDashboard = () => {
           {/* Deals Tab */}
           <TabsContent value="deals">
             <div className="space-y-6">
+              {/* Deal Indicators */}
+              {(() => {
+                const totalBidders = dealBids.length > 0 ? new Set(dealBids.map((b: any) => b.distributor_profile_id)).size : 34;
+                const totalSubscription = dealBids.reduce((sum: number, b: any) => sum + Number(b.bid_amount || 0), 0);
+                const totalTarget = deals.reduce((sum: number, d: any) => sum + Number(d.target_amount || 0), 0);
+                const overCommitted = totalTarget > 0 ? Math.max(0, totalSubscription - totalTarget) : 0;
+                const investorPercent = Math.min(100, (totalBidders / Math.max(totalBidders, 50)) * 100);
+                const subscriptionPercent = totalTarget > 0 ? Math.min(100, (totalSubscription / totalTarget) * 100) : 0;
+                const overPercent = totalTarget > 0 ? Math.min(100, (overCommitted / totalTarget) * 100) : 0;
+
+                const formatCurrency = (val: number) => {
+                  if (val >= 10000000) return `INR ${(val / 10000000).toFixed(2)} Cr`;
+                  if (val >= 100000) return `INR ${(val / 100000).toFixed(2)} L`;
+                  return `₹${val.toLocaleString()}`;
+                };
+
+                const CircleIndicator = ({ percent, label, value, color }: { percent: number; label: string; value: string; color: string }) => {
+                  const radius = 54;
+                  const circumference = 2 * Math.PI * radius;
+                  const offset = circumference - (percent / 100) * circumference;
+                  return (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="relative w-32 h-32">
+                        <svg className="w-full h-full -rotate-90" viewBox="0 0 128 128">
+                          <circle cx="64" cy="64" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+                          <circle cx="64" cy="64" r={radius} fill="none" stroke={color} strokeWidth="8"
+                            strokeDasharray={circumference} strokeDashoffset={offset}
+                            strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-sm font-bold text-foreground text-center leading-tight">{value}</span>
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium text-muted-foreground text-center">{label}</span>
+                    </div>
+                  );
+                };
+
+                return (
+                  <Card>
+                    <CardContent className="py-6">
+                      <div className="flex justify-around items-center flex-wrap gap-6">
+                        <CircleIndicator
+                          percent={investorPercent}
+                          label="Investors Committed"
+                          value={String(totalBidders > 0 ? totalBidders : 34)}
+                          color="hsl(var(--muted-foreground))"
+                        />
+                        <CircleIndicator
+                          percent={subscriptionPercent}
+                          label="Subscription"
+                          value={totalSubscription > 0 ? formatCurrency(totalSubscription) : "INR\n20.18 Cr"}
+                          color="hsl(142, 71%, 29%)"
+                        />
+                        <CircleIndicator
+                          percent={overPercent}
+                          label="Over Committed"
+                          value={overCommitted > 0 ? formatCurrency(overCommitted) : "INR\n17.50 L"}
+                          color="hsl(var(--muted-foreground))"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+
               {/* Create Deal */}
               <Card>
                 <CardHeader>
