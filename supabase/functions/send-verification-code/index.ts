@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -34,6 +37,21 @@ serve(async (req: Request) => {
       return new Response(
         JSON.stringify({ error: "Use client-side verification" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Check if email already exists in profiles table
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: existingProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("email", email.trim().toLowerCase())
+      .maybeSingle();
+
+    if (existingProfile) {
+      return new Response(
+        JSON.stringify({ error: "email_exists", message: "This email is already registered with another account. Please try with a different email." }),
+        { status: 409, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
