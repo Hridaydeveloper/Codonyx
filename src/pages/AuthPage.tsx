@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, Loader2, Eye, EyeOff } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
+import googleIcon from "@/assets/google-icon.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const features = [
@@ -33,6 +35,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -228,6 +231,45 @@ export default function AuthPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast({ title: "Google Sign-In Failed", description: result.error.message || "An error occurred.", variant: "destructive" });
+        setIsGoogleLoading(false);
+        return;
+      }
+      if (result.redirected) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase.from("profiles").select("approval_status").eq("user_id", session.user.id).maybeSingle();
+        if (!profile) {
+          await supabase.auth.signOut();
+          toast({ title: "No Account Found", description: "Contact Us to get the register Link.", variant: "destructive" });
+          setIsGoogleLoading(false);
+          return;
+        }
+        if (profile.approval_status === "pending") {
+          await supabase.auth.signOut();
+          toast({ title: "Pending Approval", description: "Your account is still pending admin approval." });
+        } else if (profile.approval_status === "rejected") {
+          await supabase.auth.signOut();
+          toast({ title: "Access Denied", description: "Your registration request was rejected.", variant: "destructive" });
+        } else if (profile.approval_status === "approved") {
+          navigate("/dashboard");
+        }
+      }
+    } catch (error: any) {
+      console.error("Google sign-in error:", error);
+      toast({ title: "Google Sign-In Failed", description: "An unexpected error occurred.", variant: "destructive" });
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -311,6 +353,30 @@ export default function AuthPage() {
               )}
             </Button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-muted" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 text-base gap-3"
+            disabled={isGoogleLoading}
+            onClick={handleGoogleSignIn}
+          >
+            {isGoogleLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <img src={googleIcon} alt="Google" className="w-5 h-5" />
+            )}
+            Continue with Google
+          </Button>
 
           <p className="mt-8 text-xs text-center text-muted-foreground">
             Access is by invitation only. Contact your network administrator for an invite.
