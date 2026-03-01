@@ -34,11 +34,21 @@ export default function EmailVerificationField({
     setIsSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-verification-code", {
-        body: { email },
+        body: { email: email.trim().toLowerCase() },
       });
 
-      if (error || !data?.success) {
+      if (error) {
+        // Try to parse the error body for email_exists
         toast({ title: "Failed to send code", description: error?.message || "Please try again.", variant: "destructive" });
+        return;
+      }
+      
+      if (!data?.success) {
+        if (data?.error === "email_exists") {
+          toast({ title: "Email already exists", description: data.message || "This email is already registered with another account. Please try with a different email.", variant: "destructive" });
+        } else {
+          toast({ title: "Failed to send code", description: data?.message || data?.error || "Please try again.", variant: "destructive" });
+        }
         return;
       }
 
