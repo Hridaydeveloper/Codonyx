@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, Truck } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EmailVerificationField from "@/components/registration/EmailVerificationField";
 
 export default function RegisterDistributorPage() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function RegisterDistributorPage() {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +53,10 @@ export default function RegisterDistributorPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isEmailVerified) {
+      toast({ title: "Email not verified", description: "Please verify your email before submitting.", variant: "destructive" });
+      return;
+    }
     if (password !== confirmPassword) {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
@@ -106,6 +112,21 @@ export default function RegisterDistributorPage() {
       }
 
       await supabase.auth.signOut();
+
+      // Send registration submitted email
+      try {
+        await supabase.functions.invoke("send-notification-email", {
+          body: {
+            type: "registration_submitted",
+            recipientEmail: email,
+            recipientName: fullName,
+            userType: "distributor",
+          },
+        });
+      } catch (emailErr) {
+        console.error("Failed to send confirmation email:", emailErr);
+      }
+
       setIsRegistered(true);
     } catch (error) {
       console.error("Registration error:", error);
@@ -173,10 +194,12 @@ export default function RegisterDistributorPage() {
               <Input id="fullName" placeholder="Enter your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="h-12" required />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs uppercase tracking-wider font-medium">Email *</Label>
-              <Input id="email" type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12" required />
-            </div>
+            <EmailVerificationField
+              email={email}
+              onEmailChange={setEmail}
+              isVerified={isEmailVerified}
+              onVerified={setIsEmailVerified}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -230,7 +253,7 @@ export default function RegisterDistributorPage() {
               <Textarea id="bio" placeholder="Brief description of your distribution business..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[80px]" />
             </div>
 
-            <Button type="submit" variant="primary" className="w-full h-12 text-base" disabled={isSubmitting}>
+            <Button type="submit" variant="primary" className="w-full h-12 text-base" disabled={isSubmitting || !isEmailVerified}>
               {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</> : "Submit Application"}
             </Button>
 

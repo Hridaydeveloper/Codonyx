@@ -8,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-type NotificationType = "connection_accepted" | "registration_approved" | "registration_rejected";
+type NotificationType = "connection_accepted" | "registration_approved" | "registration_rejected" | "registration_submitted";
 
 interface NotificationRequest {
   type: NotificationType;
@@ -89,7 +89,7 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
             Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,
           </p>
           <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">
-            We are pleased to inform you that your registration as a <strong style="color:#059669;">${data.userType === "advisor" ? "Advisor" : "Laboratory"}</strong> on Codonyx has been approved.
+            We are pleased to inform you that your registration as a <strong style="color:#059669;">${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong> on Codonyx has been approved.
           </p>
           <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">
             You can now sign in using your login credentials and start connecting with professionals across the network.
@@ -114,11 +114,35 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
             Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,
           </p>
           <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">
-            We regret to inform you that your registration as a <strong>${data.userType === "advisor" ? "Advisor" : "Laboratory"}</strong> on Codonyx has not been approved at this time.
+            We regret to inform you that your registration as a <strong>${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong> on Codonyx has not been approved at this time.
           </p>
           <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">
             If you believe this is an error or would like further information, please contact us at <a href="mailto:info@codonyx.org" style="color:#059669;text-decoration:none;font-weight:500;">info@codonyx.org</a>.
           </p>`
+        ),
+      };
+
+    case "registration_submitted":
+      return {
+        subject: `Registration Received — Codonyx`,
+        html: wrapper(
+          "Registration Received ✅",
+          "Thank you for registering with Codonyx",
+          `<p style="color:#475569;font-size:16px;line-height:1.6;margin:0 0 24px;">
+            Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,
+          </p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">
+            Thank you for registering as a <strong style="color:#059669;">${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong> on Codonyx.
+          </p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">
+            Your registration is currently <strong style="color:#d97706;">under review</strong>. Our team will evaluate your application and you will be notified via email once a decision has been made.
+          </p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">
+            We appreciate your interest in joining the Codonyx network.
+          </p>
+          <div style="background:#f1f5f9;border-radius:10px;padding:16px 20px;margin:0 0 24px;">
+            <p style="margin:0;color:#64748b;font-size:14px;">💡 Please do not attempt to sign in until your account has been approved.</p>
+          </div>`
         ),
       };
   }

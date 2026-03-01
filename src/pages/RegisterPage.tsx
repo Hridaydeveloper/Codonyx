@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, CheckCircle, Loader2, XCircle, Eye, EyeOff, Upload, User } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EmailVerificationField from "@/components/registration/EmailVerificationField";
 
 const features = [
   {
@@ -46,6 +47,7 @@ export default function RegisterPage() {
   // Form state
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -140,6 +142,14 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isEmailVerified) {
+      toast({
+        title: "Email not verified",
+        description: "Please verify your email before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (password !== confirmPassword) {
       toast({
         title: "Passwords don't match",
@@ -257,6 +267,20 @@ export default function RegisterPage() {
 
       // Sign out immediately (user needs approval)
       await supabase.auth.signOut();
+
+      // Send registration submitted email
+      try {
+        await supabase.functions.invoke("send-notification-email", {
+          body: {
+            type: "registration_submitted",
+            recipientEmail: email,
+            recipientName: fullName,
+            userType,
+          },
+        });
+      } catch (emailErr) {
+        console.error("Failed to send confirmation email:", emailErr);
+      }
 
       setIsRegistered(true);
     } catch (error) {
@@ -392,20 +416,12 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs uppercase tracking-wider font-medium">
-                Email *
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12"
-                required
-              />
-            </div>
+            <EmailVerificationField
+              email={email}
+              onEmailChange={setEmail}
+              isVerified={isEmailVerified}
+              onVerified={setIsEmailVerified}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -676,7 +692,7 @@ export default function RegisterPage() {
               type="submit" 
               variant="primary" 
               className="w-full h-12 text-base"
-              disabled={isSubmitting || isUploading}
+              disabled={isSubmitting || isUploading || !isEmailVerified}
             >
               {isSubmitting || isUploading ? (
                 <>
