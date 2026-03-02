@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, TrendingUp, DollarSign, Briefcase, Target } from "lucide-react";
+import { Loader2, TrendingUp, DollarSign, Briefcase, Target, Pencil } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -39,6 +39,7 @@ interface Bid {
   notes: string | null;
   created_at: string;
   deal_title?: string;
+  deal_status?: string;
 }
 
 interface Profile {
@@ -51,12 +52,17 @@ export default function DistributorDashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [allDeals, setAllDeals] = useState<Deal[]>([]);
   const [myBids, setMyBids] = useState<Bid[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [bidAmount, setBidAmount] = useState("");
   const [bidNotes, setBidNotes] = useState("");
   const [isSubmittingBid, setIsSubmittingBid] = useState(false);
+  const [editingBid, setEditingBid] = useState<Bid | null>(null);
+  const [editBidAmount, setEditBidAmount] = useState("");
+  const [editBidNotes, setEditBidNotes] = useState("");
+  const [isUpdatingBid, setIsUpdatingBid] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -75,14 +81,22 @@ export default function DistributorDashboard() {
     if (!profileData) { navigate("/auth"); return; }
     setProfile(profileData);
 
-    // Fetch published deals
-    const { data: dealsData } = await supabase
+    // Fetch published deals (for bidding)
+    const { data: publishedDeals } = await supabase
       .from("deals")
       .select("*")
       .eq("deal_status", "published")
       .order("created_at", { ascending: false });
 
-    setDeals((dealsData as Deal[]) || []);
+    setDeals((publishedDeals as Deal[]) || []);
+
+    // Fetch ALL deals the distributor can see (includes closed ones they bid on)
+    const { data: allDealsData } = await supabase
+      .from("deals")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    setAllDeals((allDealsData as Deal[]) || []);
 
     // Fetch my bids
     const { data: bidsData } = await supabase
@@ -91,12 +105,17 @@ export default function DistributorDashboard() {
       .eq("distributor_profile_id", profileData.id)
       .order("created_at", { ascending: false });
 
-    // Enrich bids with deal titles
-    if (bidsData && dealsData) {
-      const enriched = (bidsData as Bid[]).map(bid => ({
-        ...bid,
-        deal_title: (dealsData as Deal[]).find(d => d.id === bid.deal_id)?.title || "Unknown Deal",
-      }));
+    // Enrich bids with deal titles and status
+    const allDealsList = (allDealsData as Deal[]) || [];
+    if (bidsData) {
+      const enriched = (bidsData as Bid[]).map(bid => {
+        const deal = allDealsList.find(d => d.id === bid.deal_id);
+        return {
+          ...bid,
+          deal_title: deal?.title || "Unknown Deal",
+          deal_status: deal?.deal_status || "unknown",
+        };
+      });
       setMyBids(enriched);
     }
 
@@ -146,6 +165,37 @@ export default function DistributorDashboard() {
     }
   };
 
+  const handleEditBid = (bid: Bid) => {
+    setEditingBid(bid);
+    setEditBidAmount(String(bid.bid_amount));
+    setEditBidNotes(bid.notes || "");
+  };
+
+  const handleUpdateBid = async () => {
+    if (!editingBid || !editBidAmount) return;
+
+    const amount = parseFloat(editBidAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({ title: "Invalid amount", variant: "destructive" });
+      return;
+    }
+
+    setIsUpdatingBid(true);
+    const { error } = await supabase
+      .from("deal_bids")
+      .update({ bid_amount: amount, notes: editBidNotes || null })
+      .eq("id", editingBid.id);
+
+    if (error) {
+      toast({ title: "Failed to update bid", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Bid updated successfully!" });
+      setEditingBid(null);
+      loadData();
+    }
+    setIsUpdatingBid(false);
+  };
+
   const formatCurrency = (amount: number) => {
     if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
     if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} L`;
@@ -159,6 +209,19 @@ export default function DistributorDashboard() {
       case "withdrawn": return "bg-muted text-muted-foreground border-muted";
       default: return "bg-amber-500/10 text-amber-600 border-amber-500/20";
     }
+  };
+
+  const getBidDisplayStatus = (bid: Bid) => {
+    if (bid.deal_status === "closed") {
+      if (bid.bid_status === "accepted") return "Accepted · Deal Closed";
+      if (bid.bid_status === "rejected") return "Rejected · Deal Closed";
+      return `${bid.bid_status} · Deal Closed`;
+    }
+    return bid.bid_status;
+  };
+
+  const canEditBid = (bid: Bid) => {
+    return bid.deal_status !== "closed" && bid.deal_status !== "cancelled" && (bid.bid_status === "pending" || bid.bid_status === "accepted");
   };
 
   if (isLoading) {
@@ -328,8 +391,13 @@ export default function DistributorDashboard() {
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="font-semibold text-foreground">{formatCurrency(bid.bid_amount)}</span>
-                          <Badge className={getStatusColor(bid.bid_status)}>{bid.bid_status}</Badge>
-                          {bid.bid_status === "pending" && (
+                          <Badge className={getStatusColor(bid.bid_status)}>{getBidDisplayStatus(bid)}</Badge>
+                          {canEditBid(bid) && (
+                            <Button variant="outline" size="sm" onClick={() => handleEditBid(bid)}>
+                              <Pencil className="w-3 h-3 mr-1" /> Edit
+                            </Button>
+                          )}
+                          {bid.bid_status === "pending" && bid.deal_status !== "closed" && (
                             <Button variant="outline" size="sm" onClick={() => handleWithdrawBid(bid.id)}>
                               Withdraw
                             </Button>
@@ -379,6 +447,45 @@ export default function DistributorDashboard() {
             <Button onClick={handlePlaceBid} disabled={isSubmittingBid || !bidAmount}>
               {isSubmittingBid ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               Submit Bid
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Bid Dialog */}
+      <Dialog open={!!editingBid} onOpenChange={() => setEditingBid(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Bid - "{editingBid?.deal_title}"</DialogTitle>
+            <DialogDescription>
+              Modify your bid amount or notes
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Bid Amount (₹) *</Label>
+              <Input
+                type="number"
+                min="1"
+                placeholder="Enter bid amount"
+                value={editBidAmount}
+                onChange={(e) => setEditBidAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Notes (optional)</Label>
+              <Textarea
+                placeholder="Any notes for the admin..."
+                value={editBidNotes}
+                onChange={(e) => setEditBidNotes(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingBid(null)}>Cancel</Button>
+            <Button onClick={handleUpdateBid} disabled={isUpdatingBid || !editBidAmount}>
+              {isUpdatingBid ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Update Bid
             </Button>
           </DialogFooter>
         </DialogContent>
