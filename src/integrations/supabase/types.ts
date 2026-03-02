@@ -113,6 +113,7 @@ export type Database = {
           created_by: string | null
           deal_status: string
           description: string | null
+          document_url: string | null
           id: string
           raised_amount: number
           target_amount: number
@@ -124,6 +125,7 @@ export type Database = {
           created_by?: string | null
           deal_status?: string
           description?: string | null
+          document_url?: string | null
           id?: string
           raised_amount?: number
           target_amount?: number
@@ -135,6 +137,7 @@ export type Database = {
           created_by?: string | null
           deal_status?: string
           description?: string | null
+          document_url?: string | null
           id?: string
           raised_amount?: number
           target_amount?: number
@@ -258,6 +261,7 @@ export type Database = {
           updated_at: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
+          verification_document_url: string | null
           website_url: string | null
           years_of_experience: number | null
         }
@@ -291,6 +295,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
+          verification_document_url?: string | null
           website_url?: string | null
           years_of_experience?: number | null
         }
@@ -324,6 +329,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           user_type?: Database["public"]["Enums"]["user_type"]
+          verification_document_url?: string | null
           website_url?: string | null
           years_of_experience?: number | null
         }
