@@ -84,6 +84,7 @@ const AdminDashboard = () => {
   const [newDealTitle, setNewDealTitle] = useState("");
   const [newDealDescription, setNewDealDescription] = useState("");
   const [newDealTarget, setNewDealTarget] = useState("");
+  const [newDealDocFile, setNewDealDocFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -162,16 +163,40 @@ const AdminDashboard = () => {
     setDealBids(bidsData || []);
   };
 
+  const handleDealDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 20 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Max 20MB.", variant: "destructive" });
+        return;
+      }
+      setNewDealDocFile(file);
+    }
+  };
+
   const handleCreateDeal = async () => {
     if (!newDealTitle || !newDealTarget) return;
     const { data: { user } } = await supabase.auth.getUser();
+
+    let documentUrl: string | null = null;
+    if (newDealDocFile) {
+      const fileExt = newDealDocFile.name.split(".").pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from("deal-documents").upload(filePath, newDealDocFile);
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage.from("deal-documents").getPublicUrl(filePath);
+        documentUrl = urlData.publicUrl;
+      }
+    }
+
     const { error } = await supabase.from("deals").insert({
       title: newDealTitle,
       description: newDealDescription || null,
       target_amount: parseFloat(newDealTarget),
       deal_status: "published",
       created_by: user?.id,
-    });
+      document_url: documentUrl,
+    } as any);
     if (error) {
       toast({ title: "Error", description: "Failed to create deal.", variant: "destructive" });
     } else {
@@ -179,6 +204,7 @@ const AdminDashboard = () => {
       setNewDealTitle("");
       setNewDealDescription("");
       setNewDealTarget("");
+      setNewDealDocFile(null);
       fetchDeals();
     }
   };
@@ -827,7 +853,7 @@ const AdminDashboard = () => {
                   <CardDescription>Publish a deal for distributors to bid on</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label>Title *</Label>
                       <Input placeholder="Deal title" value={newDealTitle} onChange={(e) => setNewDealTitle(e.target.value)} />
@@ -839,6 +865,11 @@ const AdminDashboard = () => {
                     <div className="space-y-2">
                       <Label>Description</Label>
                       <Input placeholder="Brief description" value={newDealDescription} onChange={(e) => setNewDealDescription(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Document (optional)</Label>
+                      <Input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png" onChange={handleDealDocumentChange} />
+                      {newDealDocFile && <p className="text-xs text-muted-foreground">Selected: {newDealDocFile.name}</p>}
                     </div>
                   </div>
                   <Button className="mt-4" onClick={handleCreateDeal} disabled={!newDealTitle || !newDealTarget}>
@@ -954,7 +985,7 @@ const AdminDashboard = () => {
                                   {bid.bid_status}
                                 </Badge>
                               </TableCell>
-                              <TableCell className="text-muted-foreground">{format(new Date(bid.created_at), "MMM d, yyyy")}</TableCell>
+                              <TableCell className="text-muted-foreground text-xs font-mono">{format(new Date(bid.created_at), "MMM d, yyyy HH:mm:ss.SSS")}</TableCell>
                               <TableCell>
                                 {bid.bid_status === "pending" && (
                                   <div className="flex gap-2">

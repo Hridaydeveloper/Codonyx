@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, Truck } from "lucide-react";
+import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, Truck, FileText } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
@@ -31,6 +31,7 @@ export default function RegisterDistributorPage() {
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [verificationDoc, setVerificationDoc] = useState<File | null>(null);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -90,6 +91,17 @@ export default function RegisterDistributorPage() {
         }
       }
 
+      let verificationDocUrl = null;
+      if (verificationDoc) {
+        const fileExt = verificationDoc.name.split(".").pop();
+        const filePath = `${authData.user.id}/verification.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from("verification-documents").upload(filePath, verificationDoc, { upsert: true });
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from("verification-documents").getPublicUrl(filePath);
+          verificationDocUrl = urlData.publicUrl;
+        }
+      }
+
       const { error: profileError } = await supabase.from("profiles").insert({
         user_id: authData.user.id,
         full_name: fullName,
@@ -103,7 +115,8 @@ export default function RegisterDistributorPage() {
         region: region || null,
         distribution_capacity: distributionCapacity || null,
         years_of_experience: yearsOfExperience ? parseInt(yearsOfExperience) : null,
-      });
+        verification_document_url: verificationDocUrl,
+      } as any);
 
       if (profileError) {
         console.error("Profile error:", profileError);
@@ -253,7 +266,28 @@ export default function RegisterDistributorPage() {
               <Textarea id="bio" placeholder="Brief description of your distribution business..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[80px]" />
             </div>
 
-            <Button type="submit" variant="primary" className="w-full h-12 text-base" disabled={isSubmitting || !isEmailVerified}>
+            <div className="space-y-2">
+              <Label className="text-xs uppercase tracking-wider font-medium">Verification Document *</Label>
+              <p className="text-xs text-muted-foreground">Upload a business registration certificate, GST certificate, or company ID for verification.</p>
+              <label className="cursor-pointer">
+                <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" className="hidden" onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                      toast({ title: "File too large", description: "Max 10MB.", variant: "destructive" });
+                      return;
+                    }
+                    setVerificationDoc(file);
+                  }
+                }} />
+                <div className="flex items-center gap-2 px-4 py-3 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors">
+                  <FileText className="h-4 w-4" />
+                  {verificationDoc ? verificationDoc.name : "Upload Document"}
+                </div>
+              </label>
+            </div>
+
+            <Button type="submit" variant="primary" className="w-full h-12 text-base" disabled={isSubmitting || !isEmailVerified || !verificationDoc}>
               {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</> : "Submit Application"}
             </Button>
 

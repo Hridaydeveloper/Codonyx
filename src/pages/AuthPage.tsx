@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+
 import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, Loader2, Eye, EyeOff } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
@@ -234,34 +234,18 @@ export default function AuthPage() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
-      if (result.error) {
-        toast({ title: "Google Sign-In Failed", description: result.error.message || "An error occurred.", variant: "destructive" });
+      if (error) {
+        toast({ title: "Google Sign-In Failed", description: error.message || "An error occurred.", variant: "destructive" });
         setIsGoogleLoading(false);
         return;
       }
-      if (result.redirected) return;
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: profile } = await supabase.from("profiles").select("approval_status").eq("user_id", session.user.id).maybeSingle();
-        if (!profile) {
-          await supabase.auth.signOut();
-          toast({ title: "No Account Found", description: "Contact Us to get the register Link.", variant: "destructive" });
-          setIsGoogleLoading(false);
-          return;
-        }
-        if (profile.approval_status === "pending") {
-          await supabase.auth.signOut();
-          toast({ title: "Pending Approval", description: "Your account is still pending admin approval." });
-        } else if (profile.approval_status === "rejected") {
-          await supabase.auth.signOut();
-          toast({ title: "Access Denied", description: "Your registration request was rejected.", variant: "destructive" });
-        } else if (profile.approval_status === "approved") {
-          navigate("/dashboard");
-        }
-      }
+      // OAuth will redirect, the onAuthStateChange listener handles the rest
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       toast({ title: "Google Sign-In Failed", description: "An unexpected error occurred.", variant: "destructive" });

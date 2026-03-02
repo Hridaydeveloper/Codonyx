@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, X, MapPin, Mail, Phone, Building2, GraduationCap, Briefcase, Globe, Users, Calendar, Beaker, Wrench, Linkedin, Clock } from "lucide-react";
+import { Check, X, MapPin, Mail, Phone, Building2, GraduationCap, Briefcase, Globe, Users, Calendar, Beaker, Wrench, Linkedin, Clock, FileText, Truck } from "lucide-react";
 import { format } from "date-fns";
 
 interface PendingUser {
@@ -32,6 +32,10 @@ interface PendingUser {
   website_url: string | null;
   services: string | null;
   research_areas: string | null;
+  region?: string | null;
+  distribution_capacity?: string | null;
+  years_of_experience?: number | null;
+  verification_document_url?: string | null;
 }
 
 interface PendingUserDetailModalProps {
@@ -93,6 +97,7 @@ export function PendingUserDetailModal({
 
   const isAdvisor = user.user_type === "advisor";
   const isLaboratory = user.user_type === "laboratory";
+  const isDistributor = user.user_type === "distributor";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -340,6 +345,66 @@ export function PendingUserDetailModal({
             </div>
           )}
 
+          {/* Distributor Details */}
+          {isDistributor && (
+            <div className="bg-muted rounded-xl p-6">
+              <h3 className="font-heading text-lg font-semibold text-foreground mb-4">Distribution Details</h3>
+              <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {(user as any).region && (
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <MapPin className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Region</p>
+                        <p className="font-medium text-foreground">{(user as any).region}</p>
+                      </div>
+                    </div>
+                  )}
+                  {(user as any).distribution_capacity && (
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Truck className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Distribution Capacity</p>
+                        <p className="font-medium text-foreground">{(user as any).distribution_capacity}</p>
+                      </div>
+                    </div>
+                  )}
+                  {(user as any).years_of_experience && (
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Briefcase className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Years of Experience</p>
+                        <p className="font-medium text-foreground">{(user as any).years_of_experience}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Verification Document */}
+          {(user as any).verification_document_url && (
+            <div className="bg-muted rounded-xl p-6">
+              <h3 className="font-heading text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+                <FileText className="h-5 w-5" /> Verification Document
+              </h3>
+              <Button
+                variant="outline"
+                onClick={() => window.open((user as any).verification_document_url, '_blank')}
+                className="gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                View Document
+              </Button>
+            </div>
+          )}
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4 border-t border-divider">
             <Button
