@@ -46,6 +46,20 @@ export default function ConnectionsPage() {
     loadConnections();
   }, []);
 
+  // Realtime subscription for connections
+  useEffect(() => {
+    if (!currentProfileId) return;
+
+    const channel = supabase
+      .channel('connections-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        loadConnections();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [currentProfileId]);
+
   const loadConnections = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
