@@ -68,6 +68,23 @@ export default function DistributorDashboard() {
     loadData();
   }, []);
 
+  // Realtime subscriptions
+  useEffect(() => {
+    if (!profile) return;
+
+    const channel = supabase
+      .channel('distributor-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deals' }, () => {
+        loadData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deal_bids' }, () => {
+        loadData();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [profile]);
+
   const loadData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { navigate("/auth"); return; }

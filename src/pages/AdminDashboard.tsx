@@ -92,6 +92,27 @@ const AdminDashboard = () => {
     checkAdminAccess();
   }, []);
 
+  // Realtime subscriptions
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = supabase
+      .channel('admin-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        fetchPendingUsers();
+        fetchAllUsers();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deals' }, () => {
+        fetchDeals();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deal_bids' }, () => {
+        fetchDeals();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [isAdmin]);
+
   const checkAdminAccess = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -740,7 +761,7 @@ const AdminDashboard = () => {
                       {allDistributors
                         .filter(d => distributorStatusFilter === "all" || d.approval_status === distributorStatusFilter)
                         .map((dist) => (
-                        <TableRow key={dist.id}>
+                        <TableRow key={dist.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewPendingUser(dist as any)}>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">

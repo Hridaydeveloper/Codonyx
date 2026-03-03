@@ -405,26 +405,28 @@ export function PendingUserDetailModal({
               </Button>
             </div>
           )}
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-divider">
-            <Button
-              onClick={() => onApprove(user.user_id, user.id)}
-              disabled={isProcessing}
-              className="flex-1"
-            >
-              <Check className="h-4 w-4 mr-2" />
-              Approve Registration
-            </Button>
-            <Button
-              onClick={() => onReject(user.user_id, user.id)}
-              disabled={isProcessing}
-              variant="destructive"
-              className="flex-1"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Reject Registration
-            </Button>
-          </div>
+          {/* Action Buttons - Only show for pending users */}
+          {user.approval_status === "pending" && (
+            <div className="flex gap-3 pt-4 border-t border-divider">
+              <Button
+                onClick={() => onApprove(user.user_id, user.id)}
+                disabled={isProcessing}
+                className="flex-1"
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Approve Registration
+              </Button>
+              <Button
+                onClick={() => onReject(user.user_id, user.id)}
+                disabled={isProcessing}
+                variant="destructive"
+                className="flex-1"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Reject Registration
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
