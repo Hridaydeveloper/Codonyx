@@ -345,10 +345,11 @@ export default function DistributorDashboard() {
 
             {/* Deal Indicators */}
             {(() => {
-              const totalSubscription = deals.reduce((sum, d) => sum + Number(d.raised_amount || 0), 0);
-              const totalTarget = deals.reduce((sum, d) => sum + Number(d.target_amount || 0), 0);
+              const uniqueBidders = aggregateStats.unique_bidders;
+              const totalBidders = 34 + uniqueBidders;
+              const totalSubscription = aggregateStats.total_subscription;
+              const totalTarget = aggregateStats.total_target;
               const overCommitted = totalTarget > 0 ? Math.max(0, totalSubscription - totalTarget) : 0;
-              const totalBidders = 34 + myBids.filter(b => b.bid_status !== "withdrawn").length;
               const investorPercent = Math.min(100, (totalBidders / 250) * 100);
               const subscriptionPercent = totalTarget > 0 ? Math.min(100, (totalSubscription / totalTarget) * 100) : 92;
               const overPercent = totalTarget > 0 ? Math.min(100, (overCommitted / totalTarget) * 100) : 5;
