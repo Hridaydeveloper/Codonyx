@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.send-notification-email]
 verify_jwt = false
+
+[functions.reset-password-otp]
+verify_jwt = false
