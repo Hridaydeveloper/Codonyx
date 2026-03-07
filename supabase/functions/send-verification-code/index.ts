@@ -11,16 +11,14 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// In-memory store for verification codes (per instance)
-const verificationCodes = new Map<string, { code: string; expiresAt: number }>();
-
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email, action } = await req.json();
+    const { email, action, code } = await req.json();
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     if (!email) {
       return new Response(
@@ -29,23 +27,60 @@ serve(async (req: Request) => {
       );
     }
 
-    // Action: verify
+    const trimmedEmail = email.trim().toLowerCase();
+
+    // Action: verify code server-side
     if (action === "verify") {
-      const { code } = await req.json().catch(() => ({ code: "" }));
-      // We handle verify on the client side by comparing codes
-      // This branch is not used in current implementation
+      if (!code) {
+        return new Response(
+          JSON.stringify({ error: "Code is required" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      const { data: otpRecord } = await supabaseAdmin
+        .from("registration_otps")
+        .select("*")
+        .eq("email", trimmedEmail)
+        .eq("code", code)
+        .eq("used", false)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!otpRecord) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Invalid code. Please try again." }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      if (new Date(otpRecord.expires_at) < new Date()) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Code has expired. Please request a new one." }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Mark as used
+      await supabaseAdmin
+        .from("registration_otps")
+        .update({ used: true })
+        .eq("id", otpRecord.id);
+
       return new Response(
-        JSON.stringify({ error: "Use client-side verification" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
+    // Default action: send code
+
     // Check if email already exists in profiles table
-    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const { data: existingProfile } = await supabaseAdmin
       .from("profiles")
       .select("id")
-      .eq("email", email.trim().toLowerCase())
+      .eq("email", trimmedEmail)
       .maybeSingle();
 
     if (existingProfile) {
@@ -55,9 +90,21 @@ serve(async (req: Request) => {
       );
     }
 
-    // Action: send code
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    
+    // Invalidate any existing OTPs for this email
+    await supabaseAdmin
+      .from("registration_otps")
+      .update({ used: true })
+      .eq("email", trimmedEmail)
+      .eq("used", false);
+
+    // Generate and store code server-side
+    const generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+    await supabaseAdmin
+      .from("registration_otps")
+      .insert({ email: trimmedEmail, code: generatedCode, expires_at: expiresAt });
+
     const year = new Date().getFullYear();
     const html = `
       <!DOCTYPE html>
@@ -77,7 +124,7 @@ serve(async (req: Request) => {
                 </p>
                 <div style="text-align:center;margin:0 0 24px;">
                   <span style="display:inline-block;background:#f1f5f9;border:2px solid #059669;border-radius:12px;padding:16px 40px;font-size:32px;font-weight:700;letter-spacing:8px;color:#1e293b;">
-                    ${code}
+                    ${generatedCode}
                   </span>
                 </div>
                 <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0 0 8px;">
@@ -97,7 +144,7 @@ serve(async (req: Request) => {
       </body></html>
     `;
 
-    console.log(`Sending verification code to: ${email}`);
+    console.log(`Sending verification code to: ${trimmedEmail}`);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -107,8 +154,8 @@ serve(async (req: Request) => {
       },
       body: JSON.stringify({
         from: "Codonyx <notifications@codonyx.org>",
-        to: [email],
-        subject: `${code} - Your Codonyx Verification Code`,
+        to: [trimmedEmail],
+        subject: `Your Codonyx Verification Code`,
         html,
       }),
     });
@@ -120,8 +167,9 @@ serve(async (req: Request) => {
       throw new Error(emailResponse.message || "Failed to send verification email");
     }
 
+    // Do NOT return the code to the client
     return new Response(
-      JSON.stringify({ success: true, code }),
+      JSON.stringify({ success: true }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {

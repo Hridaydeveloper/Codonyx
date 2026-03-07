@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.reset-password-otp]
 verify_jwt = false
+
+[functions.send-verification-code]
+verify_jwt = false

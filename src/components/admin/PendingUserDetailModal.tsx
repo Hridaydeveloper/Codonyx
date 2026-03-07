@@ -397,7 +397,21 @@ export function PendingUserDetailModal({
               </h3>
               <Button
                 variant="outline"
-                onClick={() => window.open(user.verification_document_url!, '_blank')}
+                onClick={async () => {
+                  const docPath = user.verification_document_url!;
+                  // If it's already a full URL (legacy), open directly
+                  if (docPath.startsWith('http')) {
+                    window.open(docPath, '_blank');
+                    return;
+                  }
+                  // Generate a signed URL for private bucket
+                  const { data } = await (await import("@/integrations/supabase/client")).supabase.storage
+                    .from("verification-documents")
+                    .createSignedUrl(docPath, 300);
+                  if (data?.signedUrl) {
+                    window.open(data.signedUrl, '_blank');
+                  }
+                }}
                 className="gap-2"
               >
                 <FileText className="h-4 w-4" />
