@@ -22,7 +22,6 @@ export default function EmailVerificationField({
   const [isSending, setIsSending] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
-  const [expectedCode, setExpectedCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
 
   const handleSendCode = async () => {
@@ -38,7 +37,6 @@ export default function EmailVerificationField({
       });
 
       if (error) {
-        // Try to parse the error body for email_exists
         toast({ title: "Failed to send code", description: error?.message || "Please try again.", variant: "destructive" });
         return;
       }
@@ -52,7 +50,6 @@ export default function EmailVerificationField({
         return;
       }
 
-      setExpectedCode(data.code);
       setCodeSent(true);
       toast({ title: "Code sent!", description: `A verification code has been sent to ${email}.` });
     } catch (err) {
@@ -62,15 +59,25 @@ export default function EmailVerificationField({
     }
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
     setIsVerifying(true);
-    if (verificationCode === expectedCode) {
+    try {
+      const { data, error } = await supabase.functions.invoke("send-verification-code", {
+        body: { email: email.trim().toLowerCase(), action: "verify", code: verificationCode },
+      });
+
+      if (error || !data?.success) {
+        toast({ title: "Invalid code", description: data?.error || "The code you entered is incorrect. Please try again.", variant: "destructive" });
+        return;
+      }
+
       onVerified(true);
       toast({ title: "Email verified!", description: "Your email has been successfully verified." });
-    } else {
-      toast({ title: "Invalid code", description: "The code you entered is incorrect. Please try again.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Error", description: "Could not verify code.", variant: "destructive" });
+    } finally {
+      setIsVerifying(false);
     }
-    setIsVerifying(false);
   };
 
   return (
