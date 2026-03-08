@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, CheckCircle, Loader2, XCircle, Eye, EyeOff, Upload, User } from "lucide-react";
@@ -30,11 +29,8 @@ const features = [
   },
 ];
 
-type UserType = "advisor" | "laboratory";
-
 export default function RegisterPage() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const inviteToken = searchParams.get("invite");
 
   const [isValidatingToken, setIsValidatingToken] = useState(true);
@@ -54,25 +50,16 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [contactNumber, setContactNumber] = useState("");
   const [organisation, setOrganisation] = useState("");
-  const [userType, setUserType] = useState<UserType>("advisor");
-  
-  // Additional fields
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [bio, setBio] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  
+
   // Advisor-specific fields
   const [expertise, setExpertise] = useState("");
   const [experience, setExperience] = useState("");
-  
-  // Laboratory-specific fields
-  const [companyType, setCompanyType] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [researchAreas, setResearchAreas] = useState("");
-  const [services, setServices] = useState("");
 
   // Validate invite token
   useEffect(() => {
@@ -92,11 +79,7 @@ export default function RegisterPage() {
 
         if (error || !data) {
           setIsTokenValid(false);
-        } else if (!data.is_active) {
-          setIsTokenValid(false);
-        } else if (data.used_at) {
-          setIsTokenValid(false);
-        } else if (new Date(data.expires_at) < new Date()) {
+        } else if (!data.is_active || data.used_at || new Date(data.expires_at) < new Date()) {
           setIsTokenValid(false);
         } else {
           setIsTokenValid(true);
@@ -116,23 +99,14 @@ export default function RegisterPage() {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload an image file.",
-          variant: "destructive",
-        });
+        toast({ title: "Invalid file type", description: "Please upload an image file.", variant: "destructive" });
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Please upload an image smaller than 5MB.",
-          variant: "destructive",
-        });
+        toast({ title: "File too large", description: "Please upload an image smaller than 5MB.", variant: "destructive" });
         return;
       }
       setAvatarFile(file);
-      // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => setAvatarUrl(e.target?.result as string);
       reader.readAsDataURL(file);
@@ -143,139 +117,79 @@ export default function RegisterPage() {
     e.preventDefault();
 
     if (!isEmailVerified) {
-      toast({
-        title: "Email not verified",
-        description: "Please verify your email before submitting.",
-        variant: "destructive",
-      });
+      toast({ title: "Email not verified", description: "Please verify your email before submitting.", variant: "destructive" });
       return;
     }
     if (password !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
-        variant: "destructive",
-      });
+      toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-
     if (password.length < 6) {
-      toast({
-        title: "Password too short",
-        description: "Password must be at least 6 characters.",
-        variant: "destructive",
-      });
+      toast({ title: "Password too short", description: "Password must be at least 6 characters.", variant: "destructive" });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Sign up the user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        },
+        options: { emailRedirectTo: `${window.location.origin}/` },
       });
 
-      if (authError) {
-        toast({
-          title: "Registration failed",
-          description: authError.message,
-          variant: "destructive",
-        });
+      if (authError || !authData.user) {
+        toast({ title: "Registration failed", description: authError?.message || "Could not create account.", variant: "destructive" });
         return;
       }
 
-      if (!authData.user) {
-        toast({
-          title: "Registration failed",
-          description: "Could not create user account.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Upload avatar if provided
       let uploadedAvatarUrl = null;
       if (avatarFile) {
         setIsUploading(true);
         const fileExt = avatarFile.name.split(".").pop();
         const filePath = `${authData.user.id}/avatar.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(filePath, avatarFile, { upsert: true });
-        
+        const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, avatarFile, { upsert: true });
         if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from("avatars")
-            .getPublicUrl(filePath);
+          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
           uploadedAvatarUrl = urlData.publicUrl;
         }
         setIsUploading(false);
       }
 
-      // Create profile with all fields
       const locationStr = [city, country].filter(Boolean).join(", ");
-      
-      // Build profile data based on user type
-      const baseProfileData = {
+
+      const { error: profileError } = await supabase.from("profiles").insert({
         user_id: authData.user.id,
         full_name: fullName,
-        email: email,
+        email,
         contact_number: contactNumber || null,
         organisation: organisation || null,
-        user_type: userType as "advisor" | "laboratory",
+        user_type: "advisor" as const,
         approval_status: "pending" as const,
         invite_token_id: tokenId,
         location: locationStr || null,
         bio: bio || null,
         linkedin_url: linkedinUrl || null,
         avatar_url: uploadedAvatarUrl,
-      };
-
-      const advisorFields = userType === "advisor" ? {
         expertise: expertise || null,
         experience: experience || null,
-      } : {};
-
-      const labFields = userType === "laboratory" ? {
-        company_type: companyType || null,
-        website_url: websiteUrl || null,
-        research_areas: researchAreas || null,
-        services: services || null,
-      } : {};
-
-      const { error: profileError } = await supabase.from("profiles").insert({
-        ...baseProfileData,
-        ...advisorFields,
-        ...labFields,
       });
 
       if (profileError) {
         console.error("Profile error:", profileError);
-        toast({
-          title: "Profile creation failed",
-          description: "Your account was created but profile setup failed. Please contact support.",
-          variant: "destructive",
-        });
+        toast({ title: "Profile creation failed", description: "Account created but profile setup failed.", variant: "destructive" });
         return;
       }
 
-      // Sign out immediately (user needs approval)
       await supabase.auth.signOut();
 
-      // Send registration submitted email
       try {
         await supabase.functions.invoke("send-notification-email", {
           body: {
             type: "registration_submitted",
             recipientEmail: email,
             recipientName: fullName,
-            userType,
+            userType: "advisor",
           },
         });
       } catch (emailErr) {
@@ -285,17 +199,12 @@ export default function RegisterPage() {
       setIsRegistered(true);
     } catch (error) {
       console.error("Registration error:", error);
-      toast({
-        title: "Registration failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Registration failed", description: "An unexpected error occurred.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Loading state
   if (isValidatingToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -307,7 +216,6 @@ export default function RegisterPage() {
     );
   }
 
-  // Invalid or no token
   if (!isTokenValid) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -315,22 +223,17 @@ export default function RegisterPage() {
           <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
             <XCircle className="w-8 h-8 text-destructive" />
           </div>
-          <h1 className="font-display text-2xl font-medium text-foreground mb-3">
-            Invalid Invitation
-          </h1>
+          <h1 className="font-display text-2xl font-medium text-foreground mb-3">Invalid Invitation</h1>
           <p className="text-muted-foreground mb-6">
-            This invitation link is invalid, expired, or has already been used. 
+            This invitation link is invalid, expired, or has already been used.
             Please contact your network administrator for a new invitation.
           </p>
-          <Link to="/">
-            <Button variant="outline">Return to Homepage</Button>
-          </Link>
+          <Link to="/"><Button variant="outline">Return to Homepage</Button></Link>
         </div>
       </div>
     );
   }
 
-  // Registration success
   if (isRegistered) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -338,19 +241,13 @@ export default function RegisterPage() {
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="font-display text-2xl font-medium text-foreground mb-3">
-            Registration Submitted
-          </h1>
-          <p className="text-muted-foreground mb-2">
-            Thank you for registering with Codonyx.
-          </p>
+          <h1 className="font-display text-2xl font-medium text-foreground mb-3">Registration Submitted</h1>
+          <p className="text-muted-foreground mb-2">Thank you for registering with Codonyx.</p>
           <p className="text-muted-foreground mb-6">
-            Your request is currently <span className="text-amber-600 font-medium">pending admin approval</span>. 
+            Your request is currently <span className="text-amber-600 font-medium">pending admin approval</span>.
             You will receive an email once your account has been approved.
           </p>
-          <Link to="/">
-            <Button variant="primary">Return to Homepage</Button>
-          </Link>
+          <Link to="/"><Button variant="primary">Return to Homepage</Button></Link>
         </div>
       </div>
     );
@@ -361,112 +258,57 @@ export default function RegisterPage() {
       {/* Left Panel - Form */}
       <div className="w-full lg:w-1/2 flex flex-col px-8 lg:px-16 xl:px-24 py-12 bg-background overflow-y-auto max-h-screen">
         <div className="max-w-md mx-auto w-full">
-          {/* Logo */}
           <Link to="/" className="inline-block mb-8">
             <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
           </Link>
 
           <h1 className="font-display text-3xl lg:text-4xl font-medium text-foreground mb-2">
-            Join Codonyx
+            Join as Advisor
           </h1>
           <p className="text-muted-foreground font-body mb-8">
-            Complete your registration to join the network.
+            Complete your registration to join the advisor network.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Avatar Upload */}
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider font-medium">
-                Profile Picture
-              </Label>
+              <Label className="text-xs uppercase tracking-wider font-medium">Profile Picture</Label>
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
                   <AvatarImage src={avatarUrl} />
-                  <AvatarFallback className="bg-muted">
-                    <User className="h-6 w-6 text-muted-foreground" />
-                  </AvatarFallback>
+                  <AvatarFallback className="bg-muted"><User className="h-6 w-6 text-muted-foreground" /></AvatarFallback>
                 </Avatar>
                 <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarChange}
-                  />
+                  <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                   <div className="flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors">
-                    <Upload className="h-4 w-4" />
-                    Upload Photo
+                    <Upload className="h-4 w-4" /> Upload Photo
                   </div>
                 </label>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-xs uppercase tracking-wider font-medium">
-                Full Name *
-              </Label>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder="Enter your full name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="h-12"
-                required
-              />
+              <Label htmlFor="fullName" className="text-xs uppercase tracking-wider font-medium">Full Name *</Label>
+              <Input id="fullName" placeholder="Enter your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="h-12" required />
             </div>
 
-            <EmailVerificationField
-              email={email}
-              onEmailChange={setEmail}
-              isVerified={isEmailVerified}
-              onVerified={setIsEmailVerified}
-            />
+            <EmailVerificationField email={email} onEmailChange={setEmail} isVerified={isEmailVerified} onVerified={setIsEmailVerified} />
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs uppercase tracking-wider font-medium">
-                  Password *
-                </Label>
+                <Label htmlFor="password" className="text-xs uppercase tracking-wider font-medium">Password *</Label>
                 <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Create password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="h-12 pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
+                  <Input id="password" type={showPassword ? "text" : "password"} placeholder="Create password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 pr-10" required />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-wider font-medium">
-                  Confirm *
-                </Label>
+                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-wider font-medium">Confirm *</Label>
                 <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="h-12 pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
+                  <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="h-12 pr-10" required />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
@@ -475,230 +317,51 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="country" className="text-xs uppercase tracking-wider font-medium">
-                  Country *
-                </Label>
-                <Input
-                  id="country"
-                  type="text"
-                  placeholder="Enter your country"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <Label htmlFor="country" className="text-xs uppercase tracking-wider font-medium">Country *</Label>
+                <Input id="country" placeholder="Enter your country" value={country} onChange={(e) => setCountry(e.target.value)} className="h-12" required />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="city" className="text-xs uppercase tracking-wider font-medium">
-                  City *
-                </Label>
-                <Input
-                  id="city"
-                  type="text"
-                  placeholder="Enter your city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <Label htmlFor="city" className="text-xs uppercase tracking-wider font-medium">City *</Label>
+                <Input id="city" placeholder="Enter your city" value={city} onChange={(e) => setCity(e.target.value)} className="h-12" required />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contactNumber" className="text-xs uppercase tracking-wider font-medium">
-                Contact Number *
-              </Label>
-              <Input
-                id="contactNumber"
-                type="tel"
-                placeholder="Enter your phone number"
-                value={contactNumber}
-                onChange={(e) => setContactNumber(e.target.value)}
-                className="h-12"
-                required
-              />
+              <Label htmlFor="contactNumber" className="text-xs uppercase tracking-wider font-medium">Contact Number *</Label>
+              <Input id="contactNumber" type="tel" placeholder="Enter your phone number" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} className="h-12" required />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">
-                Organisation / Company *
-              </Label>
-              <Input
-                id="organisation"
-                type="text"
-                placeholder="Enter your organisation"
-                value={organisation}
-                onChange={(e) => setOrganisation(e.target.value)}
-                className="h-12"
-                required
-              />
+              <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">Organisation / Company *</Label>
+              <Input id="organisation" placeholder="Enter your organisation" value={organisation} onChange={(e) => setOrganisation(e.target.value)} className="h-12" required />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">
-                LinkedIn Profile *
-              </Label>
-              <Input
-                id="linkedinUrl"
-                type="url"
-                placeholder="https://linkedin.com/in/yourprofile"
-                value={linkedinUrl}
-                onChange={(e) => setLinkedinUrl(e.target.value)}
-                className="h-12"
-                required
-              />
+              <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">LinkedIn Profile *</Label>
+              <Input id="linkedinUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-12" required />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">
-                Bio *
-              </Label>
-              <Textarea
-                id="bio"
-                placeholder="Tell us about yourself..."
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                className="min-h-[100px]"
-                required
-              />
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-xs uppercase tracking-wider font-medium">
-                I am a *
-              </Label>
-              <RadioGroup
-                value={userType}
-                onValueChange={(value) => setUserType(value as UserType)}
-                className="flex gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="advisor" id="advisor" />
-                  <Label htmlFor="advisor" className="font-normal cursor-pointer">
-                    Advisor
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="laboratory" id="laboratory" />
-                  <Label htmlFor="laboratory" className="font-normal cursor-pointer">
-                    Laboratory
-                  </Label>
-                </div>
-              </RadioGroup>
+              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">Bio *</Label>
+              <Textarea id="bio" placeholder="Tell us about yourself..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[100px]" required />
             </div>
 
             {/* Advisor-specific fields */}
-            {userType === "advisor" && (
-              <div className="space-y-4 pt-4 border-t border-divider">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                  Advisor Details
-                </h3>
-                <div className="space-y-2">
-                  <Label htmlFor="expertise" className="text-xs uppercase tracking-wider font-medium">
-                    Areas of Expertise *
-                  </Label>
-                  <Input
-                    id="expertise"
-                    type="text"
-                    placeholder="e.g., Biotechnology, Drug Development, Clinical Trials"
-                    value={expertise}
-                    onChange={(e) => setExpertise(e.target.value)}
-                    className="h-12"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">
-                    Experience / Background *
-                  </Label>
-                  <Textarea
-                    id="experience"
-                    placeholder="Describe your professional experience..."
-                    value={experience}
-                    onChange={(e) => setExperience(e.target.value)}
-                    className="min-h-[80px]"
-                    required
-                  />
-                </div>
+            <div className="space-y-4 pt-4 border-t border-divider">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Advisor Details</h3>
+              <div className="space-y-2">
+                <Label htmlFor="expertise" className="text-xs uppercase tracking-wider font-medium">Areas of Expertise *</Label>
+                <Input id="expertise" placeholder="e.g., Biotechnology, Drug Development, Clinical Trials" value={expertise} onChange={(e) => setExpertise(e.target.value)} className="h-12" required />
               </div>
-            )}
-
-            {/* Laboratory-specific fields */}
-            {userType === "laboratory" && (
-              <div className="space-y-4 pt-4 border-t border-divider">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                  Laboratory Details
-                </h3>
-                <div className="space-y-2">
-                  <Label htmlFor="companyType" className="text-xs uppercase tracking-wider font-medium">
-                    Company Type *
-                  </Label>
-                  <Input
-                    id="companyType"
-                    type="text"
-                    placeholder="e.g., CRO, Biotech, Pharmaceutical"
-                    value={companyType}
-                    onChange={(e) => setCompanyType(e.target.value)}
-                    className="h-12"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="websiteUrl" className="text-xs uppercase tracking-wider font-medium">
-                    Company Website *
-                  </Label>
-                  <Input
-                    id="websiteUrl"
-                    type="url"
-                    placeholder="https://yourcompany.com"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    className="h-12"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="researchAreas" className="text-xs uppercase tracking-wider font-medium">
-                    Research Areas *
-                  </Label>
-                  <Input
-                    id="researchAreas"
-                    type="text"
-                    placeholder="e.g., Oncology, Neuroscience, Immunology"
-                    value={researchAreas}
-                    onChange={(e) => setResearchAreas(e.target.value)}
-                    className="h-12"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="services" className="text-xs uppercase tracking-wider font-medium">
-                    Services Offered *
-                  </Label>
-                  <Textarea
-                    id="services"
-                    placeholder="Describe the services your laboratory offers..."
-                    value={services}
-                    onChange={(e) => setServices(e.target.value)}
-                    className="min-h-[80px]"
-                    required
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">Experience / Background *</Label>
+                <Textarea id="experience" placeholder="Describe your professional experience..." value={experience} onChange={(e) => setExperience(e.target.value)} className="min-h-[80px]" required />
               </div>
-            )}
+            </div>
 
-            <Button 
-              type="submit" 
-              variant="primary" 
-              className="w-full h-12 text-base"
-              disabled={isSubmitting || isUploading || !isEmailVerified}
-            >
+            <Button type="submit" variant="primary" className="w-full h-12 text-base" disabled={isSubmitting || isUploading || !isEmailVerified}>
               {isSubmitting || isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isUploading ? "Uploading..." : "Registering..."}
-                </>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isUploading ? "Uploading..." : "Registering..."}</>
               ) : (
                 "Submit Registration"
               )}
@@ -708,24 +371,18 @@ export default function RegisterPage() {
           <div className="mt-8 pt-8 border-t border-divider text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/auth" className="text-primary hover:underline font-medium">
-                Sign In
-              </Link>
+              <Link to="/auth" className="text-primary hover:underline font-medium">Sign In</Link>
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Features (Fixed) */}
+      {/* Right Panel */}
       <div className="hidden lg:flex w-1/2 bg-foreground text-background p-12 xl:p-16 flex-col justify-center fixed right-0 top-0 bottom-0">
         <div className="max-w-md">
           <div className="space-y-8">
             {features.map((feature, index) => (
-              <div
-                key={feature.title}
-                className="flex items-start gap-4 group cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+              <div key={feature.title} className="flex items-start gap-4 group cursor-pointer" style={{ animationDelay: `${index * 0.1}s` }}>
                 <div className="w-12 h-12 rounded-lg bg-background/10 flex items-center justify-center flex-shrink-0">
                   <feature.icon className="w-5 h-5 text-background" />
                 </div>

@@ -1,103 +1,322 @@
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FlaskConical, Mail, ShieldCheck, Users, Cpu, FileSearch, Handshake } from "lucide-react";
-import heroLabImage from "@/assets/hero-lab.jpg";
-import aiMolecularImg from "@/assets/ai-molecular.jpg";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, FlaskConical } from "lucide-react";
+import codonyxLogo from "@/assets/codonyx_logo.png";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EmailVerificationField from "@/components/registration/EmailVerificationField";
 
-const advantages = [
-  { icon: Users, title: "Expert Advisors", desc: "Access top-tier advisors across molecular biology, AI diagnostics, regulatory strategy, and more." },
-  { icon: Cpu, title: "AI-Powered Insights", desc: "Leverage our AI platform for smart advisor matching tailored to your research needs." },
-  { icon: FileSearch, title: "Verified Network", desc: "Every advisor in our network is vetted for excellence, ensuring meaningful partnerships." },
-  { icon: Handshake, title: "Strategic Collaboration", desc: "Unlock new collaboration opportunities to accelerate your research and expand capabilities." },
-];
+export default function RegisterLaboratoryPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
-const RegisterLaboratoryPage = () => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [contactNumber, setContactNumber] = useState("");
+  const [organisation, setOrganisation] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [bio, setBio] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  // Lab-specific
+  const [companyType, setCompanyType] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [researchAreas, setResearchAreas] = useState("");
+  const [services, setServices] = useState("");
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast({ title: "Invalid file type", description: "Please upload an image file.", variant: "destructive" });
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Please upload an image smaller than 5MB.", variant: "destructive" });
+        return;
+      }
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setAvatarUrl(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isEmailVerified) {
+      toast({ title: "Email not verified", description: "Please verify your email before submitting.", variant: "destructive" });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({ title: "Passwords don't match", variant: "destructive" });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/` },
+      });
+
+      if (authError || !authData.user) {
+        toast({ title: "Registration failed", description: authError?.message || "Could not create account.", variant: "destructive" });
+        return;
+      }
+
+      let uploadedAvatarUrl = null;
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split(".").pop();
+        const filePath = `${authData.user.id}/avatar.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, avatarFile, { upsert: true });
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+          uploadedAvatarUrl = urlData.publicUrl;
+        }
+      }
+
+      const locationStr = [city, country].filter(Boolean).join(", ");
+
+      const { error: profileError } = await supabase.from("profiles").insert({
+        user_id: authData.user.id,
+        full_name: fullName,
+        email,
+        contact_number: contactNumber || null,
+        organisation: organisation || null,
+        user_type: "laboratory" as any,
+        approval_status: "pending" as const,
+        bio: bio || null,
+        avatar_url: uploadedAvatarUrl,
+        location: locationStr || null,
+        linkedin_url: linkedinUrl || null,
+        company_type: companyType || null,
+        website_url: websiteUrl || null,
+        research_areas: researchAreas || null,
+        services: services || null,
+      });
+
+      if (profileError) {
+        console.error("Profile error:", profileError);
+        toast({ title: "Profile creation failed", description: "Account created but profile setup failed.", variant: "destructive" });
+        return;
+      }
+
+      await supabase.auth.signOut();
+
+      try {
+        await supabase.functions.invoke("send-notification-email", {
+          body: {
+            type: "registration_submitted",
+            recipientEmail: email,
+            recipientName: fullName,
+            userType: "laboratory",
+          },
+        });
+      } catch (emailErr) {
+        console.error("Failed to send confirmation email:", emailErr);
+      }
+
+      setIsRegistered(true);
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({ title: "Registration failed", description: "An unexpected error occurred.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isRegistered) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="font-display text-2xl font-medium text-foreground mb-3">Registration Submitted</h1>
+          <p className="text-muted-foreground mb-2">Thank you for registering as a Laboratory.</p>
+          <p className="text-muted-foreground mb-6">
+            Your application is <span className="text-amber-600 font-medium">pending admin review</span>.
+            You will receive an email once approved.
+          </p>
+          <Link to="/"><Button variant="primary">Return to Homepage</Button></Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main>
-        {/* Hero Banner */}
-        <section className="relative pt-20 overflow-hidden">
-          <div className="absolute inset-0">
-            <img src={heroLabImage} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-            <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/80 to-navy/60" />
-          </div>
-          <div className="container mx-auto px-6 lg:px-8 relative z-10 py-20 lg:py-32">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 backdrop-blur-sm mb-6">
-                <FlaskConical className="w-8 h-8 text-emerald-glow" />
-              </div>
-              <h1 className="font-display text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                Register as a <span className="text-emerald-glow">Laboratory</span>
-              </h1>
-              <p className="text-white/80 text-lg lg:text-xl font-body leading-relaxed max-w-xl">
-                Connect with our global network of expert advisors to accelerate your research, 
-                gain strategic insights, and unlock new collaboration opportunities.
-              </p>
-            </div>
-          </div>
-        </section>
+    <div className="min-h-screen flex">
+      {/* Left Panel - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col px-8 lg:px-16 xl:px-24 py-12 bg-background overflow-y-auto max-h-screen">
+        <div className="max-w-md mx-auto w-full">
+          <Link to="/" className="inline-block mb-8">
+            <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
+          </Link>
 
-        {/* Advantages Grid */}
-        <section className="py-20 lg:py-28 bg-background">
-          <div className="container mx-auto px-6 lg:px-8">
-            <p className="text-primary font-body text-sm font-semibold tracking-[0.2em] uppercase mb-4 text-center">
-              Why Register
-            </p>
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-16 text-center">
-              Advantages for Laboratories
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {advantages.map((a) => (
-                <div key={a.title} className="bg-card border border-divider rounded-xl p-6 text-center hover:shadow-lg hover:border-primary/30 transition-all duration-300 group">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-5 group-hover:bg-primary/20 transition-colors">
-                    <a.icon className="w-7 h-7 text-primary" />
+          <h1 className="font-display text-3xl lg:text-4xl font-medium text-foreground mb-2">
+            Register Laboratory
+          </h1>
+          <p className="text-muted-foreground font-body mb-8">
+            Register your laboratory to connect with expert advisors.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Avatar */}
+            <div className="space-y-2">
+              <Label className="text-xs uppercase tracking-wider font-medium">Profile Picture</Label>
+              <div className="flex items-center gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={avatarUrl} />
+                  <AvatarFallback className="bg-muted"><User className="h-6 w-6 text-muted-foreground" /></AvatarFallback>
+                </Avatar>
+                <label className="cursor-pointer">
+                  <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                  <div className="flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors">
+                    <Upload className="h-4 w-4" /> Upload Photo
                   </div>
-                  <h3 className="font-heading text-lg font-semibold text-card-foreground mb-2">{a.title}</h3>
-                  <p className="text-muted-foreground font-body text-sm leading-relaxed">{a.desc}</p>
-                </div>
-              ))}
+                </label>
+              </div>
             </div>
-          </div>
-        </section>
 
-        {/* Invitation CTA */}
-        <section className="relative py-20 lg:py-28 overflow-hidden">
-          <div className="absolute inset-0">
-            <img src={aiMolecularImg} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-            <div className="absolute inset-0 bg-navy/85" />
-          </div>
-          <div className="container mx-auto px-6 lg:px-8 relative z-10 max-w-3xl text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-glow/20 backdrop-blur-sm mb-6">
-              <ShieldCheck className="w-8 h-8 text-emerald-glow" />
+            <div className="space-y-2">
+              <Label htmlFor="fullName" className="text-xs uppercase tracking-wider font-medium">Full Name *</Label>
+              <Input id="fullName" placeholder="Enter your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="h-12" required />
             </div>
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-white mb-6">
-              Invitation-Only Registration
-            </h2>
-            <p className="text-white/70 font-body text-lg leading-relaxed mb-6">
-              Laboratories can register on our platform to connect with top-tier advisors 
-              across molecular biology, AI diagnostics, GMP manufacturing, regulatory strategy, 
-              and more. Our invitation-only model ensures that every connection is meaningful and verified.
+
+            <EmailVerificationField email={email} onEmailChange={setEmail} isVerified={isEmailVerified} onVerified={setIsEmailVerified} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-xs uppercase tracking-wider font-medium">Password *</Label>
+                <div className="relative">
+                  <Input id="password" type={showPassword ? "text" : "password"} placeholder="Create password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 pr-10" required />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-wider font-medium">Confirm *</Label>
+                <div className="relative">
+                  <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="h-12 pr-10" required />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="country" className="text-xs uppercase tracking-wider font-medium">Country *</Label>
+                <Input id="country" placeholder="Enter your country" value={country} onChange={(e) => setCountry(e.target.value)} className="h-12" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-xs uppercase tracking-wider font-medium">City *</Label>
+                <Input id="city" placeholder="Enter your city" value={city} onChange={(e) => setCity(e.target.value)} className="h-12" required />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="contactNumber" className="text-xs uppercase tracking-wider font-medium">Contact Number *</Label>
+              <Input id="contactNumber" type="tel" placeholder="Enter your phone number" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} className="h-12" required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">Organisation / Company *</Label>
+              <Input id="organisation" placeholder="Enter your organisation" value={organisation} onChange={(e) => setOrganisation(e.target.value)} className="h-12" required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">LinkedIn Profile</Label>
+              <Input id="linkedinUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-12" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">Bio</Label>
+              <Textarea id="bio" placeholder="Tell us about your laboratory..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[80px]" />
+            </div>
+
+            {/* Lab-specific fields */}
+            <div className="space-y-4 pt-4 border-t border-divider">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Laboratory Details</h3>
+              <div className="space-y-2">
+                <Label htmlFor="companyType" className="text-xs uppercase tracking-wider font-medium">Company Type *</Label>
+                <Input id="companyType" placeholder="e.g., CRO, Biotech, Pharmaceutical" value={companyType} onChange={(e) => setCompanyType(e.target.value)} className="h-12" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="websiteUrl" className="text-xs uppercase tracking-wider font-medium">Company Website *</Label>
+                <Input id="websiteUrl" type="url" placeholder="https://yourcompany.com" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="h-12" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="researchAreas" className="text-xs uppercase tracking-wider font-medium">Research Areas *</Label>
+                <Input id="researchAreas" placeholder="e.g., Oncology, Neuroscience, Immunology" value={researchAreas} onChange={(e) => setResearchAreas(e.target.value)} className="h-12" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="services" className="text-xs uppercase tracking-wider font-medium">Services Offered *</Label>
+                <Textarea id="services" placeholder="Describe the services your laboratory offers..." value={services} onChange={(e) => setServices(e.target.value)} className="min-h-[80px]" required />
+              </div>
+            </div>
+
+            <Button type="submit" variant="primary" className="w-full h-12 text-base" disabled={isSubmitting || !isEmailVerified}>
+              {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</> : "Submit Registration"}
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Link to="/auth" className="text-primary hover:underline font-medium">Sign In</Link>
             </p>
-            <p className="text-white/70 font-body text-lg leading-relaxed mb-10">
-              If your laboratory is looking to partner with experienced advisors and expand your 
-              scientific capabilities, please contact us. Our team will evaluate your profile 
-              and provide you with a registration invitation.
-            </p>
-            <Link to="/contact">
-              <Button variant="primary" size="lg" className="gap-2 text-base px-8 py-4">
-                <Mail className="w-5 h-5" />
-                Contact Us for Registration
-              </Button>
-            </Link>
+          </form>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-navy via-navy/95 to-primary/20 items-center justify-center p-16">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-8">
+            <FlaskConical className="w-10 h-10 text-emerald-glow" />
           </div>
-        </section>
-      </main>
-      <Footer />
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            Register Your Laboratory
+          </h2>
+          <p className="text-white/70 text-lg mb-8">
+            Join our platform and connect with world-class advisors in molecular science, AI healthcare, and beyond.
+          </p>
+          <div className="space-y-4 text-left">
+            {[
+              "Access expert advisors across 70+ countries",
+              "AI-powered advisor matching for your needs",
+              "Secure environment for confidential partnerships",
+              "Dedicated laboratory dashboard",
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-emerald-glow shrink-0" />
+                <span className="text-white/80">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default RegisterLaboratoryPage;
+}
