@@ -812,10 +812,10 @@ const AdminDashboard = () => {
                 const overCommitted = totalTarget > 0 ? Math.max(0, totalSubscription - totalTarget) : 0;
                 // Investors: full circle at 250
                 const investorPercent = Math.min(100, (totalBidders / 250) * 100);
-                // Subscription: fill proportional to target, default ~92% like screenshot
-                const subscriptionPercent = totalTarget > 0 ? Math.min(100, (totalSubscription / totalTarget) * 100) : 92;
-                // Over committed: small fill like screenshot, default ~5%
-                const overPercent = totalTarget > 0 ? Math.min(100, (overCommitted / totalTarget) * 100) : 5;
+                // Subscription: cap visual fill at ~92%
+                const subscriptionPercent = totalTarget > 0 ? Math.min(92, (totalSubscription / (totalSubscription + totalTarget)) * 100) : 92;
+                // Over committed: proportional to subscription, cap at ~30%
+                const overPercent = totalSubscription > 0 ? Math.min(30, (overCommitted / totalSubscription) * 100) : 5;
 
                 const formatCurrency = (val: number) => {
                   if (val >= 10000000) return `INR\n${(val / 10000000).toFixed(2)} Cr`;
