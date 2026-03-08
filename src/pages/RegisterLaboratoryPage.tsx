@@ -112,7 +112,7 @@ export default function RegisterLaboratoryPage() {
       let uploadedAvatarUrl = null;
       if (avatarFile) {
         const fileExt = avatarFile.name.split(".").pop();
-        const filePath = `${authData.user.id}/avatar.${fileExt}`;
+        const filePath = `${userId}/avatar.${fileExt}`;
         const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, avatarFile, { upsert: true });
         if (!uploadError) {
           const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
