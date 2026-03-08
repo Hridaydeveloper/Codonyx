@@ -20,7 +20,7 @@ export default function AboutPage() {
         {/* Hero Banner */}
         <section className="relative pt-20 overflow-hidden">
           <div className="absolute inset-0">
-            <img src={dnaHelixBg} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+            <img src={dnaHelixBg} alt="" className="w-full h-full object-cover animate-dna-drift" aria-hidden="true" />
             <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/85 to-navy/70" />
           </div>
           <div
@@ -87,8 +87,8 @@ export default function AboutPage() {
         {/* What We Do */}
         <section className="relative py-20 lg:py-28 overflow-hidden">
           <div className="absolute inset-0">
-            <img src={dnaHelixBg} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-            <div className="absolute inset-0 bg-navy/92" />
+            <img src={dnaHelixBg} alt="" className="w-full h-full object-cover animate-dna-drift" aria-hidden="true" />
+            <div className="absolute inset-0 bg-navy/80" />
           </div>
           <div
             ref={whatRef}
@@ -100,7 +100,7 @@ export default function AboutPage() {
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-white mb-8 leading-tight max-w-3xl">
               Molecular and AI-Enabled Solutions
             </h2>
-            <p className="text-white/80 font-body text-lg leading-relaxed mb-8 max-w-4xl">
+            <p className="text-white/90 font-body text-lg leading-relaxed mb-8 max-w-4xl">
               We innovate, develop, manufacture, and co-create <strong className="text-white">molecular and AI-enabled solutions</strong> for laboratories, researchers, healthcare systems, and industry partners worldwide.
             </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
@@ -115,11 +115,11 @@ export default function AboutPage() {
               ].map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <div className="w-2 h-2 rounded-full bg-emerald-glow mt-2.5 shrink-0" />
-                  <span className="text-white/80 font-body text-base">{item}</span>
+                  <span className="text-white/90 font-body text-base">{item}</span>
                 </div>
               ))}
             </div>
-            <p className="text-white/70 font-body text-lg leading-relaxed max-w-4xl border-l-2 border-emerald-glow pl-6">
+            <p className="text-white/85 font-body text-lg leading-relaxed max-w-4xl border-l-2 border-emerald-glow pl-6">
               We design solutions that are not only scientifically advanced, but <strong className="text-white">validated, traceable, and globally compliant</strong>.
             </p>
           </div>
