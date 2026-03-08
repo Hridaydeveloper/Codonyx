@@ -69,21 +69,46 @@ export default function RegisterDistributorPage() {
 
     setIsSubmitting(true);
     try {
+      let userId: string;
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: { emailRedirectTo: `${window.location.origin}/` },
       });
 
-      if (authError || !authData.user) {
-        toast({ title: "Registration failed", description: authError?.message || "Could not create account.", variant: "destructive" });
+      if (authError) {
+        if (authError.message?.includes("already registered") || (authError as any)?.code === "user_already_exists") {
+          const { data: fnData, error: fnError } = await supabase.functions.invoke("handle-existing-auth-user", {
+            body: { email, password },
+          });
+          if (fnError || !fnData?.user_id) {
+            let errorMsg = "This email is already registered. Please try signing in instead.";
+            if (fnError) {
+              try {
+                const bodyText = await (fnError as any)?.context?.json?.() ?? JSON.parse(await (fnError as any)?.context?.text?.());
+                if (bodyText?.error) errorMsg = bodyText.error;
+              } catch { /* use default */ }
+            }
+            toast({ title: "Registration failed", description: errorMsg, variant: "destructive" });
+            return;
+          }
+          userId = fnData.user_id;
+        } else {
+          toast({ title: "Registration failed", description: authError.message || "Could not create account.", variant: "destructive" });
+          return;
+        }
+      } else if (!authData.user) {
+        toast({ title: "Registration failed", description: "Could not create account.", variant: "destructive" });
         return;
+      } else {
+        userId = authData.user.id;
       }
 
       let uploadedAvatarUrl = null;
       if (avatarFile) {
         const fileExt = avatarFile.name.split(".").pop();
-        const filePath = `${authData.user.id}/avatar.${fileExt}`;
+        const filePath = `${userId}/avatar.${fileExt}`;
         const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, avatarFile, { upsert: true });
         if (!uploadError) {
           const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
@@ -94,7 +119,7 @@ export default function RegisterDistributorPage() {
       let verificationDocUrl = null;
       if (verificationDoc) {
         const fileExt = verificationDoc.name.split(".").pop();
-        const filePath = `${authData.user.id}/verification.${fileExt}`;
+        const filePath = `${userId}/verification.${fileExt}`;
         const { error: uploadError } = await supabase.storage.from("verification-documents").upload(filePath, verificationDoc, { upsert: true });
         if (!uploadError) {
           // Store the file path (not a public URL since bucket is private)
@@ -103,7 +128,7 @@ export default function RegisterDistributorPage() {
       }
 
       const { error: profileError } = await supabase.from("profiles").insert({
-        user_id: authData.user.id,
+        user_id: userId,
         full_name: fullName,
         email,
         contact_number: contactNumber || null,
