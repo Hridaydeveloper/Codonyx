@@ -250,10 +250,22 @@ export default function AuthPage() {
         const { data, error } = await supabase.functions.invoke("reset-password-otp", {
           body: { action: "verify_code", email: forgotEmail.trim().toLowerCase(), code: resetOtp },
         });
-        if (error || data?.error) {
+        let errorMsg = "";
+        if (error) {
+          try {
+            const bodyText = await (error as any)?.context?.json?.()
+              ?? JSON.parse(await (error as any)?.context?.text?.());
+            if (bodyText?.error) errorMsg = bodyText.error;
+          } catch {
+            errorMsg = "The verification code is incorrect. Please check and try again.";
+          }
+        } else if (data?.error) {
+          errorMsg = data.error;
+        }
+        if (errorMsg) {
           toast({
-            title: "Invalid code",
-            description: data?.error || error?.message || "The code is invalid or expired. Please try again.",
+            title: "Incorrect Code",
+            description: errorMsg,
             variant: "destructive",
           });
           setResetOtp("");
@@ -573,7 +585,7 @@ export default function AuthPage() {
             <DialogDescription>
               {resetStep === "email" && "Enter your email address and we'll send you a verification code."}
               {resetStep === "otp" && "Enter the 6-digit code sent to your email."}
-              {resetStep === "password" && "Set your new password."}
+              {resetStep === "password" && `Set your new password for ${forgotEmail}.`}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleForgotPassword} className="space-y-4 mt-4">
