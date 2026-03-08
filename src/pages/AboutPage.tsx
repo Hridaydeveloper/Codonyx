@@ -100,7 +100,7 @@ export default function AboutPage() {
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-white mb-8 leading-tight max-w-3xl">
               Molecular and AI-Enabled Solutions
             </h2>
-            <p className="text-white/80 font-body text-lg leading-relaxed mb-8 max-w-4xl">
+            <p className="text-white/90 font-body text-lg leading-relaxed mb-8 max-w-4xl">
               We innovate, develop, manufacture, and co-create <strong className="text-white">molecular and AI-enabled solutions</strong> for laboratories, researchers, healthcare systems, and industry partners worldwide.
             </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
