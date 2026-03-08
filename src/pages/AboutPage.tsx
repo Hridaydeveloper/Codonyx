@@ -87,8 +87,8 @@ export default function AboutPage() {
         {/* What We Do */}
         <section className="relative py-20 lg:py-28 overflow-hidden">
           <div className="absolute inset-0">
-            <img src={dnaHelixBg} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-            <div className="absolute inset-0 bg-navy/92" />
+            <img src={dnaHelixBg} alt="" className="w-full h-full object-cover animate-dna-drift" aria-hidden="true" />
+            <div className="absolute inset-0 bg-navy/80" />
           </div>
           <div
             ref={whatRef}
