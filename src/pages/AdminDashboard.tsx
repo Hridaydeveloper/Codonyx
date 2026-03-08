@@ -306,33 +306,33 @@ const AdminDashboard = () => {
         description: `Failed to ${approve ? "approve" : "reject"} user.`,
         variant: "destructive",
       });
-    } else {
-      // Send notification email
-      if (targetUser) {
-        try {
-          await supabase.functions.invoke("send-notification-email", {
-            body: {
-              type: approve ? "registration_approved" : "registration_rejected",
-              recipientEmail: targetUser.email,
-              recipientName: targetUser.full_name,
-              userType: targetUser.user_type,
-              loginUrl: window.location.origin + "/auth",
-            },
-          });
-        } catch (emailError) {
-          console.error("Error sending notification email:", emailError);
-        }
-      }
-
-      toast({
-        title: "Success",
-        description: `User has been ${approve ? "approved" : "rejected"}.`,
-      });
-      setPendingUsers(prev => prev.filter(u => u.id !== profileId));
-      fetchAllUsers();
-      setIsModalOpen(false);
-      setSelectedPendingUser(null);
+      setProcessingId(null);
+      return;
     }
+
+    // Send notification email in the background (non-blocking)
+    if (targetUser) {
+      supabase.functions.invoke("send-notification-email", {
+        body: {
+          type: approve ? "registration_approved" : "registration_rejected",
+          recipientEmail: targetUser.email,
+          recipientName: targetUser.full_name,
+          userType: targetUser.user_type,
+          loginUrl: window.location.origin + "/auth",
+        },
+      }).catch(emailError => {
+        console.error("Error sending notification email:", emailError);
+      });
+    }
+
+    toast({
+      title: "Success",
+      description: `User has been ${approve ? "approved" : "rejected"}.`,
+    });
+    setPendingUsers(prev => prev.filter(u => u.id !== profileId));
+    fetchAllUsers();
+    setIsModalOpen(false);
+    setSelectedPendingUser(null);
     setProcessingId(null);
   };
 
