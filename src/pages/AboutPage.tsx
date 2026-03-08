@@ -119,7 +119,7 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-            <p className="text-white/70 font-body text-lg leading-relaxed max-w-4xl border-l-2 border-emerald-glow pl-6">
+            <p className="text-white/85 font-body text-lg leading-relaxed max-w-4xl border-l-2 border-emerald-glow pl-6">
               We design solutions that are not only scientifically advanced, but <strong className="text-white">validated, traceable, and globally compliant</strong>.
             </p>
           </div>
