@@ -346,8 +346,8 @@ export default function DistributorDashboard() {
 
             {/* Deal Indicators */}
             {(() => {
-              const uniqueBidders = aggregateStats.unique_bidders;
-              const totalBidders = 34 + uniqueBidders;
+               const approvedDistributors = aggregateStats.approved_distributors;
+               const totalBidders = 34 + approvedDistributors;
               const totalSubscription = aggregateStats.total_subscription;
               const totalTarget = aggregateStats.total_target;
               const overCommitted = totalTarget > 0 ? Math.max(0, totalSubscription - totalTarget) : 0;
