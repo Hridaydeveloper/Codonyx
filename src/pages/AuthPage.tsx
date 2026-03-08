@@ -585,7 +585,7 @@ export default function AuthPage() {
             <DialogDescription>
               {resetStep === "email" && "Enter your email address and we'll send you a verification code."}
               {resetStep === "otp" && "Enter the 6-digit code sent to your email."}
-              {resetStep === "password" && "Set your new password."}
+              {resetStep === "password" && `Set your new password for ${forgotEmail}.`}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleForgotPassword} className="space-y-4 mt-4">
