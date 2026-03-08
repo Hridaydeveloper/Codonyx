@@ -147,6 +147,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     // For admin-only notification types, verify admin role server-side
     if (ADMIN_ONLY_TYPES.includes(data.type)) {
+      if (!userId) {
+        return new Response(JSON.stringify({ error: "Forbidden: Admin role required" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
       const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
       const { data: roleData } = await supabaseAdmin
         .from("user_roles")
