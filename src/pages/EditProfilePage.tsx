@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
+import { CustomFieldsSection } from "@/components/profile/CustomFieldsSection";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
