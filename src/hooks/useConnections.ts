@@ -93,7 +93,7 @@ export function useConnections(currentProfileId: string | null) {
     // Check if this was a withdrawn connection with active cooldown
     if (connection.withdrawn_at) {
       const withdrawnDate = new Date(connection.withdrawn_at).getTime();
-      const cooldownEnd = withdrawnDate + TWO_WEEKS_MS;
+      const cooldownEnd = withdrawnDate + THREE_WEEKS_MS;
       if (Date.now() < cooldownEnd) {
         return { 
           status: "none", 
