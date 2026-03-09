@@ -51,6 +51,7 @@ export function AdvisorCard({
   const remainingCount = mentoringTags.length - 2;
 
   return (
+    <>
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-divider bg-background">
       {/* Image Section */}
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
