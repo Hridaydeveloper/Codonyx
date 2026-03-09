@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Menu, X, LogOut, User, Shield, Users, FileText } from "lucide-react";
+import { Menu, X, LogOut, User, Shield, Users, FileText, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
