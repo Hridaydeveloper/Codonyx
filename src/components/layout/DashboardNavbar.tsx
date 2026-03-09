@@ -209,9 +209,10 @@ export function DashboardNavbar() {
             ))}
             <Link
               to="/edit-profile"
-              className="block text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-primary transition-colors py-2"
+              className="flex items-center gap-2 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-primary transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
+              <User className="h-4 w-4" />
               Edit Profile
             </Link>
             <Link
