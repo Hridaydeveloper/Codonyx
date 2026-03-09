@@ -5,7 +5,7 @@ import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarLightbox } from "@/components/ui/avatar-lightbox";
 import { ConnectButton } from "@/components/connections/ConnectButton";
 import { ConnectionsSection } from "@/components/connections/ConnectionsSection";
 import { ProfilePublications } from "@/components/publications/ProfilePublications";
@@ -183,12 +183,13 @@ export default function ProfileDetailPage() {
               <div className="px-8 pb-8">
                 {/* Avatar & Basic Info */}
                 <div className="flex flex-col md:flex-row gap-6 -mt-16">
-                  <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
-                    <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
-                    <AvatarFallback className="text-4xl bg-primary text-primary-foreground">
-                      {getInitials(profile.full_name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <AvatarLightbox
+                    src={profile.avatar_url}
+                    alt={profile.full_name}
+                    fallback={getInitials(profile.full_name)}
+                    className="h-32 w-32 border-4 border-background shadow-lg"
+                    fallbackClassName="text-4xl bg-primary text-primary-foreground"
+                  />
 
                   <div className="flex-1 pt-4 md:pt-16">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarLightbox } from "@/components/ui/avatar-lightbox";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface LaboratoryCardProps {
   id: string;
@@ -31,6 +34,7 @@ export function LaboratoryCard({
   linkedinUrl,
 }: LaboratoryCardProps) {
   const navigate = useNavigate();
+  const [photoOpen, setPhotoOpen] = useState(false);
 
   const getInitials = (name: string) => {
     return name
@@ -44,6 +48,7 @@ export function LaboratoryCard({
   const servicesList = services?.split(",").map(s => s.trim()).filter(Boolean).slice(0, 2) || [];
 
   return (
+    <>
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-divider bg-background">
       {/* Image Section */}
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
@@ -60,15 +65,21 @@ export function LaboratoryCard({
           <img
             src={avatarUrl}
             alt={fullName}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setPhotoOpen(true);
+            }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-            <Avatar className="h-20 w-20">
-              <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                {getInitials(fullName)}
-              </AvatarFallback>
-            </Avatar>
+            <AvatarLightbox
+              src={avatarUrl}
+              alt={fullName}
+              fallback={getInitials(fullName)}
+              className="h-20 w-20"
+              fallbackClassName="text-2xl bg-primary text-primary-foreground"
+            />
           </div>
         )}
       </div>
@@ -141,5 +152,16 @@ export function LaboratoryCard({
         </div>
       </CardContent>
     </Card>
+
+    {/* Photo Lightbox */}
+    {avatarUrl && (
+      <Dialog open={photoOpen} onOpenChange={setPhotoOpen}>
+        <DialogContent className="max-w-lg p-0 bg-transparent border-none shadow-none [&>button]:text-white [&>button]:bg-black/50 [&>button]:rounded-full [&>button]:p-1">
+          <VisuallyHidden><DialogTitle>{fullName}</DialogTitle></VisuallyHidden>
+          <img src={avatarUrl} alt={fullName} className="w-full h-auto rounded-xl object-contain max-h-[80vh]" />
+        </DialogContent>
+      </Dialog>
+    )}
+    </>
   );
 }

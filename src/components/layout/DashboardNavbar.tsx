@@ -130,7 +130,7 @@ export function DashboardNavbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <Link to={`/profile/${profile?.id}`} className="flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-accent rounded-md transition-colors">
+                <Link to={`/profile/${profile?.id}`} className="flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-muted rounded-md transition-colors">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name} />
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs">
