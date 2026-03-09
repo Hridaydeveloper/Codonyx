@@ -244,6 +244,21 @@ export default function EditProfilePage() {
         variant: "destructive",
       });
     } else {
+      // Save custom field values
+      if (profileId && Object.keys(customFieldValues).length > 0) {
+        const upserts = Object.entries(customFieldValues).map(([fieldId, value]) => ({
+          profile_id: profileId,
+          field_id: fieldId,
+          value: value || null,
+        }));
+
+        for (const upsert of upserts) {
+          await supabase
+            .from("custom_profile_values")
+            .upsert(upsert, { onConflict: "profile_id,field_id" });
+        }
+      }
+
       toast({
         title: "Success",
         description: "Your profile has been updated.",
