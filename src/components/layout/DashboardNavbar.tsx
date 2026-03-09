@@ -138,9 +138,9 @@ export function DashboardNavbar() {
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/edit-profile" className="cursor-pointer">
+                  <Link to={`/profile/${profile?.id}`} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
-                    Edit Profile
+                    View Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
