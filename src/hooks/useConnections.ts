@@ -128,7 +128,7 @@ export function useConnections(currentProfileId: string | null) {
       );
 
       if (existingConn?.withdrawn_at) {
-        const cooldownEnd = new Date(existingConn.withdrawn_at).getTime() + TWO_WEEKS_MS;
+        const cooldownEnd = new Date(existingConn.withdrawn_at).getTime() + THREE_WEEKS_MS;
         if (Date.now() < cooldownEnd) {
           const daysLeft = Math.ceil((cooldownEnd - Date.now()) / (1000 * 60 * 60 * 24));
           toast({
