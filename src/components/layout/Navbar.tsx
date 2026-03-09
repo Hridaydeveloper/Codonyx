@@ -169,10 +169,18 @@ export function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
-                  <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium">{profile.full_name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
-                  </div>
+                  <Link to="/dashboard" className="flex items-center gap-2 px-2 py-2 cursor-pointer hover:bg-muted rounded-md transition-colors">
+                    <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                        {getInitials(profile.full_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{profile.full_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
+                    </div>
+                  </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" className="cursor-pointer">
