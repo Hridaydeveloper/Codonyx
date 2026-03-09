@@ -509,6 +509,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="distributors" className="text-xs sm:text-sm">Distributors</TabsTrigger>
             <TabsTrigger value="deals" className="text-xs sm:text-sm">Deals</TabsTrigger>
             <TabsTrigger value="invites" className="text-xs sm:text-sm">Invite Link</TabsTrigger>
+            <TabsTrigger value="custom-fields" className="text-xs sm:text-sm">
+              <Settings2 className="h-3 w-3 mr-1" />Profile Fields
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
