@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Clock, Check, X, Loader2, MoreVertical, UserMinus } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
+import { toast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -99,13 +100,24 @@ export function ConnectButton({
     );
   }
 
+  const handleCooldownConnect = () => {
+    if (cooldownUntil && new Date(cooldownUntil) > new Date()) {
+      const daysLeft = Math.ceil((new Date(cooldownUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      toast({
+        title: "Cooldown Active",
+        description: `You can send a connection request again after ${daysLeft} day(s). Please wait for the 3-week cooldown period to end.`,
+        variant: "destructive",
+      });
+    }
+  };
+
   // Check cooldown (3 weeks)
   if (cooldownUntil && new Date(cooldownUntil) > new Date()) {
     const daysLeft = Math.ceil((new Date(cooldownUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     return (
-      <Button variant="outline" size={size} disabled className={`gap-2 text-muted-foreground ${className}`}>
-        <Clock className="w-4 h-4" />
-        Wait {daysLeft}d
+      <Button variant={variant} size={size} className={`gap-2 ${className}`} onClick={handleCooldownConnect}>
+        <UserPlus className="w-4 h-4" />
+        Connect
       </Button>
     );
   }
