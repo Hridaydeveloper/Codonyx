@@ -13,6 +13,8 @@ export function AIIntegrationSection() {
               <img
                 src={aiMolecularImage}
                 alt="Neural network visualization merging with DNA strand"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-[400px] lg:h-[480px] object-cover"
               />
             </div>
