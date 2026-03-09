@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
+import { CustomFieldsSection } from "@/components/profile/CustomFieldsSection";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
@@ -46,6 +47,8 @@ export default function EditProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>({});
 
   // Form state - common fields
   const [fullName, setFullName] = useState("");
@@ -89,6 +92,7 @@ export default function EditProfilePage() {
 
       if (profileData) {
         setProfile(profileData as Profile);
+        setProfileId(profileData.id);
         setFullName(profileData.full_name || "");
         setHeadline(profileData.headline || "");
         setBio(profileData.bio || "");
@@ -240,6 +244,21 @@ export default function EditProfilePage() {
         variant: "destructive",
       });
     } else {
+      // Save custom field values
+      if (profileId && Object.keys(customFieldValues).length > 0) {
+        const upserts = Object.entries(customFieldValues).map(([fieldId, value]) => ({
+          profile_id: profileId,
+          field_id: fieldId,
+          value: value || null,
+        }));
+
+        for (const upsert of upserts) {
+          await supabase
+            .from("custom_profile_values")
+            .upsert(upsert, { onConflict: "profile_id,field_id" });
+        }
+      }
+
       toast({
         title: "Success",
         description: "Your profile has been updated.",
@@ -547,6 +566,15 @@ export default function EditProfilePage() {
                       />
                     </div>
                   </>
+                )}
+
+                {/* Admin-defined Custom Fields */}
+                {profileId && profile?.user_type && (
+                  <CustomFieldsSection
+                    profileId={profileId}
+                    userType={profile.user_type}
+                    onValuesChange={setCustomFieldValues}
+                  />
                 )}
 
                 <div className="flex justify-end pt-4">

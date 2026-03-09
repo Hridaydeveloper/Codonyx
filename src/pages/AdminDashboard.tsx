@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Check, X, Building2, Phone, Mail, MapPin, Clock, Link2, Copy, CalendarIcon, Power, Eye } from "lucide-react";
+import { Check, X, Building2, Phone, Mail, MapPin, Clock, Link2, Copy, CalendarIcon, Power, Eye, Settings2 } from "lucide-react";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PendingUserDetailModal } from "@/components/admin/PendingUserDetailModal";
+import { CustomFieldsManager } from "@/components/admin/CustomFieldsManager";
 import { BackButton } from "@/components/layout/BackButton";
 
 interface PendingUser {
@@ -508,6 +509,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="distributors" className="text-xs sm:text-sm">Distributors</TabsTrigger>
             <TabsTrigger value="deals" className="text-xs sm:text-sm">Deals</TabsTrigger>
             <TabsTrigger value="invites" className="text-xs sm:text-sm">Invite Link</TabsTrigger>
+            <TabsTrigger value="custom-fields" className="text-xs sm:text-sm">
+              <Settings2 className="h-3 w-3 mr-1" />Profile Fields
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
@@ -1160,6 +1164,10 @@ const AdminDashboard = () => {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="custom-fields">
+            <CustomFieldsManager />
           </TabsContent>
         </Tabs>
 
