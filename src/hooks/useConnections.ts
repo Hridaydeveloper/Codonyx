@@ -28,7 +28,7 @@ interface Connection {
   };
 }
 
-const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+const THREE_WEEKS_MS = 21 * 24 * 60 * 60 * 1000;
 
 export function useConnections(currentProfileId: string | null) {
   const [connections, setConnections] = useState<Connection[]>([]);
