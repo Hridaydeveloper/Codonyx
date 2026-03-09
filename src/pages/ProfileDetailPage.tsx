@@ -434,6 +434,9 @@ export default function ProfileDetailPage() {
               </div>
             )}
 
+            {/* Admin-defined Custom Fields */}
+            <ProfileCustomFieldsDisplay profileId={profile.id} userType={profile.user_type} />
+
             {/* Publications Section */}
             <ProfilePublications profileId={profile.id} />
 
