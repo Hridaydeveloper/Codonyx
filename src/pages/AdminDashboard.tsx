@@ -1162,6 +1162,10 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="custom-fields">
+            <CustomFieldsManager />
+          </TabsContent>
         </Tabs>
 
         <PendingUserDetailModal
