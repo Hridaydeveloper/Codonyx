@@ -323,7 +323,7 @@ export function useConnections(currentProfileId: string | null) {
 
       toast({
         title: "Request Withdrawn",
-        description: "Your connection request has been withdrawn. You can resend after 2 weeks.",
+        description: "Connection has been disconnected. You can reconnect after 3 weeks.",
       });
       
       await fetchConnections();
