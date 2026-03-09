@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 
 // Lazy-loaded pages for code splitting
@@ -34,7 +35,16 @@ const RegisterDistributorPage = lazy(() => import("./pages/RegisterDistributorPa
 const DistributorDashboard = lazy(() => import("./pages/DistributorDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,      // 5 minutes before data is considered stale
+      gcTime: 10 * 60 * 1000,         // 10 minutes garbage collection
+      retry: 2,                        // Retry failed queries twice
+      refetchOnWindowFocus: false,     // Don't refetch on tab switch
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -43,46 +53,50 @@ const PageLoader = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/~oauth/*" element={<AuthPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/advisors" element={<AdvisorsPage />} />
-            <Route path="/laboratories" element={<LaboratoriesPage />} />
-            <Route path="/edit-profile" element={<EditProfilePage />} />
-            <Route path="/connections" element={<ConnectionsPage />} />
-            <Route path="/publications" element={<PublicationsPage />} />
-            <Route path="/profile/:id" element={<ProfileDetailPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/investments" element={<InvestmentsPage />} />
-            <Route path="/product" element={<ProductPage />} />
-            <Route path="/technology" element={<TechnologyPage />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms" element={<TermsConditionsPage />} />
-            <Route path="/become-advisor" element={<BecomeAdvisorPage />} />
-            <Route path="/register-laboratory" element={<RegisterLaboratoryPage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/register-distributor" element={<RegisterDistributorPage />} />
-            <Route path="/distributor-dashboard" element={<DistributorDashboard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          <Suspense fallback={<PageLoader />}>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/~oauth/*" element={<AuthPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/advisors" element={<AdvisorsPage />} />
+                <Route path="/laboratories" element={<LaboratoriesPage />} />
+                <Route path="/edit-profile" element={<EditProfilePage />} />
+                <Route path="/connections" element={<ConnectionsPage />} />
+                <Route path="/publications" element={<PublicationsPage />} />
+                <Route path="/profile/:id" element={<ProfileDetailPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/investments" element={<InvestmentsPage />} />
+                <Route path="/product" element={<ProductPage />} />
+                <Route path="/technology" element={<TechnologyPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms" element={<TermsConditionsPage />} />
+                <Route path="/become-advisor" element={<BecomeAdvisorPage />} />
+                <Route path="/register-laboratory" element={<RegisterLaboratoryPage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/register-distributor" element={<RegisterDistributorPage />} />
+                <Route path="/distributor-dashboard" element={<DistributorDashboard />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

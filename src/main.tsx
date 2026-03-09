@@ -1,6 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { initMonitoring } from "./lib/monitoring";
+
+// Initialize production error monitoring
+initMonitoring();
 
 // Only clear corrupted (unparseable) tokens — valid tokens must be preserved for session persistence
 const STORAGE_KEY = "sb-ismtjnkzgfsrcstlyops-auth-token";
