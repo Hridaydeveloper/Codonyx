@@ -32,7 +32,7 @@ export function CustomFieldsSection({ profileId, userType, onValuesChange }: Cus
       const { data: fieldsData } = await supabase
         .from("custom_profile_fields")
         .select("*")
-        .eq("applies_to", userType)
+        .eq("applies_to", userType as any)
         .order("display_order");
 
       const customFields = (fieldsData as CustomField[]) || [];
