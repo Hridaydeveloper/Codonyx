@@ -47,6 +47,8 @@ export default function EditProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>({});
 
   // Form state - common fields
   const [fullName, setFullName] = useState("");
