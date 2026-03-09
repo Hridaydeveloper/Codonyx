@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Clock, Check, X, Loader2, MoreVertical, UserMinus } from "lucide-react";
 import { useConnections } from "@/hooks/useConnections";
+import { toast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
