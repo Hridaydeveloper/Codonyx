@@ -568,6 +568,15 @@ export default function EditProfilePage() {
                   </>
                 )}
 
+                {/* Admin-defined Custom Fields */}
+                {profileId && profile?.user_type && (
+                  <CustomFieldsSection
+                    profileId={profileId}
+                    userType={profile.user_type}
+                    onValuesChange={setCustomFieldValues}
+                  />
+                )}
+
                 <div className="flex justify-end pt-4">
                   <Button
                     onClick={handleSave}
