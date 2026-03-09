@@ -23,7 +23,8 @@ import {
   Users,
   Calendar,
   Beaker,
-  Wrench
+  Wrench,
+  BookOpen
 } from "lucide-react";
 
 interface Profile {
