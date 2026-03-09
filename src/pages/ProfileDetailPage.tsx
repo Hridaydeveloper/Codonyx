@@ -38,7 +38,7 @@ interface Profile {
   organisation: string | null;
   contact_number: string | null;
   avatar_url: string | null;
-  user_type: "advisor" | "laboratory";
+  user_type: "advisor" | "laboratory" | "distributor";
   created_at: string;
   linkedin_url: string | null;
   education: string | null;
