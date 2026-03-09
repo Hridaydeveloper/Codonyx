@@ -28,16 +28,27 @@ interface UserProfile {
   approval_status: "pending" | "approved" | "rejected";
 }
 
+// Module-level cache so Navbar doesn't re-fetch on every page navigation
+let cachedProfile: UserProfile | null = null;
+let cachedUserId: string | null = null;
+
 export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(cachedProfile);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!cachedProfile);
   const [isLoading, setIsLoading] = useState(false);
-  const profileFetched = useRef(false);
+  const profileFetched = useRef(!!cachedProfile);
 
   const fetchProfile = useCallback(async (userId: string) => {
+    // Skip if already fetched for this user
+    if (cachedUserId === userId && cachedProfile) {
+      setProfile(cachedProfile);
+      setIsLoggedIn(true);
+      profileFetched.current = true;
+      return;
+    }
     if (profileFetched.current) return;
     profileFetched.current = true;
     try {
@@ -49,10 +60,15 @@ export function Navbar() {
 
       if (data?.approval_status === "approved") {
         const { full_name, email, avatar_url } = data;
-        setProfile({ full_name, email, avatar_url, approval_status: data.approval_status });
+        const p = { full_name, email, avatar_url, approval_status: data.approval_status };
+        cachedProfile = p;
+        cachedUserId = userId;
+        setProfile(p);
         setIsLoggedIn(true);
       } else {
         profileFetched.current = false;
+        cachedProfile = null;
+        cachedUserId = null;
         setProfile(null);
         setIsLoggedIn(false);
         await supabase.auth.signOut({ scope: "local" });
