@@ -239,6 +239,7 @@ const AdminDashboard = () => {
       deal_status: "published",
       created_by: user?.id,
       document_url: documentUrl,
+      min_bid_amount: newDealMinBid ? parseFloat(newDealMinBid) : null,
     } as any);
     if (error) {
       toast({ title: "Error", description: "Failed to create deal.", variant: "destructive" });
