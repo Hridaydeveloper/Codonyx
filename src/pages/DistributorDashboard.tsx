@@ -29,6 +29,7 @@ interface Deal {
   raised_amount: number;
   deal_status: string;
   created_at: string;
+  min_bid_amount: number | null;
 }
 
 interface Bid {
@@ -166,6 +167,16 @@ export default function DistributorDashboard() {
     const amount = parseFloat(bidAmount);
     if (isNaN(amount) || amount <= 0) {
       toast({ title: "Invalid amount", variant: "destructive" });
+      return;
+    }
+
+    const minBid = selectedDeal.min_bid_amount ? Number(selectedDeal.min_bid_amount) : 0;
+    if (minBid > 0 && amount < minBid) {
+      toast({
+        title: "Bid amount too low",
+        description: `Minimum bid for this deal is ₹${minBid.toLocaleString()}. You can't bid less than this amount.`,
+        variant: "destructive",
+      });
       return;
     }
 
@@ -527,6 +538,11 @@ export default function DistributorDashboard() {
             <DialogTitle>Place Bid on "{selectedDeal?.title}"</DialogTitle>
             <DialogDescription>
               Target: {selectedDeal && formatCurrency(selectedDeal.target_amount)}
+              {selectedDeal?.min_bid_amount && (
+                <span className="block mt-1 text-amber-600 font-medium">
+                  Minimum Bid: ₹{Number(selectedDeal.min_bid_amount).toLocaleString()}
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

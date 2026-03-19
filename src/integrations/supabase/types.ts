@@ -196,6 +196,7 @@ export type Database = {
           description: string | null
           document_url: string | null
           id: string
+          min_bid_amount: number | null
           raised_amount: number
           target_amount: number
           title: string
@@ -208,6 +209,7 @@ export type Database = {
           description?: string | null
           document_url?: string | null
           id?: string
+          min_bid_amount?: number | null
           raised_amount?: number
           target_amount?: number
           title: string
@@ -220,6 +222,7 @@ export type Database = {
           description?: string | null
           document_url?: string | null
           id?: string
+          min_bid_amount?: number | null
           raised_amount?: number
           target_amount?: number
           title?: string

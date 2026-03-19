@@ -91,6 +91,7 @@ const AdminDashboard = () => {
   const [newDealDescription, setNewDealDescription] = useState("");
   const [newDealTarget, setNewDealTarget] = useState("");
   const [newDealDocFile, setNewDealDocFile] = useState<File | null>(null);
+  const [newDealMinBid, setNewDealMinBid] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -238,6 +239,7 @@ const AdminDashboard = () => {
       deal_status: "published",
       created_by: user?.id,
       document_url: documentUrl,
+      min_bid_amount: newDealMinBid ? parseFloat(newDealMinBid) : null,
     } as any);
     if (error) {
       toast({ title: "Error", description: "Failed to create deal.", variant: "destructive" });
@@ -246,6 +248,7 @@ const AdminDashboard = () => {
       setNewDealTitle("");
       setNewDealDescription("");
       setNewDealTarget("");
+      setNewDealMinBid("");
       setNewDealDocFile(null);
       fetchDeals();
     }
@@ -908,6 +911,10 @@ const AdminDashboard = () => {
                     <div className="space-y-2">
                       <Label>Target Amount (₹) *</Label>
                       <Input type="number" placeholder="e.g. 10000000" value={newDealTarget} onChange={(e) => setNewDealTarget(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Minimum Bid Amount (₹)</Label>
+                      <Input type="number" placeholder="e.g. 500000" value={newDealMinBid} onChange={(e) => setNewDealMinBid(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label>Description</Label>
