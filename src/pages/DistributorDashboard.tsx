@@ -504,7 +504,7 @@ export default function DistributorDashboard() {
                               <Pencil className="w-3 h-3 mr-1" /> Edit
                             </Button>
                           )}
-                          {bid.bid_status === "pending" && bid.deal_status !== "closed" && (
+                          {bid.bid_status === "accepted" && bid.deal_status !== "closed" && (
                             <Button variant="outline" size="sm" onClick={() => handleWithdrawBid(bid.id)}>
                               Withdraw
                             </Button>
