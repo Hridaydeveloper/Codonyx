@@ -248,6 +248,7 @@ const AdminDashboard = () => {
       setNewDealTitle("");
       setNewDealDescription("");
       setNewDealTarget("");
+      setNewDealMinBid("");
       setNewDealDocFile(null);
       fetchDeals();
     }
