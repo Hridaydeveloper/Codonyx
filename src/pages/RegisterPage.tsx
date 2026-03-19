@@ -352,20 +352,24 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">Bio *</Label>
-              <Textarea id="bio" placeholder="Tell us about yourself..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[100px]" required />
+              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">Bio</Label>
+              <Textarea id="bio" placeholder="Tell us about yourself..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[100px]" />
             </div>
 
             {/* Advisor-specific fields */}
             <div className="space-y-4 pt-4 border-t border-divider">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Advisor Details</h3>
               <div className="space-y-2">
+                <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">Organisation / Company *</Label>
+                <Input id="organisation" placeholder="Enter your organisation" value={organisation} onChange={(e) => setOrganisation(e.target.value)} className="h-12" required />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="expertise" className="text-xs uppercase tracking-wider font-medium">Areas of Expertise *</Label>
-                <Input id="expertise" placeholder="e.g., Biotechnology, Drug Development, Clinical Trials" value={expertise} onChange={(e) => setExpertise(e.target.value)} className="h-12" required />
+                <TagInput id="expertise" value={expertise} onChange={setExpertise} placeholder="Add expertise (e.g., Biotechnology, Drug Development)" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">Experience / Background *</Label>
-                <Textarea id="experience" placeholder="Describe your professional experience..." value={experience} onChange={(e) => setExperience(e.target.value)} className="min-h-[80px]" required />
+                <TagInput id="experience" value={experience} onChange={setExperience} placeholder="Add experience (e.g., Clinical Trials, R&D Management)" />
               </div>
             </div>
 
