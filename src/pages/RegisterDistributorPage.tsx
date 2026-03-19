@@ -68,6 +68,10 @@ export default function RegisterDistributorPage() {
       toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
       return;
     }
+    if (!distributionCapacity.trim()) {
+      toast({ title: "Distribution Capacity required", description: "Please add at least one distribution capacity.", variant: "destructive" });
+      return;
+    }
 
     setIsSubmitting(true);
     try {

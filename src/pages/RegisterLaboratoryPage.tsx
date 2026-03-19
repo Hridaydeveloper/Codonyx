@@ -72,6 +72,14 @@ export default function RegisterLaboratoryPage() {
       toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
       return;
     }
+    if (!researchAreas.trim()) {
+      toast({ title: "Research Areas required", description: "Please add at least one research area.", variant: "destructive" });
+      return;
+    }
+    if (!services.trim()) {
+      toast({ title: "Services required", description: "Please add at least one service.", variant: "destructive" });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
