@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TagInput } from "@/components/ui/tag-input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, FlaskConical } from "lucide-react";
@@ -69,6 +70,14 @@ export default function RegisterLaboratoryPage() {
     }
     if (password.length < 6) {
       toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
+      return;
+    }
+    if (!researchAreas.trim()) {
+      toast({ title: "Research Areas required", description: "Please add at least one research area.", variant: "destructive" });
+      return;
+    }
+    if (!services.trim()) {
+      toast({ title: "Services required", description: "Please add at least one service.", variant: "destructive" });
       return;
     }
 
@@ -272,11 +281,11 @@ export default function RegisterLaboratoryPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="researchAreas" className="text-xs uppercase tracking-wider font-medium">Research Areas *</Label>
-                <Input id="researchAreas" placeholder="e.g., Oncology, Neuroscience, Immunology" value={researchAreas} onChange={(e) => setResearchAreas(e.target.value)} className="h-12" required />
+                <TagInput id="researchAreas" value={researchAreas} onChange={setResearchAreas} placeholder="Add research area (e.g., Oncology, Neuroscience)" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="services" className="text-xs uppercase tracking-wider font-medium">Services Offered *</Label>
-                <Textarea id="services" placeholder="Describe the services your laboratory offers..." value={services} onChange={(e) => setServices(e.target.value)} className="min-h-[80px]" required />
+                <TagInput id="services" value={services} onChange={setServices} placeholder="Add service (e.g., Gene Sequencing, Bioanalysis)" />
               </div>
             </div>
 

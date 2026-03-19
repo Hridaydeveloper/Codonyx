@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TagInput } from "@/components/ui/tag-input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ArrowRight, Target, MessageCircle, Handshake, CheckCircle, Loader2, XCircle, Eye, EyeOff, Upload, User } from "lucide-react";
@@ -72,13 +73,19 @@ export default function RegisterPage() {
       }
 
       try {
+        // Clear any stale auth session that might interfere with the query
+        await supabase.auth.signOut();
+
         const { data, error } = await supabase
           .from("invite_tokens")
           .select("id, is_active, expires_at, used_at")
           .eq("token", inviteToken)
           .maybeSingle();
 
-        if (error || !data) {
+        if (error) {
+          console.error("Token validation error:", error);
+          setIsTokenValid(false);
+        } else if (!data) {
           setIsTokenValid(false);
         } else if (!data.is_active || data.used_at || new Date(data.expires_at) < new Date()) {
           setIsTokenValid(false);
@@ -86,7 +93,8 @@ export default function RegisterPage() {
           setIsTokenValid(true);
           setTokenId(data.id);
         }
-      } catch {
+      } catch (err) {
+        console.error("Token validation exception:", err);
         setIsTokenValid(false);
       } finally {
         setIsValidatingToken(false);
@@ -127,6 +135,14 @@ export default function RegisterPage() {
     }
     if (password.length < 6) {
       toast({ title: "Password too short", description: "Password must be at least 6 characters.", variant: "destructive" });
+      return;
+    }
+    if (!expertise.trim()) {
+      toast({ title: "Areas of Expertise required", description: "Please add at least one area of expertise.", variant: "destructive" });
+      return;
+    }
+    if (!experience.trim()) {
+      toast({ title: "Experience / Background required", description: "Please add at least one experience entry.", variant: "destructive" });
       return;
     }
 
@@ -334,30 +350,29 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">Organisation / Company *</Label>
-              <Input id="organisation" placeholder="Enter your organisation" value={organisation} onChange={(e) => setOrganisation(e.target.value)} className="h-12" required />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">LinkedIn Profile *</Label>
               <Input id="linkedinUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-12" required />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">Bio *</Label>
-              <Textarea id="bio" placeholder="Tell us about yourself..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[100px]" required />
+              <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">Bio</Label>
+              <Textarea id="bio" placeholder="Tell us about yourself..." value={bio} onChange={(e) => setBio(e.target.value)} className="min-h-[100px]" />
             </div>
 
             {/* Advisor-specific fields */}
             <div className="space-y-4 pt-4 border-t border-divider">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Advisor Details</h3>
               <div className="space-y-2">
+                <Label htmlFor="organisation" className="text-xs uppercase tracking-wider font-medium">Organisation / Company *</Label>
+                <Input id="organisation" placeholder="Enter your organisation" value={organisation} onChange={(e) => setOrganisation(e.target.value)} className="h-12" required />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="expertise" className="text-xs uppercase tracking-wider font-medium">Areas of Expertise *</Label>
-                <Input id="expertise" placeholder="e.g., Biotechnology, Drug Development, Clinical Trials" value={expertise} onChange={(e) => setExpertise(e.target.value)} className="h-12" required />
+                <TagInput id="expertise" value={expertise} onChange={setExpertise} placeholder="Add expertise (e.g., Biotechnology, Drug Development)" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">Experience / Background *</Label>
-                <Textarea id="experience" placeholder="Describe your professional experience..." value={experience} onChange={(e) => setExperience(e.target.value)} className="min-h-[80px]" required />
+                <TagInput id="experience" value={experience} onChange={setExperience} placeholder="Add experience (e.g., Clinical Trials, R&D Management)" />
               </div>
             </div>
 
