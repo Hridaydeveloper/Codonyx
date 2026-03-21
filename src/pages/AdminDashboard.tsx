@@ -480,6 +480,46 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleDeactivateAccount = async (user: PendingUser) => {
+    setAccountActionLoading(true);
+    const newStatus = user.approval_status === "deactivated" ? "approved" : "deactivated";
+    const { error } = await supabase
+      .from("profiles")
+      .update({ approval_status: newStatus } as any)
+      .eq("id", user.id);
+
+    if (error) {
+      toast({ title: "Error", description: "Failed to update account status.", variant: "destructive" });
+    } else {
+      toast({ title: "Success", description: `Account ${newStatus === "deactivated" ? "deactivated" : "reactivated"} successfully.` });
+      fetchAllUsers();
+      fetchPendingUsers();
+    }
+    setAccountActionLoading(false);
+    setAccountAction(null);
+  };
+
+  const handleDeleteAccount = async (user: PendingUser) => {
+    setAccountActionLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-user-account", {
+        body: { profileId: user.id },
+      });
+
+      if (error) {
+        toast({ title: "Error", description: "Failed to delete account.", variant: "destructive" });
+      } else {
+        toast({ title: "Account Deleted", description: `${user.full_name}'s account has been permanently deleted.` });
+        fetchAllUsers();
+        fetchPendingUsers();
+      }
+    } catch {
+      toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" });
+    }
+    setAccountActionLoading(false);
+    setAccountAction(null);
+  };
+
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMM d, yyyy h:mm a");
   };
