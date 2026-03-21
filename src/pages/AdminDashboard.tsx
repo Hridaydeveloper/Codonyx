@@ -1307,6 +1307,68 @@ const AdminDashboard = () => {
           onReject={(userId, profileId) => handleApproval(userId, profileId, false)}
           isProcessing={processingId !== null}
         />
+
+        {/* Deactivate / Delete Confirmation Dialog */}
+        <AlertDialog open={!!accountAction} onOpenChange={(open) => !open && setAccountAction(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {accountAction?.type === "delete"
+                  ? "Permanently Delete Account"
+                  : accountAction?.user.approval_status === "deactivated"
+                    ? "Reactivate Account"
+                    : "Deactivate Account"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {accountAction?.type === "delete" ? (
+                  <>
+                    Are you really sure you want to <strong>permanently delete</strong> the account of{" "}
+                    <strong>{accountAction?.user.full_name}</strong> ({accountAction?.user.email})?
+                    <br /><br />
+                    This action <strong>cannot be undone</strong>. All data including profile, publications, connections, and bids will be permanently removed.
+                  </>
+                ) : accountAction?.user.approval_status === "deactivated" ? (
+                  <>
+                    Are you sure you want to <strong>reactivate</strong> the account of{" "}
+                    <strong>{accountAction?.user.full_name}</strong> ({accountAction?.user.email})?
+                    <br /><br />
+                    The user will be able to log in again after reactivation.
+                  </>
+                ) : (
+                  <>
+                    Are you really sure you want to <strong>deactivate</strong> the account of{" "}
+                    <strong>{accountAction?.user.full_name}</strong> ({accountAction?.user.email})?
+                    <br /><br />
+                    The user will not be able to log in while deactivated. You can reactivate the account later.
+                  </>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={accountActionLoading}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={accountActionLoading}
+                className={accountAction?.type === "delete" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+                onClick={() => {
+                  if (!accountAction) return;
+                  if (accountAction.type === "delete") {
+                    handleDeleteAccount(accountAction.user);
+                  } else {
+                    handleDeactivateAccount(accountAction.user);
+                  }
+                }}
+              >
+                {accountActionLoading
+                  ? "Processing..."
+                  : accountAction?.type === "delete"
+                    ? "Yes, Delete Permanently"
+                    : accountAction?.user.approval_status === "deactivated"
+                      ? "Yes, Reactivate"
+                      : "Yes, Deactivate"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
       <Footer />
     </div>
