@@ -12,7 +12,7 @@ interface Profile {
   email: string;
   user_type: "advisor" | "laboratory" | "distributor";
   organisation: string | null;
-  approval_status: "pending" | "approved" | "rejected";
+  approval_status: "pending" | "approved" | "rejected" | "deactivated";
 }
 export default function DashboardPage() {
   const navigate = useNavigate();

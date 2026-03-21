@@ -48,7 +48,7 @@ interface Profile {
   full_name: string;
   organisation: string | null;
   user_type: "advisor" | "laboratory" | "distributor";
-  approval_status: "approved" | "pending" | "rejected";
+  approval_status: "approved" | "pending" | "rejected" | "deactivated";
 }
 
 interface AggregateStats {
