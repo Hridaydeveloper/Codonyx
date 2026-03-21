@@ -21,6 +21,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PendingUserDetailModal } from "@/components/admin/PendingUserDetailModal";
 import { CustomFieldsManager } from "@/components/admin/CustomFieldsManager";
 import { BackButton } from "@/components/layout/BackButton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface PendingUser {
   id: string;
