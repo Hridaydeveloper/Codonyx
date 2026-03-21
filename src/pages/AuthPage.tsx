@@ -70,27 +70,22 @@ export default function AuthPage() {
     showAccountNotFoundToast(isDeactivated);
   };
 
-  const isSessionApproved = async (userId: string) => {
-    const { data: isApproved, error } = await supabase.rpc("is_user_approved", {
-      _user_id: userId,
-    });
+  const isSessionApproved = async (userId: string): Promise<{ approved: boolean; deactivated: boolean }> => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("approval_status")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-    if (error) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("approval_status")
-        .eq("user_id", userId)
-        .maybeSingle();
-      return profile?.approval_status === "approved";
-    }
-
-    return Boolean(isApproved);
+    if (!profile) return { approved: false, deactivated: false };
+    if (profile.approval_status === "deactivated") return { approved: false, deactivated: true };
+    return { approved: profile.approval_status === "approved", deactivated: false };
   };
 
   const validateApprovedSession = async (userId: string) => {
-    const approved = await isSessionApproved(userId);
+    const { approved, deactivated } = await isSessionApproved(userId);
     if (!approved) {
-      await signOutUnauthorized();
+      await signOutUnauthorized(deactivated);
       return false;
     }
     return true;
