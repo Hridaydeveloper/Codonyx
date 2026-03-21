@@ -102,6 +102,8 @@ const AdminDashboard = () => {
   const [newDealTarget, setNewDealTarget] = useState("");
   const [newDealDocFile, setNewDealDocFile] = useState<File | null>(null);
   const [newDealMinBid, setNewDealMinBid] = useState("");
+  const [accountAction, setAccountAction] = useState<{ user: PendingUser; type: "deactivate" | "delete" } | null>(null);
+  const [accountActionLoading, setAccountActionLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
