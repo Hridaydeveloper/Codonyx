@@ -61,13 +61,13 @@ export default function AuthPage() {
     });
   };
 
-  const signOutUnauthorized = async () => {
+  const signOutUnauthorized = async (isDeactivated = false) => {
     try {
       await supabase.auth.signOut();
     } catch {
       await supabase.auth.signOut({ scope: "local" });
     }
-    showAccountNotFoundToast();
+    showAccountNotFoundToast(isDeactivated);
   };
 
   const isSessionApproved = async (userId: string) => {
