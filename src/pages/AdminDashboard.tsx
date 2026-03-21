@@ -716,12 +716,35 @@ const AdminDashboard = () => {
                           <TableCell>
                             <Badge variant={
                               advisor.approval_status === "approved" ? "default" :
-                              advisor.approval_status === "pending" ? "secondary" : "destructive"
+                              advisor.approval_status === "pending" ? "secondary" :
+                              advisor.approval_status === "deactivated" ? "outline" : "destructive"
                             } className="capitalize">
                               {advisor.approval_status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground">{format(new Date(advisor.created_at), "MMM d, yyyy")}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                title={advisor.approval_status === "deactivated" ? "Reactivate" : "Deactivate"}
+                                onClick={() => setAccountAction({ user: advisor, type: "deactivate" })}
+                              >
+                                <Ban className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                title="Delete permanently"
+                                onClick={() => setAccountAction({ user: advisor, type: "delete" })}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
