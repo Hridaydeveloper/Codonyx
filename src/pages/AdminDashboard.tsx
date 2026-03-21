@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Check, X, Building2, Phone, Mail, MapPin, Clock, Link2, Copy, CalendarIcon, Power, Eye, Settings2 } from "lucide-react";
+import { Check, X, Building2, Phone, Mail, MapPin, Clock, Link2, Copy, CalendarIcon, Power, Eye, Settings2, Trash2, Ban } from "lucide-react";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +21,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PendingUserDetailModal } from "@/components/admin/PendingUserDetailModal";
 import { CustomFieldsManager } from "@/components/admin/CustomFieldsManager";
 import { BackButton } from "@/components/layout/BackButton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface PendingUser {
   id: string;
@@ -34,7 +44,7 @@ interface PendingUser {
   location: string | null;
   headline: string | null;
   bio: string | null;
-  approval_status: "pending" | "approved" | "rejected";
+  approval_status: "pending" | "approved" | "rejected" | "deactivated";
   avatar_url: string | null;
   company_type: string | null;
   linkedin_url: string | null;
@@ -92,6 +102,8 @@ const AdminDashboard = () => {
   const [newDealTarget, setNewDealTarget] = useState("");
   const [newDealDocFile, setNewDealDocFile] = useState<File | null>(null);
   const [newDealMinBid, setNewDealMinBid] = useState("");
+  const [accountAction, setAccountAction] = useState<{ user: PendingUser; type: "deactivate" | "delete" } | null>(null);
+  const [accountActionLoading, setAccountActionLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -468,6 +480,46 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleDeactivateAccount = async (user: PendingUser) => {
+    setAccountActionLoading(true);
+    const newStatus = user.approval_status === "deactivated" ? "approved" : "deactivated";
+    const { error } = await supabase
+      .from("profiles")
+      .update({ approval_status: newStatus } as any)
+      .eq("id", user.id);
+
+    if (error) {
+      toast({ title: "Error", description: "Failed to update account status.", variant: "destructive" });
+    } else {
+      toast({ title: "Success", description: `Account ${newStatus === "deactivated" ? "deactivated" : "reactivated"} successfully.` });
+      fetchAllUsers();
+      fetchPendingUsers();
+    }
+    setAccountActionLoading(false);
+    setAccountAction(null);
+  };
+
+  const handleDeleteAccount = async (user: PendingUser) => {
+    setAccountActionLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-user-account", {
+        body: { profileId: user.id },
+      });
+
+      if (error) {
+        toast({ title: "Error", description: "Failed to delete account.", variant: "destructive" });
+      } else {
+        toast({ title: "Account Deleted", description: `${user.full_name}'s account has been permanently deleted.` });
+        fetchAllUsers();
+        fetchPendingUsers();
+      }
+    } catch {
+      toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" });
+    }
+    setAccountActionLoading(false);
+    setAccountAction(null);
+  };
+
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMM d, yyyy h:mm a");
   };
@@ -623,6 +675,7 @@ const AdminDashboard = () => {
                       <SelectItem value="approved">Approved</SelectItem>
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="rejected">Rejected</SelectItem>
+                      <SelectItem value="deactivated">Deactivated</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -640,6 +693,7 @@ const AdminDashboard = () => {
                         <TableHead>Location</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Joined</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -662,12 +716,35 @@ const AdminDashboard = () => {
                           <TableCell>
                             <Badge variant={
                               advisor.approval_status === "approved" ? "default" :
-                              advisor.approval_status === "pending" ? "secondary" : "destructive"
+                              advisor.approval_status === "pending" ? "secondary" :
+                              advisor.approval_status === "deactivated" ? "outline" : "destructive"
                             } className="capitalize">
                               {advisor.approval_status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground">{format(new Date(advisor.created_at), "MMM d, yyyy")}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                title={advisor.approval_status === "deactivated" ? "Reactivate" : "Deactivate"}
+                                onClick={() => setAccountAction({ user: advisor, type: "deactivate" })}
+                              >
+                                <Ban className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                title="Delete permanently"
+                                onClick={() => setAccountAction({ user: advisor, type: "delete" })}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -695,6 +772,7 @@ const AdminDashboard = () => {
                       <SelectItem value="approved">Approved</SelectItem>
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="rejected">Rejected</SelectItem>
+                      <SelectItem value="deactivated">Deactivated</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -712,6 +790,7 @@ const AdminDashboard = () => {
                         <TableHead>Location</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Joined</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -734,12 +813,35 @@ const AdminDashboard = () => {
                           <TableCell>
                             <Badge variant={
                               lab.approval_status === "approved" ? "default" :
-                              lab.approval_status === "pending" ? "secondary" : "destructive"
+                              lab.approval_status === "pending" ? "secondary" :
+                              lab.approval_status === "deactivated" ? "outline" : "destructive"
                             } className="capitalize">
                               {lab.approval_status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground">{format(new Date(lab.created_at), "MMM d, yyyy")}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                title={lab.approval_status === "deactivated" ? "Reactivate" : "Deactivate"}
+                                onClick={() => setAccountAction({ user: lab, type: "deactivate" })}
+                              >
+                                <Ban className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                title="Delete permanently"
+                                onClick={() => setAccountAction({ user: lab, type: "delete" })}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -767,6 +869,7 @@ const AdminDashboard = () => {
                       <SelectItem value="approved">Approved</SelectItem>
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="rejected">Rejected</SelectItem>
+                      <SelectItem value="deactivated">Deactivated</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -786,6 +889,7 @@ const AdminDashboard = () => {
                         <TableHead>Region</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Joined</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -808,12 +912,35 @@ const AdminDashboard = () => {
                           <TableCell>
                             <Badge variant={
                               dist.approval_status === "approved" ? "default" :
-                              dist.approval_status === "pending" ? "secondary" : "destructive"
+                              dist.approval_status === "pending" ? "secondary" :
+                              dist.approval_status === "deactivated" ? "outline" : "destructive"
                             } className="capitalize">
                               {dist.approval_status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground">{format(new Date(dist.created_at), "MMM d, yyyy")}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                title={dist.approval_status === "deactivated" ? "Reactivate" : "Deactivate"}
+                                onClick={() => setAccountAction({ user: dist, type: "deactivate" })}
+                              >
+                                <Ban className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                title="Delete permanently"
+                                onClick={() => setAccountAction({ user: dist, type: "delete" })}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -1180,6 +1307,68 @@ const AdminDashboard = () => {
           onReject={(userId, profileId) => handleApproval(userId, profileId, false)}
           isProcessing={processingId !== null}
         />
+
+        {/* Deactivate / Delete Confirmation Dialog */}
+        <AlertDialog open={!!accountAction} onOpenChange={(open) => !open && setAccountAction(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {accountAction?.type === "delete"
+                  ? "Permanently Delete Account"
+                  : accountAction?.user.approval_status === "deactivated"
+                    ? "Reactivate Account"
+                    : "Deactivate Account"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {accountAction?.type === "delete" ? (
+                  <>
+                    Are you really sure you want to <strong>permanently delete</strong> the account of{" "}
+                    <strong>{accountAction?.user.full_name}</strong> ({accountAction?.user.email})?
+                    <br /><br />
+                    This action <strong>cannot be undone</strong>. All data including profile, publications, connections, and bids will be permanently removed.
+                  </>
+                ) : accountAction?.user.approval_status === "deactivated" ? (
+                  <>
+                    Are you sure you want to <strong>reactivate</strong> the account of{" "}
+                    <strong>{accountAction?.user.full_name}</strong> ({accountAction?.user.email})?
+                    <br /><br />
+                    The user will be able to log in again after reactivation.
+                  </>
+                ) : (
+                  <>
+                    Are you really sure you want to <strong>deactivate</strong> the account of{" "}
+                    <strong>{accountAction?.user.full_name}</strong> ({accountAction?.user.email})?
+                    <br /><br />
+                    The user will not be able to log in while deactivated. You can reactivate the account later.
+                  </>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={accountActionLoading}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={accountActionLoading}
+                className={accountAction?.type === "delete" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+                onClick={() => {
+                  if (!accountAction) return;
+                  if (accountAction.type === "delete") {
+                    handleDeleteAccount(accountAction.user);
+                  } else {
+                    handleDeactivateAccount(accountAction.user);
+                  }
+                }}
+              >
+                {accountActionLoading
+                  ? "Processing..."
+                  : accountAction?.type === "delete"
+                    ? "Yes, Delete Permanently"
+                    : accountAction?.user.approval_status === "deactivated"
+                      ? "Yes, Reactivate"
+                      : "Yes, Deactivate"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
       <Footer />
     </div>
