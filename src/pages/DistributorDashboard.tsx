@@ -262,11 +262,11 @@ export default function DistributorDashboard() {
 
   const getBidDisplayStatus = (bid: Bid) => {
     if (bid.deal_status === "closed") {
-      if (bid.bid_status === "accepted") return "Accepted · Deal Closed";
+      if (bid.bid_status === "accepted") return "Submitted · Deal Closed";
       if (bid.bid_status === "rejected") return "Rejected · Deal Closed";
-      return `${bid.bid_status} · Deal Closed`;
+      return `${bid.bid_status === "accepted" ? "Submitted" : bid.bid_status} · Deal Closed`;
     }
-    return bid.bid_status;
+    return bid.bid_status === "accepted" ? "Submitted" : bid.bid_status;
   };
 
   const canEditBid = (bid: Bid) => {
@@ -338,7 +338,7 @@ export default function DistributorDashboard() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-foreground">{acceptedBids}</p>
-                    <p className="text-sm text-muted-foreground">Accepted Bids</p>
+                    <p className="text-sm text-muted-foreground">Submitted Bids</p>
                   </div>
                 </CardContent>
               </Card>
@@ -471,7 +471,7 @@ export default function DistributorDashboard() {
                               {existingBid ? (
                                 <p className="text-sm text-muted-foreground">
                                   You've bid <span className="font-semibold text-foreground">{formatCurrency(existingBid.bid_amount)}</span>
-                                  {" "}<Badge className={getStatusColor(existingBid.bid_status)}>{existingBid.bid_status}</Badge>
+                                  {" "}<Badge className={getStatusColor(existingBid.bid_status)}>{existingBid.bid_status === "accepted" ? "Submitted" : existingBid.bid_status}</Badge>
                                 </p>
                               ) : (
                                 <Button className="w-full" onClick={() => setSelectedDeal(deal)}>
