@@ -262,11 +262,11 @@ export default function DistributorDashboard() {
 
   const getBidDisplayStatus = (bid: Bid) => {
     if (bid.deal_status === "closed") {
-      if (bid.bid_status === "accepted") return "Accepted · Deal Closed";
+      if (bid.bid_status === "accepted") return "Submitted · Deal Closed";
       if (bid.bid_status === "rejected") return "Rejected · Deal Closed";
-      return `${bid.bid_status} · Deal Closed`;
+      return `${bid.bid_status === "accepted" ? "Submitted" : bid.bid_status} · Deal Closed`;
     }
-    return bid.bid_status;
+    return bid.bid_status === "accepted" ? "Submitted" : bid.bid_status;
   };
 
   const canEditBid = (bid: Bid) => {
