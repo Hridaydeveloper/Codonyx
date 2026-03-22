@@ -368,7 +368,7 @@ export default function RegisterPage() {
                 <TagInput id="expertise" value={expertise} onChange={setExpertise} placeholder="Add expertise (e.g., Biotechnology, Drug Development)" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">Experience / Background *</Label>
+                <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">Experience / Background</Label>
                 <TagInput id="experience" value={experience} onChange={setExperience} placeholder="Add experience (e.g., Clinical Trials, R&D Management)" />
               </div>
             </div>
