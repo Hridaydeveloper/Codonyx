@@ -548,7 +548,7 @@ export default function AuthPage() {
             {isGoogleLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <img src={googleIcon} alt="Google" className="w-5 h-5" />
+              <img src={googleIcon} alt="Google" className="w-5 h-5" fetchPriority="high" decoding="sync" />
             )}
             Continue with Google
           </Button>
