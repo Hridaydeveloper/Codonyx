@@ -350,8 +350,8 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">LinkedIn Profile *</Label>
-              <Input id="linkedinUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-12" required />
+              <Label htmlFor="linkedinUrl" className="text-xs uppercase tracking-wider font-medium">LinkedIn Profile</Label>
+              <Input id="linkedinUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="h-12" />
             </div>
 
             <div className="space-y-2">
