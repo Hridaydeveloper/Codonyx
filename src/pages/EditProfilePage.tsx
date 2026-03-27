@@ -125,8 +125,8 @@ export default function EditProfilePage() {
     checkAuthAndLoadProfile();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_OUT" || !session) {
+      (event) => {
+        if (event === "SIGNED_OUT") {
           navigate("/auth");
         }
       }
