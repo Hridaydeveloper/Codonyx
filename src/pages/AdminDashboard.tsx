@@ -1190,8 +1190,8 @@ const AdminDashboard = () => {
                                   {bid.bid_status === "accepted" ? "Submitted" : bid.bid_status}
                                 </Badge>
                               </TableCell>
-                              <TableCell className="text-muted-foreground text-xs font-mono">{format(new Date(bid.created_at), "MMM d, yyyy HH:mm:ss.SSS")}</TableCell>
-                              <TableCell>
+                              <TableCell className="text-muted-foreground text-xs font-mono whitespace-nowrap">{format(new Date(bid.created_at), "MMM d, yyyy HH:mm:ss.SSS")}</TableCell>
+                              <TableCell className="whitespace-nowrap">
                                 <span className="text-xs text-muted-foreground">Auto-submitted</span>
                               </TableCell>
                             </TableRow>
@@ -1199,6 +1199,7 @@ const AdminDashboard = () => {
                         })}
                       </TableBody>
                     </Table>
+                    </div>
                   )}
                 </CardContent>
               </Card>
