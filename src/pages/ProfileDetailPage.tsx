@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AvatarLightbox } from "@/components/ui/avatar-lightbox";
 import { ConnectButton } from "@/components/connections/ConnectButton";
+import { ConnectionsSection } from "@/components/connections/ConnectionsSection";
+import { ProfilePublications } from "@/components/publications/ProfilePublications";
+import { ProfileCustomFieldsDisplay } from "@/components/profile/ProfileCustomFieldsDisplay";
 import { ConnectionsSection } from "@/components/connections/ConnectionsSection";
 import { ProfilePublications } from "@/components/publications/ProfilePublications";
 import { ProfileCustomFieldsDisplay } from "@/components/profile/ProfileCustomFieldsDisplay";
