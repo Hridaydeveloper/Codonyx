@@ -579,6 +579,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="custom-fields" className="text-xs sm:text-sm">
               <Settings2 className="h-3 w-3 mr-1" />Profile Fields
             </TabsTrigger>
+            <TabsTrigger value="keyword-suggestions" className="text-xs sm:text-sm">
+              <Settings2 className="h-3 w-3 mr-1" />Keywords
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
