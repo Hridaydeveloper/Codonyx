@@ -84,6 +84,41 @@ export function CustomFieldsManager() {
     setIsRequired(false);
     setPlaceholder("");
     setEditingField(null);
+    setTagSuggestions([]);
+    setNewSuggestion("");
+  };
+
+  const fetchTagSuggestions = async (name: string) => {
+    if (!name) { setTagSuggestions([]); return; }
+    const { data } = await supabase
+      .from("keyword_suggestions" as any)
+      .select("id, keyword")
+      .eq("field_name", name)
+      .order("keyword");
+    setTagSuggestions((data as any[]) || []);
+  };
+
+  const addTagSuggestion = async () => {
+    const kw = newSuggestion.trim();
+    if (!kw || !fieldName.trim()) return;
+    if (tagSuggestions.some(s => s.keyword.toLowerCase() === kw.toLowerCase())) {
+      toast({ title: "Duplicate", description: "This suggestion already exists.", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase
+      .from("keyword_suggestions" as any)
+      .insert({ field_name: fieldName.trim(), keyword: kw });
+    if (error) {
+      toast({ title: "Error", description: "Failed to add suggestion.", variant: "destructive" });
+    } else {
+      setNewSuggestion("");
+      fetchTagSuggestions(fieldName.trim());
+    }
+  };
+
+  const removeTagSuggestion = async (id: string) => {
+    await supabase.from("keyword_suggestions" as any).delete().eq("id", id);
+    fetchTagSuggestions(fieldName.trim());
   };
 
   const openCreateDialog = () => {
