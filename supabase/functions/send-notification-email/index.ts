@@ -68,11 +68,12 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
       };
     case "registration_approved":
       return {
-        subject: `Your Codonyx registration has been approved! 🎉`,
-        html: wrapper("Registration Approved! ✅", "Welcome to the Codonyx network",
+        subject: `Your Codonyx account has been verified! 🎉`,
+        html: wrapper("Account Verified! ✅", "Welcome to the Codonyx network",
           `<p style="color:#475569;font-size:16px;line-height:1.6;margin:0 0 24px;">Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,</p>
-          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">Your registration as a <strong style="color:#059669;">${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong> on Codonyx has been approved.</p>
-          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">You can now sign in and start connecting with professionals.</p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">Your account has been <strong style="color:#059669;">verified successfully</strong>. You can now sign in using the login credentials you set during registration.</p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">Your role: <strong style="color:#059669;">${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong></p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">Start connecting with professionals and explore the platform.</p>
           <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center"><a href="${baseUrl}" style="display:inline-block;background:linear-gradient(135deg,#059669 0%,#047857 100%);color:#ffffff;text-decoration:none;padding:16px 40px;border-radius:10px;font-size:16px;font-weight:600;">Sign In to Codonyx</a></td></tr></table>`),
       };
     case "registration_rejected":
@@ -81,7 +82,8 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
         html: wrapper("Registration Update", "An update on your Codonyx account",
           `<p style="color:#475569;font-size:16px;line-height:1.6;margin:0 0 24px;">Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,</p>
           <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">We regret to inform you that your registration as a <strong>${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong> on Codonyx has not been approved at this time.</p>
-          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">If you believe this is an error, please contact us at <a href="mailto:info@codonyx.org" style="color:#059669;text-decoration:none;font-weight:500;">info@codonyx.org</a>.</p>`),
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">This could be due to incomplete information or verification requirements. If you believe this is an error or would like to reapply, please contact us.</p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">Please reach out at <a href="mailto:info@codonyx.org" style="color:#059669;text-decoration:none;font-weight:500;">info@codonyx.org</a> for any questions.</p>`),
       };
     case "registration_submitted":
       return {

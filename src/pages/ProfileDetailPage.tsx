@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
@@ -25,7 +25,8 @@ import {
   Calendar,
   Beaker,
   Wrench,
-  BookOpen
+  BookOpen,
+  Pencil
 } from "lucide-react";
 
 interface Profile {
@@ -221,6 +222,20 @@ export default function ProfileDetailPage() {
                       </div>
 
                       <div className="flex flex-wrap gap-2">
+                        {/* Edit Profile Button - only show on own profile */}
+                        {isOwnProfile && (
+                          <Button
+                            variant="outline"
+                            asChild
+                            className="gap-2"
+                          >
+                            <Link to="/edit-profile">
+                              <Pencil className="h-4 w-4" />
+                              Edit Profile
+                            </Link>
+                          </Button>
+                        )}
+
                         {/* Connect Button - only show if not own profile */}
                         {!isOwnProfile && currentUserProfile && (
                           <ConnectButton
@@ -246,10 +261,10 @@ export default function ProfileDetailPage() {
                 </div>
 
                 {/* Contact Info */}
-                <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-divider">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    {profile.email}
+                <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-divider overflow-hidden">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
+                    <Mail className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{profile.email}</span>
                   </div>
                   {profile.contact_number && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

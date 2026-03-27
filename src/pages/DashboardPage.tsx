@@ -57,8 +57,8 @@ export default function DashboardPage() {
       data: {
         subscription
       }
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT" || !session) {
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
         navigate("/auth");
       }
     });

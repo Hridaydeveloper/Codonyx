@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageCropper } from "@/components/ui/image-cropper";
 import { format } from "date-fns";
 
 interface Profile {
@@ -49,6 +50,9 @@ export default function EditProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>({});
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   // Form state - common fields
   const [fullName, setFullName] = useState("");
@@ -121,8 +125,8 @@ export default function EditProfilePage() {
     checkAuthAndLoadProfile();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_OUT" || !session) {
+      (event) => {
+        if (event === "SIGNED_OUT") {
           navigate("/auth");
         }
       }
@@ -131,36 +135,39 @@ export default function EditProfilePage() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload an image file.",
-        variant: "destructive",
-      });
+      toast({ title: "Invalid file type", description: "Please upload an image file.", variant: "destructive" });
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "File too large",
-        description: "Please upload an image smaller than 5MB.",
-        variant: "destructive",
-      });
+      toast({ title: "File too large", description: "Please upload an image smaller than 5MB.", variant: "destructive" });
       return;
     }
 
-    setIsUploading(true);
+    setPendingFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRawImageSrc(reader.result as string);
+      setCropperOpen(true);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
+  const handleCroppedUpload = async (croppedBlob: Blob) => {
+    setIsUploading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${session.user.id}/avatar.${fileExt}`;
+      const fileName = `${session.user.id}/avatar.jpg`;
+      const file = new File([croppedBlob], "avatar.jpg", { type: "image/jpeg" });
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -180,19 +187,14 @@ export default function EditProfilePage() {
         .update({ avatar_url: urlWithCacheBuster })
         .eq("user_id", session.user.id);
 
-      toast({
-        title: "Success",
-        description: "Profile photo uploaded successfully.",
-      });
+      toast({ title: "Success", description: "Profile photo uploaded successfully." });
     } catch (error) {
       console.error("Upload error:", error);
-      toast({
-        title: "Upload failed",
-        description: "Failed to upload profile photo. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Upload failed", description: "Failed to upload profile photo. Please try again.", variant: "destructive" });
     } finally {
       setIsUploading(false);
+      setPendingFile(null);
+      setRawImageSrc(null);
     }
   };
 
@@ -331,7 +333,7 @@ export default function EditProfilePage() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={handleAvatarUpload}
+                    onChange={handleAvatarSelect}
                   />
                   <Button
                     size="sm"
@@ -348,7 +350,7 @@ export default function EditProfilePage() {
                   </Button>
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{profile?.email}</p>
+                  <p className="font-medium text-foreground truncate max-w-[200px] sm:max-w-none" title={profile?.email}>{profile?.email}</p>
                   <p className="text-sm text-muted-foreground capitalize mb-2">
                     {profile?.user_type}
                   </p>
@@ -617,6 +619,18 @@ export default function EditProfilePage() {
           </div>
         </div>
       </main>
+
+      {/* Image Cropper */}
+      {rawImageSrc && (
+        <ImageCropper
+          imageSrc={rawImageSrc}
+          open={cropperOpen}
+          onClose={() => { setCropperOpen(false); setRawImageSrc(null); setPendingFile(null); }}
+          onCropComplete={handleCroppedUpload}
+          aspect={1}
+          cropShape="round"
+        />
+      )}
 
       <Footer />
     </div>
