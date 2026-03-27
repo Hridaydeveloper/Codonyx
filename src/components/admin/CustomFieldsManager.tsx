@@ -321,7 +321,7 @@ export function CustomFieldsManager() {
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(field)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDelete(field.id)} className="text-destructive hover:text-destructive">
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(field.id)} className="text-destructive hover:text-destructive">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
