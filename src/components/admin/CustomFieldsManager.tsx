@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, GripVertical, Pencil } from "lucide-react";
+import { Plus, Trash2, GripVertical, Pencil, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface CustomField {
@@ -53,6 +53,10 @@ export function CustomFieldsManager() {
   const [isRequired, setIsRequired] = useState(false);
   const [placeholder, setPlaceholder] = useState("");
 
+  // Tag suggestions state
+  const [tagSuggestions, setTagSuggestions] = useState<{ id: string; keyword: string }[]>([]);
+  const [newSuggestion, setNewSuggestion] = useState("");
+
   useEffect(() => {
     fetchFields();
   }, []);
@@ -80,6 +84,41 @@ export function CustomFieldsManager() {
     setIsRequired(false);
     setPlaceholder("");
     setEditingField(null);
+    setTagSuggestions([]);
+    setNewSuggestion("");
+  };
+
+  const fetchTagSuggestions = async (name: string) => {
+    if (!name) { setTagSuggestions([]); return; }
+    const { data } = await supabase
+      .from("keyword_suggestions" as any)
+      .select("id, keyword")
+      .eq("field_name", name)
+      .order("keyword");
+    setTagSuggestions((data as any[]) || []);
+  };
+
+  const addTagSuggestion = async () => {
+    const kw = newSuggestion.trim();
+    if (!kw || !fieldName.trim()) return;
+    if (tagSuggestions.some(s => s.keyword.toLowerCase() === kw.toLowerCase())) {
+      toast({ title: "Duplicate", description: "This suggestion already exists.", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase
+      .from("keyword_suggestions" as any)
+      .insert({ field_name: fieldName.trim(), keyword: kw });
+    if (error) {
+      toast({ title: "Error", description: "Failed to add suggestion.", variant: "destructive" });
+    } else {
+      setNewSuggestion("");
+      fetchTagSuggestions(fieldName.trim());
+    }
+  };
+
+  const removeTagSuggestion = async (id: string) => {
+    await supabase.from("keyword_suggestions" as any).delete().eq("id", id);
+    fetchTagSuggestions(fieldName.trim());
   };
 
   const openCreateDialog = () => {
@@ -95,6 +134,11 @@ export function CustomFieldsManager() {
     setAppliesTo(field.applies_to);
     setIsRequired(field.is_required);
     setPlaceholder(field.placeholder || "");
+    if (field.field_type === "tags") {
+      fetchTagSuggestions(field.field_name);
+    } else {
+      setTagSuggestions([]);
+    }
     setDialogOpen(true);
   };
 
@@ -302,7 +346,7 @@ export function CustomFieldsManager() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Input Type</Label>
-                <Select value={fieldType} onValueChange={setFieldType}>
+                <Select value={fieldType} onValueChange={(v) => { setFieldType(v); if (v === "tags" && fieldName.trim()) fetchTagSuggestions(fieldName.trim()); }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -342,6 +386,43 @@ export function CustomFieldsManager() {
               <Label>Required Field</Label>
               <Switch checked={isRequired} onCheckedChange={setIsRequired} />
             </div>
+
+            {/* Tag Suggestions Section - only for tags type */}
+            {fieldType === "tags" && fieldName.trim() && (
+              <div className="space-y-3 border-t border-border pt-4">
+                <Label className="text-sm font-semibold">Dropdown Suggestions</Label>
+                <p className="text-xs text-muted-foreground">
+                  Add predefined options users can choose from. They can also type custom values via "Other".
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    value={newSuggestion}
+                    onChange={(e) => setNewSuggestion(e.target.value)}
+                    placeholder="Add a suggestion..."
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTagSuggestion(); } }}
+                    className="flex-1"
+                  />
+                  <Button type="button" size="sm" onClick={addTagSuggestion} disabled={!newSuggestion.trim()}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {tagSuggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+                    {tagSuggestions.map((s) => (
+                      <Badge key={s.id} variant="secondary" className="gap-1 pr-1">
+                        {s.keyword}
+                        <button type="button" onClick={() => removeTagSuggestion(s.id)} className="ml-0.5 hover:text-destructive">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {tagSuggestions.length === 0 && (
+                  <p className="text-xs text-muted-foreground italic">No suggestions yet. Users will only see a free-text input.</p>
+                )}
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setDialogOpen(false); resetForm(); }}>Cancel</Button>
