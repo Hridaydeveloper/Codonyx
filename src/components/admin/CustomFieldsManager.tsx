@@ -386,6 +386,43 @@ export function CustomFieldsManager() {
               <Label>Required Field</Label>
               <Switch checked={isRequired} onCheckedChange={setIsRequired} />
             </div>
+
+            {/* Tag Suggestions Section - only for tags type */}
+            {fieldType === "tags" && fieldName.trim() && (
+              <div className="space-y-3 border-t border-border pt-4">
+                <Label className="text-sm font-semibold">Dropdown Suggestions</Label>
+                <p className="text-xs text-muted-foreground">
+                  Add predefined options users can choose from. They can also type custom values via "Other".
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    value={newSuggestion}
+                    onChange={(e) => setNewSuggestion(e.target.value)}
+                    placeholder="Add a suggestion..."
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTagSuggestion(); } }}
+                    className="flex-1"
+                  />
+                  <Button type="button" size="sm" onClick={addTagSuggestion} disabled={!newSuggestion.trim()}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {tagSuggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+                    {tagSuggestions.map((s) => (
+                      <Badge key={s.id} variant="secondary" className="gap-1 pr-1">
+                        {s.keyword}
+                        <button type="button" onClick={() => removeTagSuggestion(s.id)} className="ml-0.5 hover:text-destructive">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {tagSuggestions.length === 0 && (
+                  <p className="text-xs text-muted-foreground italic">No suggestions yet. Users will only see a free-text input.</p>
+                )}
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setDialogOpen(false); resetForm(); }}>Cancel</Button>
