@@ -264,12 +264,12 @@ export default function RegisterDistributorPage() {
 
             <div className="space-y-2">
               <Label htmlFor="distributionCapacity" className="text-xs uppercase tracking-wider font-medium">Distribution Capacity *</Label>
-              <TagInput id="distributionCapacity" value={distributionCapacity} onChange={setDistributionCapacity} placeholder="Add capacity (e.g., National, Regional, International)" />
+              <TagInput id="distributionCapacity" value={distributionCapacity} onChange={setDistributionCapacity} placeholder="Search or add capacity (e.g., National, Regional)" suggestionField="distribution_capacity" />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="bio" className="text-xs uppercase tracking-wider font-medium">About Your Business</Label>
-              <TagInput id="bio" value={bio} onChange={setBio} placeholder="Add keyword (e.g., Pharmaceutical Distribution, Cold Chain)" />
+              <TagInput id="bio" value={bio} onChange={setBio} placeholder="Search or add keyword (e.g., Pharmaceutical Distribution)" suggestionField="bio_distributor" />
             </div>
 
             <div className="space-y-2">

@@ -365,11 +365,11 @@ export default function RegisterPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="expertise" className="text-xs uppercase tracking-wider font-medium">Areas of Expertise *</Label>
-                <TagInput id="expertise" value={expertise} onChange={setExpertise} placeholder="Add expertise (e.g., Biotechnology, Drug Development)" />
+                <TagInput id="expertise" value={expertise} onChange={setExpertise} placeholder="Search or add expertise (e.g., Biotechnology)" suggestionField="expertise" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="experience" className="text-xs uppercase tracking-wider font-medium">Experience / Background</Label>
-                <TagInput id="experience" value={experience} onChange={setExperience} placeholder="Add experience (e.g., Clinical Trials, R&D Management)" />
+                <TagInput id="experience" value={experience} onChange={setExperience} placeholder="Search or add experience (e.g., Clinical Trials)" suggestionField="experience" />
               </div>
             </div>
 
