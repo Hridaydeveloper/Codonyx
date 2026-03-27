@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Upload, Calendar, Linkedin } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageCropper } from "@/components/ui/image-cropper";
 import { format } from "date-fns";
 
 interface Profile {
