@@ -28,7 +28,8 @@ import {
   Calendar,
   Beaker,
   Wrench,
-  BookOpen
+  BookOpen,
+  Pencil
 } from "lucide-react";
 
 interface Profile {
