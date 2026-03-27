@@ -264,10 +264,10 @@ export default function ProfileDetailPage() {
                 </div>
 
                 {/* Contact Info */}
-                <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-divider">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    {profile.email}
+                <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-divider overflow-hidden">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
+                    <Mail className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{profile.email}</span>
                   </div>
                   {profile.contact_number && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -620,6 +620,18 @@ export default function EditProfilePage() {
         </div>
       </main>
 
+      {/* Image Cropper */}
+      {rawImageSrc && (
+        <ImageCropper
+          imageSrc={rawImageSrc}
+          open={cropperOpen}
+          onClose={() => { setCropperOpen(false); setRawImageSrc(null); setPendingFile(null); }}
+          onCropComplete={handleCroppedUpload}
+          aspect={1}
+          cropShape="round"
+        />
+      )}
+
       <Footer />
     </div>
   );

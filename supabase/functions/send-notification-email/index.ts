@@ -82,7 +82,8 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
         html: wrapper("Registration Update", "An update on your Codonyx account",
           `<p style="color:#475569;font-size:16px;line-height:1.6;margin:0 0 24px;">Hello <strong style="color:#1e293b;">${data.recipientName}</strong>,</p>
           <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">We regret to inform you that your registration as a <strong>${data.userType === "advisor" ? "Advisor" : data.userType === "laboratory" ? "Laboratory" : "Distribution Partner"}</strong> on Codonyx has not been approved at this time.</p>
-          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">If you believe this is an error, please contact us at <a href="mailto:info@codonyx.org" style="color:#059669;text-decoration:none;font-weight:500;">info@codonyx.org</a>.</p>`),
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 16px;">This could be due to incomplete information or verification requirements. If you believe this is an error or would like to reapply, please contact us.</p>
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">Please reach out at <a href="mailto:info@codonyx.org" style="color:#059669;text-decoration:none;font-weight:500;">info@codonyx.org</a> for any questions.</p>`),
       };
     case "registration_submitted":
       return {
