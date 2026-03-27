@@ -20,6 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PendingUserDetailModal } from "@/components/admin/PendingUserDetailModal";
 import { CustomFieldsManager } from "@/components/admin/CustomFieldsManager";
+import { KeywordSuggestionsManager } from "@/components/admin/KeywordSuggestionsManager";
 import { BackButton } from "@/components/layout/BackButton";
 import {
   AlertDialog,
@@ -577,6 +578,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="invites" className="text-xs sm:text-sm">Invite Link</TabsTrigger>
             <TabsTrigger value="custom-fields" className="text-xs sm:text-sm">
               <Settings2 className="h-3 w-3 mr-1" />Profile Fields
+            </TabsTrigger>
+            <TabsTrigger value="keyword-suggestions" className="text-xs sm:text-sm">
+              <Settings2 className="h-3 w-3 mr-1" />Keywords
             </TabsTrigger>
           </TabsList>
 
@@ -1304,6 +1308,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="custom-fields">
             <CustomFieldsManager />
+          </TabsContent>
+
+          <TabsContent value="keyword-suggestions">
+            <KeywordSuggestionsManager />
           </TabsContent>
         </Tabs>
 

@@ -457,7 +457,8 @@ export default function EditProfilePage() {
                         id="education"
                         value={education}
                         onChange={setEducation}
-                        placeholder="Add education (e.g., Harvard University)"
+                        placeholder="Search or add education"
+                        suggestionField="education"
                       />
                     </div>
 
@@ -467,7 +468,8 @@ export default function EditProfilePage() {
                         id="expertise"
                         value={expertise}
                         onChange={setExpertise}
-                        placeholder="Add expertise (e.g., Machine Learning)"
+                        placeholder="Search or add expertise"
+                        suggestionField="expertise"
                       />
                     </div>
 
@@ -477,7 +479,8 @@ export default function EditProfilePage() {
                         id="mentoringAreas"
                         value={mentoringAreas}
                         onChange={setMentoringAreas}
-                        placeholder="Add area (e.g., Strategy)"
+                        placeholder="Search or add area"
+                        suggestionField="mentoring_areas"
                       />
                     </div>
 
@@ -487,7 +490,8 @@ export default function EditProfilePage() {
                         id="languages"
                         value={languages}
                         onChange={setLanguages}
-                        placeholder="Add language (e.g., English)"
+                        placeholder="Search or add language"
+                        suggestionField="languages"
                       />
                     </div>
 
@@ -497,7 +501,8 @@ export default function EditProfilePage() {
                         id="industryExpertise"
                         value={industryExpertise}
                         onChange={setIndustryExpertise}
-                        placeholder="Add industry (e.g., Healthcare)"
+                        placeholder="Search or add industry"
+                        suggestionField="industry_expertise"
                       />
                     </div>
                   </>
@@ -561,7 +566,8 @@ export default function EditProfilePage() {
                         id="services"
                         value={services}
                         onChange={setServices}
-                        placeholder="Add service (e.g., Gene Sequencing)"
+                        placeholder="Search or add service"
+                        suggestionField="services"
                       />
                     </div>
 
@@ -571,7 +577,8 @@ export default function EditProfilePage() {
                         id="researchAreas"
                         value={researchAreas}
                         onChange={setResearchAreas}
-                        placeholder="Add research area (e.g., Oncology)"
+                        placeholder="Search or add research area"
+                        suggestionField="research_areas"
                       />
                     </div>
                   </>
