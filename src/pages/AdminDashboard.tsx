@@ -798,17 +798,17 @@ const AdminDashboard = () => {
                 {usersLoading ? (
                   <p className="text-muted-foreground text-center py-8">Loading laboratories...</p>
                 ) : (
-                  <div className="overflow-x-auto -mx-4 sm:mx-0">
-                  <Table className="min-w-[700px]">
+                  <div className="w-full overflow-x-auto">
+                  <Table className="min-w-max whitespace-nowrap">
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Company</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Joined</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="whitespace-nowrap">Company</TableHead>
+                        <TableHead className="whitespace-nowrap">Email</TableHead>
+                        <TableHead className="whitespace-nowrap">Type</TableHead>
+                        <TableHead className="whitespace-nowrap">Location</TableHead>
+                        <TableHead className="whitespace-nowrap">Status</TableHead>
+                        <TableHead className="whitespace-nowrap">Joined</TableHead>
+                        <TableHead className="whitespace-nowrap">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -816,8 +816,8 @@ const AdminDashboard = () => {
                         .filter(l => labStatusFilter === "all" || l.approval_status === labStatusFilter)
                         .map((lab) => (
                         <TableRow key={lab.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/profile/${lab.id}`)}>
-                          <TableCell>
-                            <div className="flex items-center gap-3 whitespace-nowrap">
+                          <TableCell className="whitespace-nowrap">
+                            <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8 shrink-0">
                                 <AvatarImage src={lab.avatar_url || undefined} />
                                 <AvatarFallback>{lab.full_name.slice(0,2).toUpperCase()}</AvatarFallback>
@@ -825,9 +825,9 @@ const AdminDashboard = () => {
                               <span className="font-medium">{lab.full_name}</span>
                             </div>
                           </TableCell>
-                          <TableCell className="text-muted-foreground whitespace-nowrap max-w-[200px] truncate">{lab.email}</TableCell>
-                          <TableCell>{lab.company_type || "-"}</TableCell>
-                          <TableCell>{lab.location || "-"}</TableCell>
+                          <TableCell className="text-muted-foreground whitespace-nowrap max-w-[220px] truncate">{lab.email}</TableCell>
+                          <TableCell className="whitespace-nowrap">{lab.company_type || "-"}</TableCell>
+                          <TableCell className="whitespace-nowrap">{lab.location || "-"}</TableCell>
                           <TableCell>
                             <Badge variant={
                               lab.approval_status === "approved" ? "default" :
