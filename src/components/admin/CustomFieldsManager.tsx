@@ -216,13 +216,17 @@ export function CustomFieldsManager() {
     fetchFields();
   };
 
-  const handleDelete = async (fieldId: string) => {
-    if (!confirm("Delete this custom field? All saved values for this field will also be deleted.")) return;
+  const handleDeleteClick = (fieldId: string) => {
+    setFieldToDelete(fieldId);
+    setDeleteDialogOpen(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!fieldToDelete) return;
     const { error } = await supabase
       .from("custom_profile_fields")
       .delete()
-      .eq("id", fieldId);
+      .eq("id", fieldToDelete);
 
     if (error) {
       toast({ title: "Error", description: "Failed to delete field.", variant: "destructive" });
@@ -230,6 +234,8 @@ export function CustomFieldsManager() {
       toast({ title: "Field deleted" });
       fetchFields();
     }
+    setDeleteDialogOpen(false);
+    setFieldToDelete(null);
   };
 
   const filteredFields = filterType === "all" ? fields : fields.filter(f => f.applies_to === filterType);
