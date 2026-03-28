@@ -342,6 +342,7 @@ export default function AuthPage() {
     setResetPassword("");
     setResetConfirmPassword("");
     setShowResetPassword(false);
+    setResetCooldown(0);
   };
 
   const handleGoogleSignIn = async () => {
