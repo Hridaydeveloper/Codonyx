@@ -141,7 +141,7 @@ export default function EmailVerificationField({
               variant="outline"
               className="h-12 px-4 shrink-0"
               onClick={handleSendCode}
-              disabled={isSending || !email}
+              disabled={isSending || !email || cooldown > 0}
             >
               {isSending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
