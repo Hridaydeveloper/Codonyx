@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +46,13 @@ export default function AuthPage() {
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [resetCooldown, setResetCooldown] = useState(0);
 
+  useEffect(() => {
+    if (resetCooldown <= 0) return;
+    const timer = setTimeout(() => setResetCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resetCooldown]);
   const unauthorizedDescription = "No approved account exists with this email. Please register first or contact support.";
   const deactivatedDescription = "Your account has been deactivated by an administrator. Please contact support for assistance.";
   const hasShownUnauthorizedToast = useRef(false);
@@ -226,6 +232,7 @@ export default function AuthPage() {
         } else {
           toast({ title: "Code sent", description: "Check your email for a 6-digit verification code." });
           setResetStep("otp");
+          setResetCooldown(30);
         }
       } catch {
         toast({ title: "Error", description: "An unexpected error occurred.", variant: "destructive" });
@@ -335,6 +342,7 @@ export default function AuthPage() {
     setResetPassword("");
     setResetConfirmPassword("");
     setShowResetPassword(false);
+    setResetCooldown(0);
   };
 
   const handleGoogleSignIn = async () => {
@@ -627,7 +635,29 @@ export default function AuthPage() {
                   required
                   autoFocus
                 />
-                <p className="text-xs text-muted-foreground">Code sent to {forgotEmail}</p>
+                <p className="text-xs text-muted-foreground">
+                  Code sent to {forgotEmail}.{" "}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (resetCooldown > 0 || isSendingReset) return;
+                      setIsSendingReset(true);
+                      try {
+                        const { error } = await supabase.functions.invoke("reset-password-otp", {
+                          body: { action: "send", email: forgotEmail.trim().toLowerCase() },
+                        });
+                        if (!error) {
+                          toast({ title: "Code resent", description: "A new verification code has been sent." });
+                          setResetCooldown(30);
+                        }
+                      } catch {} finally { setIsSendingReset(false); }
+                    }}
+                    className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSendingReset || resetCooldown > 0}
+                  >
+                    {resetCooldown > 0 ? `Resend code (${resetCooldown}s)` : "Resend code"}
+                  </button>
+                </p>
               </div>
             )}
 

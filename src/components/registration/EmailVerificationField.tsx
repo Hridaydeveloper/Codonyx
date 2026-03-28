@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,13 @@ export default function EmailVerificationField({
   const [codeSent, setCodeSent] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   const handleSendCode = async () => {
     if (!email || !email.includes("@")) {
@@ -63,6 +70,7 @@ export default function EmailVerificationField({
       }
 
       setCodeSent(true);
+      setCooldown(30);
       toast({ title: "Code sent!", description: `A verification code has been sent to ${email}.` });
     } catch (err) {
       toast({ title: "Error", description: "Could not send verification code.", variant: "destructive" });
@@ -133,7 +141,7 @@ export default function EmailVerificationField({
               variant="outline"
               className="h-12 px-4 shrink-0"
               onClick={handleSendCode}
-              disabled={isSending || !email}
+              disabled={isSending || !email || cooldown > 0}
             >
               {isSending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -179,8 +187,8 @@ export default function EmailVerificationField({
           </div>
           <p className="text-xs text-muted-foreground">
             Check your inbox for a 6-digit verification code.{" "}
-            <button type="button" onClick={handleSendCode} className="text-primary hover:underline" disabled={isSending}>
-              Resend code
+            <button type="button" onClick={handleSendCode} className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed" disabled={isSending || cooldown > 0}>
+              {cooldown > 0 ? `Resend code (${cooldown}s)` : "Resend code"}
             </button>
           </p>
         </div>
