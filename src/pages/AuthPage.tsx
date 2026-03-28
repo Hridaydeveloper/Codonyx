@@ -634,7 +634,29 @@ export default function AuthPage() {
                   required
                   autoFocus
                 />
-                <p className="text-xs text-muted-foreground">Code sent to {forgotEmail}</p>
+                <p className="text-xs text-muted-foreground">
+                  Code sent to {forgotEmail}.{" "}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (resetCooldown > 0 || isSendingReset) return;
+                      setIsSendingReset(true);
+                      try {
+                        const { error } = await supabase.functions.invoke("reset-password-otp", {
+                          body: { action: "send", email: forgotEmail.trim().toLowerCase() },
+                        });
+                        if (!error) {
+                          toast({ title: "Code resent", description: "A new verification code has been sent." });
+                          setResetCooldown(30);
+                        }
+                      } catch {} finally { setIsSendingReset(false); }
+                    }}
+                    className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSendingReset || resetCooldown > 0}
+                  >
+                    {resetCooldown > 0 ? `Resend code (${resetCooldown}s)` : "Resend code"}
+                  </button>
+                </p>
               </div>
             )}
 
