@@ -76,11 +76,9 @@ export default function RegisterPage() {
         // Clear any stale auth session that might interfere with the query
         await supabase.auth.signOut();
 
-        const { data, error } = await supabase
-          .from("invite_tokens")
-          .select("id, is_active, expires_at, used_at")
-          .eq("token", inviteToken)
-          .maybeSingle();
+        const { data: rows, error } = await supabase
+          .rpc("validate_invite_token_lookup", { _token: inviteToken });
+        const data = rows && rows.length > 0 ? rows[0] : null;
 
         if (error) {
           console.error("Token validation error:", error);
