@@ -31,7 +31,7 @@ export default function RegisterLaboratoryPage() {
   const [bio, setBio] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
   // Lab-specific
   const [companyType, setCompanyType] = useState("");
