@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAccountGuard } from "@/hooks/useAccountGuard";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
