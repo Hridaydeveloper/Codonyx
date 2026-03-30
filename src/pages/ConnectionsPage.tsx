@@ -250,9 +250,9 @@ export default function ConnectionsPage() {
     return (
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <Link to={`/profile/${profile.id}`} className="flex items-center gap-4 flex-1">
-              <Avatar className="h-12 w-12">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
+            <Link to={`/profile/${profile.id}`} className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+              <Avatar className="h-10 w-10 sm:h-12 sm:w-12 shrink-0">
                 <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   {getInitials(profile.full_name)}
@@ -267,12 +267,12 @@ export default function ConnectionsPage() {
                   <p className="text-xs text-muted-foreground truncate">{profile.organisation}</p>
                 )}
               </div>
-              <Badge variant="outline" className="capitalize">
+              <Badge variant="outline" className="capitalize shrink-0 hidden sm:inline-flex">
                 {profile.user_type}
               </Badge>
             </Link>
             
-            <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-2 shrink-0">
               {showActions && (
                 <>
                   <Button
