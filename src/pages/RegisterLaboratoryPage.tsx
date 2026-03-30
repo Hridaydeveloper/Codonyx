@@ -7,10 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, FlaskConical } from "lucide-react";
+import { CheckCircle, Loader2, Eye, EyeOff, FlaskConical } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
+import { RegistrationAvatarUpload } from "@/components/registration/RegistrationAvatarUpload";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 
 export default function RegisterLaboratoryPage() {
