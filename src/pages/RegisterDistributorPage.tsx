@@ -83,16 +83,16 @@ export default function RegisterDistributorPage() {
           })()
         : Promise.resolve(null);
 
-      let verificationDocUrl = null;
-      if (verificationDoc) {
-        const fileExt = verificationDoc.name.split(".").pop();
-        const filePath = `${userId}/verification.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from("verification-documents").upload(filePath, verificationDoc, { upsert: true });
-        if (!uploadError) {
-          // Store the file path (not a public URL since bucket is private)
-          verificationDocUrl = filePath;
-        }
-      }
+      const verificationDocPromise = verificationDoc
+        ? (async () => {
+            const fileExt = verificationDoc.name.split(".").pop();
+            const filePath = `${userId}/verification.${fileExt}`;
+            const { error: uploadError } = await supabase.storage.from("verification-documents").upload(filePath, verificationDoc, { upsert: true });
+            return !uploadError ? filePath : null;
+          })()
+        : Promise.resolve(null);
+
+      const [uploadedAvatarUrl, verificationDocUrl] = await Promise.all([avatarUploadPromise, verificationDocPromise]);
 
       const { error: profileError } = await supabase.from("profiles").insert({
         user_id: userId,
