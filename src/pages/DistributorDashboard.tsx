@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAccountGuard } from "@/hooks/useAccountGuard";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
@@ -60,6 +61,7 @@ interface AggregateStats {
 
 export default function DistributorDashboard() {
   const navigate = useNavigate();
+  useAccountGuard();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [allDeals, setAllDeals] = useState<Deal[]>([]);

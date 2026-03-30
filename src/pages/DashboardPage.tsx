@@ -7,6 +7,7 @@ import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAccountGuard } from "@/hooks/useAccountGuard";
 interface Profile {
   full_name: string;
   email: string;
@@ -19,6 +20,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const hasChecked = useRef(false);
+  useAccountGuard();
 
   useEffect(() => {
     if (hasChecked.current) return;

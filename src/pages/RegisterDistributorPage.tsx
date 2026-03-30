@@ -3,14 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { TagInput } from "@/components/ui/tag-input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { CheckCircle, Loader2, Eye, EyeOff, Upload, User, Truck, FileText } from "lucide-react";
+import { CheckCircle, Loader2, Eye, EyeOff, Truck, FileText } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_logo.png";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
+import { RegistrationAvatarUpload } from "@/components/registration/RegistrationAvatarUpload";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 
 export default function RegisterDistributorPage() {
@@ -32,26 +31,10 @@ export default function RegisterDistributorPage() {
   const [yearsOfExperience, setYearsOfExperience] = useState("");
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
   const [verificationDoc, setVerificationDoc] = useState<File | null>(null);
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast({ title: "Invalid file type", description: "Please upload an image file.", variant: "destructive" });
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Please upload an image smaller than 5MB.", variant: "destructive" });
-        return;
-      }
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setAvatarUrl(e.target?.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
+  // Avatar handled by RegistrationAvatarUpload component
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,27 +69,30 @@ export default function RegisterDistributorPage() {
         return;
       }
 
-      let uploadedAvatarUrl = null;
-      if (avatarFile) {
-        const fileExt = avatarFile.name.split(".").pop();
-        const filePath = `${userId}/avatar.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, avatarFile, { upsert: true });
-        if (!uploadError) {
-          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
-          uploadedAvatarUrl = urlData.publicUrl;
-        }
-      }
+      // Upload avatar + verification doc in parallel
+      const avatarUploadPromise = avatarBlob
+        ? (async () => {
+            const filePath = `${userId}/avatar.jpg`;
+            const file = new File([avatarBlob], "avatar.jpg", { type: "image/jpeg" });
+            const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+            if (!uploadError) {
+              const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+              return urlData.publicUrl;
+            }
+            return null;
+          })()
+        : Promise.resolve(null);
 
-      let verificationDocUrl = null;
-      if (verificationDoc) {
-        const fileExt = verificationDoc.name.split(".").pop();
-        const filePath = `${userId}/verification.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from("verification-documents").upload(filePath, verificationDoc, { upsert: true });
-        if (!uploadError) {
-          // Store the file path (not a public URL since bucket is private)
-          verificationDocUrl = filePath;
-        }
-      }
+      const verificationDocPromise = verificationDoc
+        ? (async () => {
+            const fileExt = verificationDoc.name.split(".").pop();
+            const filePath = `${userId}/verification.${fileExt}`;
+            const { error: uploadError } = await supabase.storage.from("verification-documents").upload(filePath, verificationDoc, { upsert: true });
+            return !uploadError ? filePath : null;
+          })()
+        : Promise.resolve(null);
+
+      const [uploadedAvatarUrl, verificationDocUrl] = await Promise.all([avatarUploadPromise, verificationDocPromise]);
 
       const { error: profileError } = await supabase.from("profiles").insert({
         user_id: userId,
@@ -130,22 +116,17 @@ export default function RegisterDistributorPage() {
         return;
       }
 
-      // Send registration submitted email before signing out
-      try {
-        await supabase.functions.invoke("send-notification-email", {
-          body: {
-            type: "registration_submitted",
-            recipientEmail: email,
-            recipientName: fullName,
-            userType: "distributor",
-          },
-        });
-      } catch (emailErr) {
-        console.error("Failed to send confirmation email:", emailErr);
-      }
+      // Fire-and-forget email
+      supabase.functions.invoke("send-notification-email", {
+        body: {
+          type: "registration_submitted",
+          recipientEmail: email,
+          recipientName: fullName,
+          userType: "distributor",
+        },
+      }).catch((err) => console.error("Failed to send confirmation email:", err));
 
       await supabase.auth.signOut();
-
       setIsRegistered(true);
     } catch (error) {
       console.error("Registration error:", error);
@@ -191,22 +172,10 @@ export default function RegisterDistributorPage() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Avatar */}
-            <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider font-medium">Profile Picture</Label>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={avatarUrl} />
-                  <AvatarFallback className="bg-muted"><User className="h-6 w-6 text-muted-foreground" /></AvatarFallback>
-                </Avatar>
-                <label className="cursor-pointer">
-                  <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-                  <div className="flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors">
-                    <Upload className="h-4 w-4" /> Upload Photo
-                  </div>
-                </label>
-              </div>
-            </div>
+            <RegistrationAvatarUpload
+              avatarUrl={avatarUrl}
+              onAvatarChange={(url, blob) => { setAvatarUrl(url); setAvatarBlob(blob); }}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-xs uppercase tracking-wider font-medium">Full Name *</Label>
