@@ -7,6 +7,7 @@ import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAccountGuard } from "@/hooks/useAccountGuard";
 interface Profile {
   full_name: string;
   email: string;
