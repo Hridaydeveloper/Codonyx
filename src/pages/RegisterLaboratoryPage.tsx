@@ -120,22 +120,17 @@ export default function RegisterLaboratoryPage() {
         return;
       }
 
-      // Send registration submitted email before signing out
-      try {
-        await supabase.functions.invoke("send-notification-email", {
-          body: {
-            type: "registration_submitted",
-            recipientEmail: email,
-            recipientName: fullName,
-            userType: "laboratory",
-          },
-        });
-      } catch (emailErr) {
-        console.error("Failed to send confirmation email:", emailErr);
-      }
+      // Fire-and-forget email
+      supabase.functions.invoke("send-notification-email", {
+        body: {
+          type: "registration_submitted",
+          recipientEmail: email,
+          recipientName: fullName,
+          userType: "laboratory",
+        },
+      }).catch((err) => console.error("Failed to send confirmation email:", err));
 
       await supabase.auth.signOut();
-
       setIsRegistered(true);
     } catch (error) {
       console.error("Registration error:", error);
