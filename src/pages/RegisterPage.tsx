@@ -40,7 +40,6 @@ export default function RegisterPage() {
   const [tokenId, setTokenId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
 
   // Form state
   const [fullName, setFullName] = useState("");
