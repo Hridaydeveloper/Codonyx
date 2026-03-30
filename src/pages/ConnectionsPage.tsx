@@ -361,10 +361,10 @@ export default function ConnectionsPage() {
             </p>
           </div>
 
-          <Tabs defaultValue="accepted" className="w-full">
+          <Tabs defaultValue="accepted" className="w-full overflow-hidden">
             <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="accepted" className="gap-2">
-                <UserCheck className="h-4 w-4" />
+              <TabsTrigger value="accepted" className="gap-1 sm:gap-2 text-xs sm:text-sm px-1 sm:px-3">
+                <UserCheck className="h-4 w-4 hidden sm:inline" />
                 Connected
                 {acceptedConnections.length > 0 && (
                   <Badge variant="secondary" className="ml-1">
