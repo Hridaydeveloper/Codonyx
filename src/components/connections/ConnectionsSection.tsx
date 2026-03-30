@@ -203,19 +203,9 @@ export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSe
                           {profile.headline || profile.organisation || profile.user_type}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="capitalize">
-                          {profile.user_type}
-                        </Badge>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeConnection(connection.id)}
-                          className="text-muted-foreground hover:text-destructive"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      <Badge variant="secondary" className="capitalize shrink-0">
+                        {profile.user_type}
+                      </Badge>
                     </div>
                   );
                 })}
