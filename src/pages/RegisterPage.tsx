@@ -102,24 +102,6 @@ export default function RegisterPage() {
     validateToken();
   }, [inviteToken]);
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast({ title: "Invalid file type", description: "Please upload an image file.", variant: "destructive" });
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Please upload an image smaller than 5MB.", variant: "destructive" });
-        return;
-      }
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setAvatarUrl(e.target?.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
