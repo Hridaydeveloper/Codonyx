@@ -57,7 +57,7 @@ export default function RegisterPage() {
   const [bio, setBio] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
   // Advisor-specific fields
   const [expertise, setExpertise] = useState("");
