@@ -82,8 +82,8 @@ export function KeywordSuggestionsManager() {
     } else {
       const inserts = keywords.map(keyword => ({ field_name: selectedField, keyword }));
       const { error } = await supabase
-        .from("keyword_suggestions" as any)
-        .insert(inserts as any);
+        .from("keyword_suggestions")
+        .insert(inserts);
 
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -104,8 +104,8 @@ export function KeywordSuggestionsManager() {
     const inserts = keywords.map(keyword => ({ field_name: selectedField, keyword }));
 
     const { error } = await supabase
-      .from("keyword_suggestions" as any)
-      .insert(inserts as any);
+      .from("keyword_suggestions")
+      .insert(inserts);
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
