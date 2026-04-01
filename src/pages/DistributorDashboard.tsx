@@ -99,22 +99,22 @@ export default function DistributorDashboard() {
   }, [profile]);
 
   const loadData = async () => {
+    let userId: string | null = null;
+
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      // Verify with getUser before redirecting — session can be null during token refresh
+    if (session) {
+      userId = session.user.id;
+    } else {
+      // Session null during token refresh — verify with getUser
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { navigate("/auth"); return; }
-      // If user exists but session is null, re-fetch session after refresh completes
-      const { data: { session: refreshedSession } } = await supabase.auth.getSession();
-      if (!refreshedSession) { navigate("/auth"); return; }
+      userId = user.id;
     }
-    const activeSession = session || (await supabase.auth.getSession()).data.session;
-    if (!activeSession) { navigate("/auth"); return; }
 
     const { data: profileData } = await supabase
       .from("profiles")
       .select("id, full_name, organisation, user_type, approval_status")
-      .eq("user_id", session.user.id)
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (!profileData || profileData.approval_status !== "approved" || profileData.user_type !== "distributor") {
