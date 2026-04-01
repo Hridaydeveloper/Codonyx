@@ -85,7 +85,6 @@ export default function DashboardPage() {
     });
 
     return () => {
-      clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, [navigate]);
