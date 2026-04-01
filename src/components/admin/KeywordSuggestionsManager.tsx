@@ -65,8 +65,8 @@ export function KeywordSuggestionsManager() {
 
     if (keywords.length === 1) {
       const { error } = await supabase
-        .from("keyword_suggestions" as any)
-        .insert({ field_name: selectedField, keyword: keywords[0] } as any);
+        .from("keyword_suggestions")
+        .insert({ field_name: selectedField, keyword: keywords[0] });
 
       if (error) {
         if (error.code === "23505") {
