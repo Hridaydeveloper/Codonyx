@@ -103,7 +103,7 @@ export function DashboardNavbar() {
 
           {/* User Menu */}
           <div className="hidden lg:flex items-center gap-4">
-            <Link to="/edit-profile">
+            <Link to="/edit-profile" data-tour="edit-profile">
               <Button variant="outline" size="sm">
                 Edit Profile
               </Button>
