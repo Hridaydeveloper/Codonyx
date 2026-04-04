@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, ArrowRight, ArrowLeft, Pencil, Users, FileText, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,10 @@ export function OnboardingTour() {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({});
-  const [arrowDirection, setArrowDirection] = useState<"top" | "bottom" | "left" | "right">("top");
+  const [arrowDirection, setArrowDirection] = useState<"top" | "bottom">("top");
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const steps: TourStep[] = [
+  const steps: TourStep[] = useMemo(() => [
     {
       title: "Welcome to Codonyx! 👋",
       description: "Let's get you set up. We'll walk you through the key features of this networking platform so you can make the most of it.",
@@ -64,18 +64,16 @@ export function OnboardingTour() {
       action: () => navigate("/edit-profile"),
       actionLabel: "Complete My Profile",
     },
-  ];
+  ], [navigate]);
 
   useEffect(() => {
     const checkIfShouldShowTour = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      // Check localStorage first for dismissed state
       const dismissed = localStorage.getItem(`tour_dismissed_${session.user.id}`);
       if (dismissed) return;
 
-      // Check profile completeness
       const { data: profile } = await supabase
         .from("profiles")
         .select("headline, bio, location, organisation, avatar_url, created_at, updated_at")
@@ -84,15 +82,12 @@ export function OnboardingTour() {
 
       if (!profile) return;
 
-      // Show tour if essential profile fields are empty
       const isIncomplete = !profile.headline || !profile.bio || !profile.location;
-      // Also show if profile was never edited (created_at equals updated_at within 1 minute)
       const createdAt = new Date(profile.created_at).getTime();
       const updatedAt = new Date(profile.updated_at).getTime();
       const neverEdited = Math.abs(updatedAt - createdAt) < 60000;
 
       if (isIncomplete || neverEdited) {
-        // Small delay so dashboard renders first
         setTimeout(() => setShowTour(true), 800);
       }
     };
@@ -103,7 +98,6 @@ export function OnboardingTour() {
   const positionTooltip = useCallback(() => {
     const step = steps[currentStep];
     if (!step.targetSelector) {
-      // Center the tooltip
       setTargetRect(null);
       setTooltipStyle({
         position: "fixed",
@@ -131,14 +125,14 @@ export function OnboardingTour() {
     const rect = el.getBoundingClientRect();
     setTargetRect(rect);
 
-    const tooltipWidth = 360;
+    const tooltipWidth = Math.min(360, window.innerWidth - 32);
     const tooltipHeight = 220;
     const gap = 16;
     const pos = step.position || "bottom";
 
     let top = 0;
     let left = 0;
-    let dir: "top" | "bottom" | "left" | "right" = "top";
+    let dir: "top" | "bottom" = "top";
 
     if (pos === "bottom") {
       top = rect.bottom + gap;
@@ -151,14 +145,13 @@ export function OnboardingTour() {
     } else if (pos === "right") {
       top = rect.top + rect.height / 2 - tooltipHeight / 2;
       left = rect.right + gap;
-      dir = "left";
+      dir = "top";
     } else {
       top = rect.top + rect.height / 2 - tooltipHeight / 2;
       left = rect.left - tooltipWidth - gap;
-      dir = "right";
+      dir = "top";
     }
 
-    // Clamp to viewport
     left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
     top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
 
@@ -167,10 +160,10 @@ export function OnboardingTour() {
       position: "fixed",
       top: `${top}px`,
       left: `${left}px`,
+      width: `${tooltipWidth}px`,
       zIndex: 10002,
     });
 
-    // Arrow position
     const arrowPos: React.CSSProperties = { position: "absolute" };
     if (dir === "top") {
       arrowPos.top = "-8px";
@@ -221,13 +214,10 @@ export function OnboardingTour() {
     <>
       {/* Overlay */}
       <div className="fixed inset-0 z-[10000]" onClick={dismissTour}>
-        {/* Dimmed background */}
         <div className="absolute inset-0 bg-black/60 transition-opacity duration-300" />
-
-        {/* Highlight cutout for targeted element */}
         {targetRect && (
           <div
-            className="absolute rounded-lg shadow-[0_0_0_4px_hsl(var(--primary)/0.5)] bg-transparent pointer-events-none"
+            className="absolute rounded-lg bg-transparent pointer-events-none"
             style={{
               top: targetRect.top - 4,
               left: targetRect.left - 4,
@@ -243,7 +233,7 @@ export function OnboardingTour() {
       {/* Tooltip */}
       <div
         ref={tooltipRef}
-        className="w-[360px] max-w-[calc(100vw-32px)] bg-background rounded-xl border border-divider shadow-2xl p-4 sm:p-6 animate-fade-in overflow-hidden"
+        className="fixed max-w-[calc(100vw-32px)] bg-background rounded-xl border border-divider shadow-2xl p-4 sm:p-6 animate-fade-in"
         style={tooltipStyle}
         onClick={(e) => e.stopPropagation()}
       >
@@ -264,13 +254,13 @@ export function OnboardingTour() {
         {/* Close button */}
         <button
           onClick={dismissTour}
-          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors z-10"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* Step indicator */}
-        <div className="flex gap-1.5 mb-4">
+        <div className="flex gap-1.5 mb-3">
           {steps.map((_, i) => (
             <div
               key={i}
@@ -282,35 +272,35 @@ export function OnboardingTour() {
         </div>
 
         {/* Icon & Content */}
-        <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
             {step.icon}
           </div>
-          <div>
-            <h3 className="font-heading text-lg font-semibold text-foreground">{step.title}</h3>
-            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{step.description}</p>
+          <div className="min-w-0 pr-4">
+            <h3 className="font-heading text-base sm:text-lg font-semibold text-foreground leading-tight">{step.title}</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">{step.description}</p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-divider">
+          <div className="flex items-center gap-1 shrink-0">
             {currentStep > 0 && (
-              <Button variant="ghost" size="sm" onClick={prevStep} className="gap-1 px-2 text-xs sm:text-sm sm:px-3">
-                <ArrowLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Back
+              <Button variant="ghost" size="sm" onClick={prevStep} className="gap-1 h-8 px-2 text-xs">
+                <ArrowLeft className="h-3 w-3" /> Back
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={dismissTour} className="text-muted-foreground px-2 text-xs sm:text-sm sm:px-3">
+            <Button variant="ghost" size="sm" onClick={dismissTour} className="text-muted-foreground h-8 px-2 text-xs">
               Skip
             </Button>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 shrink-0">
             {step.action && step.actionLabel && (
               <Button
                 variant="outline"
                 size="sm"
-                className="px-2 text-xs sm:text-sm sm:px-3 truncate max-w-[130px] sm:max-w-none"
+                className="h-8 px-2 text-xs hidden sm:inline-flex"
                 onClick={() => {
                   step.action!();
                   dismissTour();
@@ -319,9 +309,9 @@ export function OnboardingTour() {
                 {step.actionLabel}
               </Button>
             )}
-            <Button size="sm" onClick={nextStep} className="gap-1 px-3 text-xs sm:text-sm sm:px-4 shrink-0">
+            <Button size="sm" onClick={nextStep} className="gap-1 h-8 px-3 text-xs">
               {currentStep === steps.length - 1 ? "Finish" : "Next"}
-              {currentStep < steps.length - 1 && <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
+              {currentStep < steps.length - 1 && <ArrowRight className="h-3 w-3" />}
             </Button>
           </div>
         </div>
