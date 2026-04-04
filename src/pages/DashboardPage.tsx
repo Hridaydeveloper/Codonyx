@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAccountGuard } from "@/hooks/useAccountGuard";
+import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 interface Profile {
   full_name: string;
   email: string;
