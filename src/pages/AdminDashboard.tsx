@@ -1073,7 +1073,7 @@ const AdminDashboard = () => {
                       {newDealDocFile && <p className="text-xs text-muted-foreground">Selected: {newDealDocFile.name}</p>}
                     </div>
                   </div>
-                  <Button className="mt-4" onClick={handleCreateDeal} disabled={!newDealTitle || !newDealTarget}>
+                  <Button className="mt-4" onClick={() => setShowDealConfirm(true)} disabled={!newDealTitle || !newDealTarget}>
                     Create & Publish Deal
                   </Button>
                 </CardContent>
