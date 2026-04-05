@@ -9,6 +9,6 @@ This project is built with:
 - Tailwind CSS
 
 ## What tools are used for this project?
-- Resend
-- Render
+- Resend (Emails)
+- Render (Host)
 - Loveable AI (For designs frontend)
