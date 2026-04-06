@@ -32,6 +32,15 @@ const quickLinks = {
       tourId: "quick-network",
     },
     {
+      to: "/distributors",
+      icon: Truck,
+      title: "Distributor Network",
+      description: "Browse distributor profiles",
+      gradient: "from-cyan-500/20 to-sky-500/10",
+      hoverGradient: "group-hover:from-cyan-500/30 group-hover:to-sky-500/20",
+      tourId: "quick-distributors",
+    },
+    {
       to: "/edit-profile",
       icon: Pencil,
       title: "Edit Profile",
@@ -68,6 +77,15 @@ const quickLinks = {
       gradient: "from-blue-500/20 to-indigo-500/10",
       hoverGradient: "group-hover:from-blue-500/30 group-hover:to-indigo-500/20",
       tourId: "quick-network",
+    },
+    {
+      to: "/distributors",
+      icon: Truck,
+      title: "Distributor Network",
+      description: "Browse distributor profiles",
+      gradient: "from-cyan-500/20 to-sky-500/10",
+      hoverGradient: "group-hover:from-cyan-500/30 group-hover:to-sky-500/20",
+      tourId: "quick-distributors",
     },
     {
       to: "/edit-profile",
