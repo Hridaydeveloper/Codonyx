@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Users, Building2, ArrowRight, Pencil, FileText, BookOpen } from "lucide-react";
+import { Loader2, Users, Building2, ArrowRight, Pencil, FileText, BookOpen, Truck } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
@@ -30,6 +30,15 @@ const quickLinks = {
       gradient: "from-emerald-500/20 to-teal-500/10",
       hoverGradient: "group-hover:from-emerald-500/30 group-hover:to-teal-500/20",
       tourId: "quick-network",
+    },
+    {
+      to: "/distributors",
+      icon: Truck,
+      title: "Distributor Network",
+      description: "Browse distributor profiles",
+      gradient: "from-cyan-500/20 to-sky-500/10",
+      hoverGradient: "group-hover:from-cyan-500/30 group-hover:to-sky-500/20",
+      tourId: "quick-distributors",
     },
     {
       to: "/edit-profile",
@@ -68,6 +77,15 @@ const quickLinks = {
       gradient: "from-blue-500/20 to-indigo-500/10",
       hoverGradient: "group-hover:from-blue-500/30 group-hover:to-indigo-500/20",
       tourId: "quick-network",
+    },
+    {
+      to: "/distributors",
+      icon: Truck,
+      title: "Distributor Network",
+      description: "Browse distributor profiles",
+      gradient: "from-cyan-500/20 to-sky-500/10",
+      hoverGradient: "group-hover:from-cyan-500/30 group-hover:to-sky-500/20",
+      tourId: "quick-distributors",
     },
     {
       to: "/edit-profile",

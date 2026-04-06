@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
@@ -68,22 +68,59 @@ export default function ProfileDetailPage() {
   const [currentUserProfile, setCurrentUserProfile] = useState<CurrentUserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const loadAttempted = useRef(false);
+
+  // Anti-loop: reload after 3s if still loading
+  useEffect(() => {
+    if (!isLoading) return;
+    const RECOVERY_KEY = "profile_detail_recovery";
+    const stored = sessionStorage.getItem(RECOVERY_KEY);
+    const currentPath = window.location.pathname;
+
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.path === currentPath && Date.now() - parsed.timestamp < 60000) {
+          // Already reloaded recently — don't loop
+          return;
+        }
+      } catch { /* ignore */ }
+    }
+
+    const timer = setTimeout(() => {
+      sessionStorage.setItem(RECOVERY_KEY, JSON.stringify({ path: currentPath, timestamp: Date.now() }));
+      window.location.reload();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   useEffect(() => {
+    if (loadAttempted.current) return;
+    loadAttempted.current = true;
+
     const loadProfile = async () => {
       if (!id) return;
 
+      // Try session first, fall back to getUser for token refresh scenarios
+      let userId: string | null = null;
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
+      if (session) {
+        userId = session.user.id;
+      } else {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate("/auth");
+          return;
+        }
+        userId = user.id;
       }
 
       // Get current user's profile
       const { data: currentProfile } = await supabase
         .from("profiles")
         .select("id, user_type")
-        .eq("user_id", session.user.id)
+        .eq("user_id", userId)
         .maybeSingle();
 
       if (currentProfile) {

@@ -237,7 +237,7 @@ const AdminDashboard = () => {
     
     const targetAmount = parseFloat(newDealTarget);
     if (newDealMinBid && parseFloat(newDealMinBid) >= targetAmount) {
-      showErrorToast("Invalid Minimum Bid", { description: "Minimum Bid Amount must be less than the Target Amount." });
+      showErrorToast("Invalid Minimum Bid", { description: "Minimum Bid Amount must be less than the Target Amount.", duration: 5000 });
       return;
     }
     
