@@ -251,6 +251,17 @@ export default function DistributorDashboard() {
       return;
     }
 
+    // Find the deal to validate against target
+    const deal = allDeals.find(d => d.id === editingBid.deal_id);
+    if (deal && amount > deal.target_amount) {
+      toast({
+        title: "Bid amount too high",
+        description: `Bid amount cannot exceed the target of ₹${Number(deal.target_amount).toLocaleString()}.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsUpdatingBid(true);
     const { error } = await supabase
       .from("deal_bids")

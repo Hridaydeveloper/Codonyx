@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Users, Building2, ArrowRight, Pencil, FileText, BookOpen } from "lucide-react";
+import { Loader2, Users, Building2, ArrowRight, Pencil, FileText, BookOpen, Truck } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
 import { DashboardNavbar } from "@/components/layout/DashboardNavbar";
 import { Footer } from "@/components/layout/Footer";
