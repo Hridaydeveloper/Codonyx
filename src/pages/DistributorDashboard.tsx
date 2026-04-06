@@ -31,6 +31,7 @@ interface Deal {
   deal_status: string;
   created_at: string;
   min_bid_amount: number | null;
+  document_url: string | null;
 }
 
 interface Bid {
@@ -488,7 +489,17 @@ export default function DistributorDashboard() {
                               </div>
                               <p className="text-xs text-muted-foreground text-right">{progress.toFixed(1)}% funded</p>
                             </div>
-                            <div className="mt-4">
+                            <div className="mt-4 flex flex-col gap-2">
+                              {deal.document_url && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                  onClick={() => window.open(deal.document_url!, '_blank')}
+                                >
+                                  <FileText className="w-4 h-4 mr-2" /> View Document
+                                </Button>
+                              )}
                               {existingBid ? (
                                 <p className="text-sm text-muted-foreground">
                                   You've bid <span className="font-semibold text-foreground">{formatCurrency(existingBid.bid_amount)}</span>
