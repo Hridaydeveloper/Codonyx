@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, TrendingUp, DollarSign, Briefcase, Target, Pencil } from "lucide-react";
+import { Loader2, TrendingUp, DollarSign, Briefcase, Target, Pencil, FileText, Users, Building2, ArrowRight, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Dialog,
