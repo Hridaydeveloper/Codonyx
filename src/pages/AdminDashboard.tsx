@@ -109,6 +109,8 @@ const AdminDashboard = () => {
   const [showDealConfirm, setShowDealConfirm] = useState(false);
   const [accountActionLoading, setAccountActionLoading] = useState(false);
   const [selectedBidDetail, setSelectedBidDetail] = useState<any>(null);
+  const [selectedDealDetail, setSelectedDealDetail] = useState<any>(null);
+  const [dealDeleteConfirm, setDealDeleteConfirm] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -1085,6 +1087,7 @@ const AdminDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>All Deals</CardTitle>
+                  <CardDescription>Click a row to view full deal details</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {deals.length === 0 ? (
@@ -1095,6 +1098,7 @@ const AdminDashboard = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="whitespace-nowrap">Title</TableHead>
+                          <TableHead className="whitespace-nowrap">Notes</TableHead>
                           <TableHead className="whitespace-nowrap">Target</TableHead>
                           <TableHead className="whitespace-nowrap">Raised</TableHead>
                           <TableHead className="whitespace-nowrap">Status</TableHead>
@@ -1106,8 +1110,11 @@ const AdminDashboard = () => {
                         {deals.map((deal: any) => {
                           const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id);
                           return (
-                            <TableRow key={deal.id}>
+                            <TableRow key={deal.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedDealDetail(deal)}>
                               <TableCell className="font-medium whitespace-nowrap">{deal.title}</TableCell>
+                              <TableCell className="max-w-[200px] truncate text-muted-foreground text-sm">
+                                {deal.description || <span className="italic text-muted-foreground/50">No description</span>}
+                              </TableCell>
                               <TableCell className="whitespace-nowrap">₹{Number(deal.target_amount).toLocaleString()}</TableCell>
                               <TableCell className="whitespace-nowrap">₹{Number(deal.raised_amount).toLocaleString()}</TableCell>
                               <TableCell>
@@ -1117,17 +1124,28 @@ const AdminDashboard = () => {
                               </TableCell>
                               <TableCell className="whitespace-nowrap">{bidsForDeal.length}</TableCell>
                               <TableCell className="whitespace-nowrap">
-                                <Select value={deal.deal_status} onValueChange={(val) => handleDealStatusChange(deal.id, val)}>
-                                  <SelectTrigger className="w-[130px]">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="draft">Draft</SelectItem>
-                                    <SelectItem value="published">Published</SelectItem>
-                                    <SelectItem value="closed">Closed</SelectItem>
-                                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Select value={deal.deal_status} onValueChange={(val) => handleDealStatusChange(deal.id, val)}>
+                                    <SelectTrigger className="w-[120px]">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="draft">Draft</SelectItem>
+                                      <SelectItem value="published">Published</SelectItem>
+                                      <SelectItem value="closed">Closed</SelectItem>
+                                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-destructive hover:text-destructive"
+                                    title="Delete deal"
+                                    onClick={() => setDealDeleteConfirm(deal)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           );
@@ -1138,6 +1156,111 @@ const AdminDashboard = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Deal Detail Dialog */}
+              {selectedDealDetail && (
+                <Dialog open={!!selectedDealDetail} onOpenChange={(open) => !open && setSelectedDealDetail(null)}>
+                  <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>Deal Details</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
+                        <p className="font-semibold text-lg">{selectedDealDetail.title}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Target Amount</p>
+                          <p className="font-medium">₹{Number(selectedDealDetail.target_amount).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Raised Amount</p>
+                          <p className="font-medium">₹{Number(selectedDealDetail.raised_amount).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Status</p>
+                          <Badge className="capitalize mt-1" variant={selectedDealDetail.deal_status === "published" ? "default" : "secondary"}>
+                            {selectedDealDetail.deal_status}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Min Bid</p>
+                          <p className="font-medium">{selectedDealDetail.min_bid_amount ? `₹${Number(selectedDealDetail.min_bid_amount).toLocaleString()}` : "Not set"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Bids</p>
+                          <p className="font-medium">{dealBids.filter((b: any) => b.deal_id === selectedDealDetail.id).length}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Created</p>
+                          <p className="font-medium">{format(new Date(selectedDealDetail.created_at), "MMM d, yyyy HH:mm")}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Description</p>
+                        <div className="bg-muted/50 rounded-lg p-3 min-h-[60px]">
+                          {selectedDealDetail.description ? (
+                            <p className="text-sm whitespace-pre-wrap">{selectedDealDetail.description}</p>
+                          ) : (
+                            <p className="text-sm text-muted-foreground italic">No description provided.</p>
+                          )}
+                        </div>
+                      </div>
+                      {selectedDealDetail.document_url && (
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Document</p>
+                          <Button variant="outline" size="sm" onClick={() => window.open(selectedDealDetail.document_url, "_blank")}>
+                            View Document
+                          </Button>
+                        </div>
+                      )}
+                      <div className="flex justify-end pt-2">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => { setSelectedDealDetail(null); setDealDeleteConfirm(selectedDealDetail); }}
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" /> Delete Deal
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+
+              {/* Deal Delete Confirm */}
+              <AlertDialog open={!!dealDeleteConfirm} onOpenChange={(open) => !open && setDealDeleteConfirm(null)}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Deal</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to permanently delete the deal "<strong>{dealDeleteConfirm?.title}</strong>"? All bids associated with this deal will also be deleted. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={async () => {
+                        if (!dealDeleteConfirm) return;
+                        // Delete bids first, then deal
+                        await supabase.from("deal_bids").delete().eq("deal_id", dealDeleteConfirm.id);
+                        const { error } = await supabase.from("deals").delete().eq("id", dealDeleteConfirm.id);
+                        if (error) {
+                          showErrorToast("Failed to delete deal");
+                        } else {
+                          showSuccessToast("Deal deleted successfully");
+                          fetchDeals();
+                        }
+                        setDealDeleteConfirm(null);
+                      }}
+                    >
+                      Yes, Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               {/* Bids Management */}
               <Card>
@@ -1246,10 +1369,30 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                       {selectedBidDetail.deal && (
-                        <div>
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Deal Target</p>
-                          <p className="font-medium">₹{Number(selectedBidDetail.deal.target_amount).toLocaleString()}</p>
-                        </div>
+                        <>
+                          <div>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Deal Target</p>
+                            <p className="font-medium">₹{Number(selectedBidDetail.deal.target_amount).toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Deal Description</p>
+                            <div className="bg-muted/50 rounded-lg p-3 min-h-[40px]">
+                              {selectedBidDetail.deal.description ? (
+                                <p className="text-sm whitespace-pre-wrap">{selectedBidDetail.deal.description}</p>
+                              ) : (
+                                <p className="text-sm text-muted-foreground italic">No deal description.</p>
+                              )}
+                            </div>
+                          </div>
+                          {selectedBidDetail.deal.document_url && (
+                            <div>
+                              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Document</p>
+                              <Button variant="outline" size="sm" onClick={() => window.open(selectedBidDetail.deal.document_url, "_blank")}>
+                                View Document
+                              </Button>
+                            </div>
+                          )}
+                        </>
                       )}
                       <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Distributor Notes / Description</p>

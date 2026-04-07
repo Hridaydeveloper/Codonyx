@@ -29,11 +29,15 @@ export function DashboardNavbar() {
 
   // Dynamic nav links based on user type
   // Advisors see Laboratories, Labs see Advisors
-  const navLinks = profile?.user_type === "advisor" 
-    ? [{ name: "Laboratories", href: "/laboratories" }]
-    : profile?.user_type === "laboratory"
-    ? [{ name: "Advisors", href: "/advisors" }]
-    : [];
+  const navLinks = [
+    { name: "HOME", href: "/" },
+    { name: "Dashboard", href: "/dashboard" },
+    ...(profile?.user_type === "advisor" 
+      ? [{ name: "Laboratories", href: "/laboratories" }]
+      : profile?.user_type === "laboratory"
+      ? [{ name: "Advisors", href: "/advisors" }]
+      : []),
+  ];
 
   useEffect(() => {
     const loadProfileAndCheckAdmin = async () => {
