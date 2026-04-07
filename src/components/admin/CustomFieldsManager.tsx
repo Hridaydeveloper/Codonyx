@@ -281,7 +281,11 @@ export function CustomFieldsManager() {
       ) : filteredFields.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">No custom fields created yet. Click "Add Field" to get started.</p>
+            <p className="text-muted-foreground">
+              {fields.length === 0
+                ? 'No custom fields created yet. Click "Add Field" to get started.'
+                : `No custom fields found for the selected filter "${filterType}". Try selecting a different type or "All Types".`}
+            </p>
           </CardContent>
         </Card>
       ) : (
