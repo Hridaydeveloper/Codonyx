@@ -516,7 +516,7 @@ export default function DistributorDashboard() {
             </div>
 
             {/* Available Deals */}
-            <Card className="mb-8">
+            <Card id="deals-section" className="mb-8">
               <CardHeader>
                 <CardTitle>Available Deals</CardTitle>
                 <CardDescription>Published deals you can bid on</CardDescription>
@@ -718,4 +718,11 @@ export default function DistributorDashboard() {
       <Footer />
     </div>
   );
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning ☀️";
+  if (hour < 17) return "Good afternoon 🌤️";
+  return "Good evening 🌙";
 }
