@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, addDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -111,6 +111,18 @@ const AdminDashboard = () => {
   const [selectedBidDetail, setSelectedBidDetail] = useState<any>(null);
   const [selectedDealDetail, setSelectedDealDetail] = useState<any>(null);
   const [dealDeleteConfirm, setDealDeleteConfirm] = useState<any>(null);
+  // Deal filters
+  const [dealSearchTerm, setDealSearchTerm] = useState("");
+  const [dealStatusFilter, setDealStatusFilter] = useState("all");
+  const [dealSortBy, setDealSortBy] = useState<"date" | "price">("date");
+  const [dealSortOrder, setDealSortOrder] = useState<"desc" | "asc">("desc");
+  const [dealShowCount, setDealShowCount] = useState(15);
+  // Bid filters
+  const [bidSearchTerm, setBidSearchTerm] = useState("");
+  const [bidStatusFilter, setBidStatusFilter] = useState("all");
+  const [bidSortBy, setBidSortBy] = useState<"date" | "amount">("date");
+  const [bidSortOrder, setBidSortOrder] = useState<"desc" | "asc">("desc");
+  const [bidShowCount, setBidShowCount] = useState(15);
   const navigate = useNavigate();
   const { toast } = useToast();
 
