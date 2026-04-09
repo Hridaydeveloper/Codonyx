@@ -78,6 +78,8 @@ export default function DistributorDashboard() {
   const [editBidAmount, setEditBidAmount] = useState("");
   const [editBidNotes, setEditBidNotes] = useState("");
   const [isUpdatingBid, setIsUpdatingBid] = useState(false);
+  const [dealShowCount, setDealShowCount] = useState(15);
+  const [bidShowCount, setBidShowCount] = useState(15);
 
   useEffect(() => {
     loadData();
