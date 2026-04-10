@@ -33,6 +33,7 @@ interface Deal {
   created_at: string;
   min_bid_amount: number | null;
   document_url: string | null;
+  currency?: string;
 }
 
 interface Bid {
