@@ -130,7 +130,7 @@ export default function RegisterLaboratoryPage() {
         },
       }).catch((err) => console.error("Failed to send confirmation email:", err));
 
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
       setIsRegistered(true);
     } catch (error) {
       console.error("Registration error:", error);

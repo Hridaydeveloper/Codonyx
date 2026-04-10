@@ -69,7 +69,7 @@ export default function AuthPage() {
 
   const signOutUnauthorized = async (isDeactivated = false) => {
     try {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
     } catch {
       await supabase.auth.signOut({ scope: "local" });
     }
