@@ -348,9 +348,9 @@ export default function ConnectionsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen flex flex-col bg-background">
         <DashboardNavbar />
-        <main className="pt-24 pb-16">
+        <main className="flex-1 pt-24 pb-16">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
