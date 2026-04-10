@@ -628,7 +628,7 @@ export default function DistributorDashboard() {
                             </p>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="font-semibold text-foreground">{formatCurrency(bid.bid_amount)}</span>
+                            <span className="font-semibold text-foreground">{formatCurrency(bid.bid_amount, allDeals.find(d => d.id === bid.deal_id)?.currency)}</span>
                             <Badge className={getStatusColor(bid.bid_status)}>{getBidDisplayStatus(bid)}</Badge>
                             {canEditBid(bid) && (
                               <Button variant="outline" size="sm" onClick={() => handleEditBid(bid)}>
