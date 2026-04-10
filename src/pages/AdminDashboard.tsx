@@ -122,6 +122,7 @@ const AdminDashboard = () => {
   // Bid filters
   const [bidSearchTerm, setBidSearchTerm] = useState("");
   const [bidStatusFilter, setBidStatusFilter] = useState("all");
+  const [bidCurrencyFilter, setBidCurrencyFilter] = useState("all");
   const [bidSortBy, setBidSortBy] = useState<"date" | "amount">("date");
   const [bidSortOrder, setBidSortOrder] = useState<"desc" | "asc">("desc");
   const [bidShowCount, setBidShowCount] = useState(15);
@@ -280,16 +281,19 @@ const AdminDashboard = () => {
       created_by: user?.id,
       document_url: documentUrl,
       min_bid_amount: newDealMinBid ? parseFloat(newDealMinBid) : null,
+      currency: newDealCurrency,
     } as any);
     if (error) {
       showErrorToast("Failed to create deal", { description: "Please try again." });
     } else {
-      showSuccessToast("Deal created and published!");
+      const currencySymbol = newDealCurrency === "USD" ? "$" : "₹";
+      showSuccessToast(`Deal created and published! Target: ${currencySymbol}${parseFloat(newDealTarget).toLocaleString()} (${newDealCurrency})`);
       setNewDealTitle("");
       setNewDealDescription("");
       setNewDealTarget("");
       setNewDealMinBid("");
       setNewDealDocFile(null);
+      setNewDealCurrency("INR");
       setShowDealConfirm(false);
       fetchDeals();
     }
