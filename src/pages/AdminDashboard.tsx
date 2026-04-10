@@ -1199,14 +1199,15 @@ const AdminDashboard = () => {
                           <TableBody>
                             {visible.map((deal: any) => {
                               const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id);
+                              const cs = (deal.currency || "INR") === "USD" ? "$" : "₹";
                               return (
                                 <TableRow key={deal.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedDealDetail(deal)}>
                                   <TableCell className="font-medium whitespace-nowrap">{deal.title}</TableCell>
                                   <TableCell className="max-w-[200px] truncate text-muted-foreground text-sm">
                                     {deal.description || <span className="italic text-muted-foreground/50">No description</span>}
                                   </TableCell>
-                                  <TableCell className="whitespace-nowrap">₹{Number(deal.target_amount).toLocaleString()}</TableCell>
-                                  <TableCell className="whitespace-nowrap">₹{Number(deal.raised_amount).toLocaleString()}</TableCell>
+                                  <TableCell className="whitespace-nowrap">{cs}{Number(deal.target_amount).toLocaleString()} <span className="text-xs text-muted-foreground">{deal.currency || "INR"}</span></TableCell>
+                                  <TableCell className="whitespace-nowrap">{cs}{Number(deal.raised_amount).toLocaleString()}</TableCell>
                                   <TableCell>
                                     <Badge className="capitalize" variant={deal.deal_status === "published" ? "default" : "secondary"}>
                                       {deal.deal_status}
