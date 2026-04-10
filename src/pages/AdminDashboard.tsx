@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, addDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -77,7 +77,8 @@ interface InviteConfig {
   used_by: string | null;
 }
 
-const FIXED_INVITE_PATH = `/register?invite=codonyx-invite-${new Date().getFullYear()}`;
+const CURRENT_INVITE_TOKEN = `codonyx-invite-${new Date().getFullYear()}`;
+const FIXED_INVITE_PATH = `/register?invite=${CURRENT_INVITE_TOKEN}`;
 
 const AdminDashboard = () => {
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
@@ -129,6 +130,29 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const fetchInviteConfig = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("invite_tokens")
+      .select("*")
+      .eq("token", CURRENT_INVITE_TOKEN)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error fetching invite config:", error);
+      return;
+    }
+
+    if (data) {
+      setInviteConfig(data);
+      setExpirationDate(new Date(data.expires_at));
+      return;
+    }
+
+    setInviteConfig(null);
+  }, []);
+
   useEffect(() => {
     checkAdminAccess();
   }, []);
@@ -149,10 +173,13 @@ const AdminDashboard = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'deal_bids' }, () => {
         fetchDeals();
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'invite_tokens' }, () => {
+        fetchInviteConfig();
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [isAdmin]);
+  }, [isAdmin, fetchInviteConfig]);
 
   const checkAdminAccess = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -319,21 +346,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchInviteConfig = async () => {
-    const { data, error } = await supabase
-      .from("invite_tokens")
-      .select("*")
-      .eq("token", `codonyx-invite-${new Date().getFullYear()}`)
-      .single();
-
-    if (error && error.code !== "PGRST116") {
-      console.error("Error fetching invite config:", error);
-    } else if (data) {
-      setInviteConfig(data);
-      setExpirationDate(new Date(data.expires_at));
-    }
-  };
-
   const fetchPendingUsers = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -453,7 +465,7 @@ const AdminDashboard = () => {
         .from("invite_tokens")
         .insert({ 
           created_by: user?.id,
-          token: `codonyx-invite-${new Date().getFullYear()}`,
+          token: CURRENT_INVITE_TOKEN,
           expires_at: expirationDate.toISOString(),
           is_active: true
         })
