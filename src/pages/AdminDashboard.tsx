@@ -1787,7 +1787,7 @@ const AdminDashboard = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Confirm Deal Creation</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to create and publish the deal "{newDealTitle}" with a target amount of ${newDealTarget}? This will be visible to all approved distributors.
+                Are you sure you want to create and publish the deal "{newDealTitle}" with a target amount of {newDealCurrency === "USD" ? "$" : "₹"}{parseFloat(newDealTarget || "0").toLocaleString()} ({newDealCurrency})? This will be visible to all approved distributors.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
