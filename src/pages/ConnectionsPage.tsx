@@ -51,6 +51,7 @@ export default function ConnectionsPage() {
   const [acceptedConnections, setAcceptedConnections] = useState<Connection[]>([]);
   const [pendingReceived, setPendingReceived] = useState<Connection[]>([]);
   const [pendingSent, setPendingSent] = useState<Connection[]>([]);
+  const [cancelConfirm, setCancelConfirm] = useState<Connection | null>(null);
 
   useEffect(() => {
     loadConnections();
@@ -199,16 +200,20 @@ export default function ConnectionsPage() {
 
   const handleCancelRequest = async (connectionId: string) => {
     try {
+      // Withdraw with cooldown — mark withdrawn_at so re-request is blocked for 3 weeks
       const { error } = await supabase
         .from("connections")
-        .delete()
+        .update({ 
+          status: "rejected" as any,
+          withdrawn_at: new Date().toISOString(),
+        })
         .eq("id", connectionId);
 
       if (error) throw error;
 
       toast({
         title: "Request Cancelled",
-        description: "Your connection request has been cancelled.",
+        description: "Your connection request has been cancelled. You can resend after 3 weeks.",
       });
 
       loadConnections();
@@ -220,6 +225,7 @@ export default function ConnectionsPage() {
         variant: "destructive",
       });
     }
+    setCancelConfirm(null);
   };
 
   const getInitials = (name: string) => {
