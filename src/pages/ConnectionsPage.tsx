@@ -363,9 +363,9 @@ export default function ConnectionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <DashboardNavbar />
-      <main className="pt-24 pb-16">
+      <main className="flex-1 pt-24 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <BackButton />
           <div className="mb-8">
@@ -467,6 +467,29 @@ export default function ConnectionsPage() {
         </div>
       </main>
       <Footer />
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={!!cancelConfirm} onOpenChange={(open) => !open && setCancelConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Connection Request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel your connection request to <strong>{cancelConfirm ? getOtherProfile(cancelConfirm)?.full_name : ""}</strong>?
+              <br /><br />
+              <span className="text-amber-600 font-medium">⚠️ After cancelling, you will not be able to send a new request to this person for 3 weeks.</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Request</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => cancelConfirm && handleCancelRequest(cancelConfirm.id)}
+            >
+              Yes, Cancel Request
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
