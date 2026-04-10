@@ -713,7 +713,7 @@ export default function DistributorDashboard() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Bid Amount (₹) *</Label>
+              <Label>Bid Amount ({(allDeals.find(d => d.id === editingBid?.deal_id)?.currency || "INR") === "USD" ? "$" : "₹"}) *</Label>
               <Input
                 type="number"
                 min="1"
