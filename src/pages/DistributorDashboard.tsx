@@ -281,10 +281,14 @@ export default function DistributorDashboard() {
     setIsUpdatingBid(false);
   };
 
-  const formatCurrency = (amount: number) => {
-    if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
-    if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} L`;
-    return `₹${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number, currency?: string) => {
+    const c = currency || "INR";
+    const sym = c === "USD" ? "$" : "₹";
+    if (c === "INR") {
+      if (amount >= 10000000) return `${sym}${(amount / 10000000).toFixed(2)} Cr`;
+      if (amount >= 100000) return `${sym}${(amount / 100000).toFixed(2)} L`;
+    }
+    return `${sym}${amount.toLocaleString()}`;
   };
 
   const getStatusColor = (status: string) => {
