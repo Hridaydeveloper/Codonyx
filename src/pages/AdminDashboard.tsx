@@ -1078,11 +1078,23 @@ const AdminDashboard = () => {
                       <Input placeholder="Deal title" value={newDealTitle} onChange={(e) => setNewDealTitle(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Target Amount (₹) *</Label>
+                      <Label>Currency *</Label>
+                      <Select value={newDealCurrency} onValueChange={(v) => setNewDealCurrency(v as "INR" | "USD")}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select currency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="INR">₹ INR (Indian Rupee)</SelectItem>
+                          <SelectItem value="USD">$ USD (US Dollar)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Target Amount ({newDealCurrency === "USD" ? "$" : "₹"}) *</Label>
                       <Input type="number" placeholder="e.g. 10000000" value={newDealTarget} onChange={(e) => setNewDealTarget(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Minimum Bid Amount (₹)</Label>
+                      <Label>Minimum Bid Amount ({newDealCurrency === "USD" ? "$" : "₹"})</Label>
                       <Input type="number" placeholder="e.g. 500000" value={newDealMinBid} onChange={(e) => setNewDealMinBid(e.target.value)} />
                     </div>
                     <div className="space-y-2">
