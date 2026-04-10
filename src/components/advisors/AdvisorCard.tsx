@@ -81,11 +81,7 @@ export function AdvisorCard({
           <img
             src={avatarUrl}
             alt={fullName}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              setPhotoOpen(true);
-            }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
