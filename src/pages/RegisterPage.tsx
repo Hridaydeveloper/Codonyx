@@ -72,9 +72,6 @@ export default function RegisterPage() {
       }
 
       try {
-        // Clear any stale auth session that might interfere with the query
-        await supabase.auth.signOut();
-
         const { data: rows, error } = await supabase
           .rpc("validate_invite_token_lookup", { _token: inviteToken });
         const data = rows && rows.length > 0 ? rows[0] : null;
@@ -187,7 +184,7 @@ export default function RegisterPage() {
         },
       }).catch((err) => console.error("Failed to send confirmation email:", err));
 
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
       setIsRegistered(true);
     } catch (error) {
       console.error("Registration error:", error);
