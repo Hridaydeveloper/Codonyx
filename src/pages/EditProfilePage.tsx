@@ -277,9 +277,8 @@ export default function EditProfilePage() {
     } else {
       toast({
         title: "Success",
-          description: "Your profile has been updated.",
-        });
-      }
+        description: "Your profile has been updated.",
+      });
     }
 
     setIsSaving(false);
