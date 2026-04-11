@@ -948,7 +948,7 @@ const AdminDashboard = () => {
                       {allDistributors
                         .filter(d => distributorStatusFilter === "all" || d.approval_status === distributorStatusFilter)
                         .map((dist) => (
-                        <TableRow key={dist.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleViewPendingUser(dist)}>
+                        <TableRow key={dist.id} className="cursor-pointer hover:bg-muted/50" onClick={() => dist.approval_status === "approved" ? navigate(`/profile/${dist.id}`) : handleViewPendingUser(dist)}>
                           <TableCell className="whitespace-nowrap">
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8 shrink-0">
