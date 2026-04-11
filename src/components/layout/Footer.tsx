@@ -18,6 +18,12 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const location = useLocation();
+  const handleFooterClick = (href: string) => {
+    if (location.pathname === href) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
   return (
     <footer className="bg-navy border-t border-white/10">
       <div className="container mx-auto px-6 lg:px-8 py-16">
