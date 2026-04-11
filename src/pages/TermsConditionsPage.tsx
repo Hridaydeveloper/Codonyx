@@ -145,10 +145,10 @@ export default function TermsConditionsPage() {
                   11. Contact Us
                 </h2>
                 <p>
-                  If you have any questions about these Terms, please contact us at{" "}.
+                  If you have any questions about these Terms, please contact us at{" "}
                   <a href="mailto:info@codonyx.org" className="text-primary hover:underline">
                     info@codonyx.org
-                  </a>
+                  </a>.
                 </p>
               </section>
             </div>
