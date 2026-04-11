@@ -133,6 +133,8 @@ export default function AuthPage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (cancelled) return;
+      // Skip if form-based sign-in is handling navigation
+      if (isFormSigningIn.current) return;
 
       if (!session) {
         if (event === "SIGNED_OUT") {
