@@ -67,7 +67,7 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.solutions.map((link) => (
                 <li key={link.name}>
-                  <Link to={link.href} className="text-sm text-white/60 hover:text-emerald-glow transition-colors font-body">
+                  <Link to={link.href} onClick={() => handleFooterClick(link.href)} className="text-sm text-white/60 hover:text-emerald-glow transition-colors font-body">
                     {link.name}
                   </Link>
                 </li>
