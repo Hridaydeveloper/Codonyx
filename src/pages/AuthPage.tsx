@@ -32,6 +32,7 @@ const features = [
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const isFormSigningIn = useRef(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
