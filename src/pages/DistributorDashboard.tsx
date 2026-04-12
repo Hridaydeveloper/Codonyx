@@ -80,6 +80,8 @@ export default function DistributorDashboard() {
   const [editBidNotes, setEditBidNotes] = useState("");
   const [isUpdatingBid, setIsUpdatingBid] = useState(false);
   const [dealShowCount, setDealShowCount] = useState(15);
+  const [dealSearchTerm, setDealSearchTerm] = useState("");
+  const [dealCurrencyFilter, setDealCurrencyFilter] = useState("all");
   const [bidShowCount, setBidShowCount] = useState(15);
   const [bidSearchTerm, setBidSearchTerm] = useState("");
   const [bidStatusFilter, setBidStatusFilter] = useState("all");
