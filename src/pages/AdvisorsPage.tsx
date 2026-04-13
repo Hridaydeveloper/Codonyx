@@ -68,7 +68,7 @@ export default function AdvisorsPage() {
 
       if (advisorsData) {
         const adminEmails = ["dashriday856@gmail.com", "info@codonyx.org"];
-        setAdvisors(advisorsData.filter(a => !adminEmails.includes((a as any).email?.toLowerCase())).map(({ user_id, ...rest }) => rest) as Advisor[]);
+        setAdvisors(advisorsData.filter(a => !adminEmails.includes(a.email?.toLowerCase())).map(({ user_id, email, ...rest }) => rest) as Advisor[]);
       }
       setIsLoading(false);
     };
