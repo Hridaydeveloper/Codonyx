@@ -242,7 +242,7 @@ export function useConnections(currentProfileId: string | null) {
         return false;
       }
 
-      // Send acceptance email in background
+      // Send acceptance email and create notification in background
       (async () => {
         try {
           const connection = connections.find(c => c.id === connectionId);
@@ -252,6 +252,18 @@ export function useConnections(currentProfileId: string | null) {
               supabase.from("profiles").select("full_name, headline, organisation, user_type").eq("id", currentProfileId).single(),
               supabase.from("profiles").select("full_name, email").eq("id", senderId).single(),
             ]);
+
+            if (acceptorResult.data?.full_name) {
+              // Create in-app notification for the sender
+              await supabase.from("notifications").insert({
+                profile_id: senderId,
+                type: "connection_accepted",
+                title: "Connection Accepted",
+                message: `${acceptorResult.data.full_name} accepted your connection request.`,
+                link: `/profile/${currentProfileId}`,
+                related_profile_id: currentProfileId,
+              });
+            }
 
             if (senderResult.data?.email && acceptorResult.data?.full_name) {
               await supabase.functions.invoke("send-notification-email", {
