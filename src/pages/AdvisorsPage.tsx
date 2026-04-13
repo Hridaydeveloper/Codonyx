@@ -61,7 +61,7 @@ export default function AdvisorsPage() {
       // Load approved advisors with new fields
       const { data: advisorsData } = await supabase
         .from("profiles")
-        .select("id, full_name, headline, bio, location, organisation, avatar_url, linkedin_url, education, expertise, mentoring_areas, languages, industry_expertise, user_id")
+        .select("id, full_name, headline, bio, location, organisation, avatar_url, linkedin_url, education, expertise, mentoring_areas, languages, industry_expertise, user_id, email")
         .eq("user_type", "advisor")
         .eq("approval_status", "approved")
         .order("full_name");
