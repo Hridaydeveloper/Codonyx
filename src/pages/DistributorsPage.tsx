@@ -101,10 +101,10 @@ export default function DistributorsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-muted flex flex-col">
       <DashboardNavbar />
 
-      <main className="pt-24 pb-16">
+      <main className="pt-24 pb-16 flex-1">
         <div className="container mx-auto px-4">
           <BackButton />
           <div className="max-w-6xl mx-auto">
