@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface Profile {
   id: string;
@@ -120,7 +121,9 @@ export function DashboardNavbar() {
           </div>
 
           {/* User Menu */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
+            <NotificationBell profileId={profile?.id || null} />
+            
             <Link to="/edit-profile" data-tour="edit-profile">
               <Button variant="outline" size="sm">
                 Edit Profile
