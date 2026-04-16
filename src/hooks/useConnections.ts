@@ -185,16 +185,31 @@ export function useConnections(currentProfileId: string | null) {
         return false;
       }
 
-      // Send email notification in background (non-blocking)
+      // Send email + in-app notification in background (non-blocking)
       (async () => {
         try {
           const [senderResult, receiverResult] = await Promise.all([
-            supabase.from("profiles").select("full_name, headline, organisation, bio").eq("id", currentProfileId).single(),
+            supabase.from("profiles").select("full_name, headline, organisation, bio, user_type").eq("id", currentProfileId).single(),
             supabase.from("profiles").select("full_name, email").eq("id", targetProfileId).single(),
           ]);
 
           const senderProfile = senderResult.data;
           const receiverProfile = receiverResult.data;
+
+          if (senderProfile) {
+            // Create in-app notification for the receiver
+            const userTypeLabel = senderProfile.user_type
+              ? senderProfile.user_type.charAt(0).toUpperCase() + senderProfile.user_type.slice(1)
+              : "";
+            await supabase.from("notifications").insert({
+              profile_id: targetProfileId,
+              type: "connection_request",
+              title: "New Connection Request",
+              message: `${senderProfile.full_name}${userTypeLabel ? ` (${userTypeLabel})` : ""} sent you a connection request.`,
+              link: `/connections`,
+              related_profile_id: currentProfileId,
+            });
+          }
 
           if (receiverProfile?.email && senderProfile) {
             await supabase.functions.invoke("send-connection-email", {
@@ -243,11 +258,12 @@ export function useConnections(currentProfileId: string | null) {
       }
 
       // Send acceptance email and create notification in background
+      // Capture sender_id before async work to avoid stale closure
+      const connection = connections.find(c => c.id === connectionId);
+      const senderId = connection?.sender_id;
       (async () => {
         try {
-          const connection = connections.find(c => c.id === connectionId);
-          if (connection && currentProfileId) {
-            const senderId = connection.sender_id;
+          if (senderId && currentProfileId) {
             const [acceptorResult, senderResult] = await Promise.all([
               supabase.from("profiles").select("full_name, headline, organisation, user_type").eq("id", currentProfileId).single(),
               supabase.from("profiles").select("full_name, email").eq("id", senderId).single(),
