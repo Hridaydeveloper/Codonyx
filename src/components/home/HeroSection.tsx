@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCountUp } from "@/hooks/useCountUp";
@@ -61,7 +61,10 @@ function FloatingDecor() {
 
 export function HeroSection() {
   const { banners } = useBannerImages();
-  const heroImages = banners.map(b => ({ src: b.image_url, alt: b.alt_text || "CODONYX banner" }));
+  const heroImages = useMemo(
+    () => banners.map((b) => ({ src: b.image_url, alt: b.alt_text || "CODONYX banner" })),
+    [banners]
+  );
 
   const [currentImage, setCurrentImage] = useState(0);
   const [statsVisible, setStatsVisible] = useState(false);
@@ -156,7 +159,7 @@ export function HeroSection() {
         </div>
 
         {/* NASA-style 3-column link grid — shifted up */}
-        <div className="border-t border-white/15 pb-6 sm:pb-8 pt-5 sm:pt-6 animate-fade-in-delayed">
+        <div className="border-t border-white/15 pb-10 sm:pb-14 pt-5 sm:pt-6 animate-fade-in-delayed">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-8 lg:gap-12 mb-6">
             {[
               { label: "Become an Advisor", sub: "Join our expert network", to: "/become-advisor" },
@@ -194,7 +197,7 @@ export function HeroSection() {
 
       {/* Slide indicators */}
       {heroImages.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+        <div className="absolute bottom-8 sm:bottom-10 lg:bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
           {heroImages.map((_, i) => (
             <button
               key={i}
