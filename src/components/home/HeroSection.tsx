@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCountUp } from "@/hooks/useCountUp";
@@ -55,13 +55,28 @@ function FloatingDecor() {
       <div className="absolute top-[18%] right-[30%] w-2 h-2 rounded-full bg-emerald-glow/40 animate-float" />
       <div className="absolute bottom-[35%] left-[28%] w-1.5 h-1.5 rounded-full bg-emerald-glow/50 animate-float-delayed" />
       <div className="absolute top-[60%] left-[45%] w-1 h-1 rounded-full bg-emerald-glow/60 animate-float-slow" />
+      <svg className="absolute bottom-[18%] left-[8%] w-8 h-14 sm:w-10 sm:h-16 text-emerald-glow/25 animate-float-medium" viewBox="0 0 40 80" fill="none">
+        <path d="M10 5 Q20 20 10 35 Q0 50 10 65 Q20 75 10 78" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M30 5 Q20 20 30 35 Q40 50 30 65 Q20 75 30 78" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+      <svg className="absolute top-[30%] right-[32%] w-8 h-12 sm:w-10 sm:h-16 text-emerald-glow/20 animate-float-fast-reverse" viewBox="0 0 50 100" fill="none">
+        <path d="M5 5 Q25 20 45 5 Q25 35 5 50 Q25 65 45 50 Q25 80 5 95" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M45 5 Q25 20 5 5 Q25 35 45 50 Q25 65 5 50 Q25 80 45 95" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+      <svg className="absolute bottom-[30%] right-[4%] w-10 h-10 sm:w-14 sm:h-14 text-emerald-glow/20 animate-float-reverse" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="35" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="50" cy="50" r="10" fill="currentColor" opacity="0.4" />
+      </svg>
     </div>
   );
 }
 
 export function HeroSection() {
   const { banners } = useBannerImages();
-  const heroImages = banners.map(b => ({ src: b.image_url, alt: b.alt_text || "CODONYX banner" }));
+  const heroImages = useMemo(
+    () => banners.map((b) => ({ src: b.image_url, alt: b.alt_text || "CODONYX banner" })),
+    [banners]
+  );
 
   const [currentImage, setCurrentImage] = useState(0);
   const [statsVisible, setStatsVisible] = useState(false);
@@ -156,7 +171,7 @@ export function HeroSection() {
         </div>
 
         {/* NASA-style 3-column link grid — shifted up */}
-        <div className="border-t border-white/15 pb-6 sm:pb-8 pt-5 sm:pt-6 animate-fade-in-delayed">
+        <div className="border-t border-white/15 pb-10 sm:pb-14 pt-5 sm:pt-6 animate-fade-in-delayed">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-8 lg:gap-12 mb-6">
             {[
               { label: "Become an Advisor", sub: "Join our expert network", to: "/become-advisor" },
@@ -194,7 +209,7 @@ export function HeroSection() {
 
       {/* Slide indicators */}
       {heroImages.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+        <div className="absolute bottom-8 sm:bottom-10 lg:bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
           {heroImages.map((_, i) => (
             <button
               key={i}
