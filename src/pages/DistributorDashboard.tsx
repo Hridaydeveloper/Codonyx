@@ -249,7 +249,7 @@ export default function DistributorDashboard() {
       setSelectedDeal(null);
       setBidAmount("");
       setBidNotes("");
-      loadData();
+      if (user) void loadData(user.id);
     }
     setIsSubmittingBid(false);
   };
@@ -264,7 +264,7 @@ export default function DistributorDashboard() {
       toast({ title: "Failed to withdraw", variant: "destructive" });
     } else {
       toast({ title: "Bid withdrawn" });
-      loadData();
+      if (user) void loadData(user.id);
     }
   };
 
@@ -306,7 +306,7 @@ export default function DistributorDashboard() {
     } else {
       toast({ title: "Bid updated successfully!" });
       setEditingBid(null);
-      loadData();
+      if (user) void loadData(user.id);
     }
     setIsUpdatingBid(false);
   };
