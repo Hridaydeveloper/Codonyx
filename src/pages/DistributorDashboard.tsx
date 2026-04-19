@@ -246,6 +246,42 @@ export default function DistributorDashboard() {
       toast({ title: "Failed to place bid", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Bid placed successfully!" });
+
+      // Notify all admins about the new bid (best-effort, non-blocking)
+      try {
+        const currencySymbol = (selectedDeal.currency || "INR") === "USD" ? "$" : "₹";
+        const formattedAmount = `${currencySymbol}${amount.toLocaleString()}`;
+        const distributorName = profile.full_name || "A distributor";
+        const message = `${distributorName} (Distributor) bid on "${selectedDeal.title}" deal. Bidding amount: ${formattedAmount}.`;
+
+        const { data: adminRoles } = await supabase
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin");
+
+        const adminUserIds = (adminRoles || []).map((r) => r.user_id);
+        if (adminUserIds.length > 0) {
+          const { data: adminProfiles } = await supabase
+            .from("profiles")
+            .select("id")
+            .in("user_id", adminUserIds);
+
+          const rows = (adminProfiles || []).map((ap) => ({
+            profile_id: ap.id,
+            type: "new_bid",
+            title: "New Bid Placed",
+            message,
+            link: "/admin",
+            related_profile_id: profile.id,
+          }));
+          if (rows.length > 0) {
+            await supabase.from("notifications").insert(rows);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to send admin bid notifications:", e);
+      }
+
       setSelectedDeal(null);
       setBidAmount("");
       setBidNotes("");
