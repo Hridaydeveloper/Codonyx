@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, UserPlus, UserCheck, TrendingUp, CheckCheck } from "lucide-react";
+import { Bell, UserPlus, UserCheck, TrendingUp, CheckCheck, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
