@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, User, Users, Clock, UserCheck, Mail } from "lucide-react";
+import { Check, X, User, Users, Clock, UserCheck, Mail, UserPlus } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
