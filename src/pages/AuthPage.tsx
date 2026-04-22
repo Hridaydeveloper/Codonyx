@@ -483,7 +483,7 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16 xl:px-24 py-12">
         <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-lg p-6 sm:p-10">
           <Link to="/" className="inline-block mb-8">
-            <img src={codonyxLogo} alt="Codonyx" className="h-14 w-auto" fetchpriority="high" decoding="sync" />
+            <img src={codonyxLogo} alt="Codonyx" className="h-14 w-auto" {...({ fetchpriority: "high" } as any)} decoding="sync" />
           </Link>
 
           <h1 className="font-display text-3xl lg:text-4xl font-medium text-foreground mb-2">
