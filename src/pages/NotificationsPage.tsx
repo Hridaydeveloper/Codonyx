@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 const notificationIcon = (type: string) => {
   switch (type) {
