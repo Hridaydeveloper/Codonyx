@@ -278,9 +278,31 @@ export default function ConnectionsPage() {
 
   const getEmptyMessage = () => {
     if (currentUserType === "laboratory") {
-      return "You can send connection requests to advisors through Codonyx to let them know you discovered them on this platform.";
+      return "You can send connection requests to advisors or distributors through Codonyx. When you connect, they'll know you found them on this platform.";
     }
-    return "You can receive connection requests from laboratories who are interested in your expertise through this platform.";
+    if (currentUserType === "distributor") {
+      return "You can send connection requests to advisors or laboratories through Codonyx. When you connect, they'll know you found them on this platform.";
+    }
+    return "You can send connection requests to laboratories or distributors through Codonyx. When you connect, they'll know you found them on this platform.";
+  };
+
+  const getBrowseTargets = (): { label: string; path: string }[] => {
+    if (currentUserType === "advisor") {
+      return [
+        { label: "Laboratories", path: "/laboratories" },
+        { label: "Distributors", path: "/distributors" },
+      ];
+    }
+    if (currentUserType === "laboratory") {
+      return [
+        { label: "Advisors", path: "/advisors" },
+        { label: "Distributors", path: "/distributors" },
+      ];
+    }
+    return [
+      { label: "Advisors", path: "/advisors" },
+      { label: "Laboratories", path: "/laboratories" },
+    ];
   };
 
   const ConnectionCard = ({ 
