@@ -158,6 +158,7 @@ export default function NotificationsPage() {
           </div>
         )}
       </main>
+      <ScrollToTopButton />
     </div>
   );
 }
