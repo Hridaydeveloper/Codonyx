@@ -20,7 +20,7 @@ import {
 
 interface ConnectionsSectionProps {
   currentProfileId: string;
-  userType: "advisor" | "laboratory";
+  userType: "advisor" | "laboratory" | "distributor";
 }
 
 export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSectionProps) {
