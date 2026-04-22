@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, User, Users, Clock, UserCheck, Mail } from "lucide-react";
+import { Check, X, User, Users, Clock, UserCheck, Mail, UserPlus } from "lucide-react";
 import { BackButton } from "@/components/layout/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -278,9 +278,31 @@ export default function ConnectionsPage() {
 
   const getEmptyMessage = () => {
     if (currentUserType === "laboratory") {
-      return "You can send connection requests to advisors through Codonyx to let them know you discovered them on this platform.";
+      return "You can send connection requests to advisors or distributors through Codonyx. When you connect, they'll know you found them on this platform.";
     }
-    return "You can receive connection requests from laboratories who are interested in your expertise through this platform.";
+    if (currentUserType === "distributor") {
+      return "You can send connection requests to advisors or laboratories through Codonyx. When you connect, they'll know you found them on this platform.";
+    }
+    return "You can send connection requests to laboratories or distributors through Codonyx. When you connect, they'll know you found them on this platform.";
+  };
+
+  const getBrowseTargets = (): { label: string; path: string }[] => {
+    if (currentUserType === "advisor") {
+      return [
+        { label: "Laboratories", path: "/laboratories" },
+        { label: "Distributors", path: "/distributors" },
+      ];
+    }
+    if (currentUserType === "laboratory") {
+      return [
+        { label: "Advisors", path: "/advisors" },
+        { label: "Distributors", path: "/distributors" },
+      ];
+    }
+    return [
+      { label: "Advisors", path: "/advisors" },
+      { label: "Laboratories", path: "/laboratories" },
+    ];
   };
 
   const ConnectionCard = ({ 
@@ -448,11 +470,26 @@ export default function ConnectionsPage() {
                   ))}
                 </div>
               ) : (
-                <EmptyState
-                  icon={Users}
-                  title="No connections yet"
-                  description={getEmptyMessage()}
-                />
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="rounded-full bg-muted p-4 mb-4">
+                    <Users className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">No connections yet</h3>
+                  <p className="text-muted-foreground max-w-md">{getEmptyMessage()}</p>
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                    {getBrowseTargets().map((t) => (
+                      <Button
+                        key={t.path}
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => navigate(t.path)}
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        Browse {t.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               )}
             </TabsContent>
 
