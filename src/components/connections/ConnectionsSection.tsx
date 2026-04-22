@@ -54,8 +54,29 @@ export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSe
   };
 
   const EmptyState = ({ type }: { type: "connections" | "pending" | "sent" }) => {
-    const isLab = userType === "laboratory";
-    
+    const browseTargets: { label: string; path: string }[] =
+      userType === "advisor"
+        ? [
+            { label: "Laboratories", path: "/laboratories" },
+            { label: "Distributors", path: "/distributors" },
+          ]
+        : userType === "laboratory"
+        ? [
+            { label: "Advisors", path: "/advisors" },
+            { label: "Distributors", path: "/distributors" },
+          ]
+        : [
+            { label: "Advisors", path: "/advisors" },
+            { label: "Laboratories", path: "/laboratories" },
+          ];
+
+    const description =
+      userType === "laboratory"
+        ? "You can send connection requests to advisors or distributors through Codonyx. When you connect, they'll receive an email letting them know you came from this platform."
+        : userType === "advisor"
+        ? "You can send connection requests to laboratories or distributors through Codonyx. When you connect, they'll receive an email letting them know you came from this platform."
+        : "You can send connection requests to advisors or laboratories through Codonyx. When you connect, they'll receive an email letting them know you came from this platform.";
+
     if (type === "connections") {
       return (
         <div className="text-center py-12 px-6">
@@ -66,19 +87,21 @@ export function ConnectionsSection({ currentProfileId, userType }: ConnectionsSe
             No Connections Yet
           </h3>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            {isLab
-              ? "You can send connection requests to advisors through Codonyx. When you connect, they'll receive an email letting them know you came from this platform."
-              : "You can send connection requests to laboratories through Codonyx. When you connect, they'll receive an email letting them know you came from this platform."
-            }
+            {description}
           </p>
-          <Button
-            variant="outline"
-            className="mt-6 gap-2"
-            onClick={() => navigate(isLab ? "/advisors" : "/laboratories")}
-          >
-            <UserPlus className="w-4 h-4" />
-            Browse {isLab ? "Advisors" : "Laboratories"}
-          </Button>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+            {browseTargets.map((t) => (
+              <Button
+                key={t.path}
+                variant="outline"
+                className="gap-2"
+                onClick={() => navigate(t.path)}
+              >
+                <UserPlus className="w-4 h-4" />
+                Browse {t.label}
+              </Button>
+            ))}
+          </div>
         </div>
       );
     }
