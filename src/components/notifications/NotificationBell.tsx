@@ -35,6 +35,27 @@ export function NotificationBell({ profileId }: NotificationBellProps) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Track scroll inside the popover list to toggle the scroll-to-top button.
+  useEffect(() => {
+    if (!open || isMobile) return;
+    // Radix ScrollArea renders a viewport with this data attribute.
+    const viewport = document.querySelector<HTMLDivElement>(
+      "[data-notifications-scroll-viewport]"
+    );
+    if (!viewport) return;
+    scrollViewportRef.current = viewport;
+    const onScroll = () => setShowScrollTop(viewport.scrollTop > 80);
+    onScroll();
+    viewport.addEventListener("scroll", onScroll, { passive: true });
+    return () => viewport.removeEventListener("scroll", onScroll);
+  }, [open, isMobile, notifications.length]);
+
+  const scrollListToTop = () => {
+    scrollViewportRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // On mobile, the bell navigates to a dedicated full-page notifications view.
   if (isMobile) {
