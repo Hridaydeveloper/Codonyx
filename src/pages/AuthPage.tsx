@@ -208,6 +208,8 @@ export default function AuthPage() {
           await signOutUnauthorized(deactivated);
           return;
         }
+        // Persist the user's "Remember Me" choice for this session.
+        applyRememberMePreference(rememberMe);
         // Navigate immediately - don't wait for onAuthStateChange
         navigate("/dashboard", { replace: true });
       } else {
