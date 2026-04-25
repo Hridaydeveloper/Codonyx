@@ -534,7 +534,15 @@ export default function AuthPage() {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <Checkbox
+                    id="remember-me"
+                    checked={rememberMe}
+                    onCheckedChange={(v) => setRememberMe(v === true)}
+                  />
+                  <span className="text-sm text-muted-foreground">Remember me</span>
+                </label>
                 <button
                   type="button"
                   onClick={() => setShowForgotPassword(true)}
