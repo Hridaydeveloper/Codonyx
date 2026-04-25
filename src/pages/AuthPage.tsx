@@ -11,6 +11,8 @@ import { ArrowRight, Target, MessageCircle, Handshake, Loader2, Eye, EyeOff } fr
 import codonyxLogo from "@/assets/codonyx_logo.png";
 import googleIcon from "@/assets/google-icon.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { applyRememberMePreference, REMEMBER_ME_KEY } from "@/lib/rememberMe";
 
 const features = [
   {
