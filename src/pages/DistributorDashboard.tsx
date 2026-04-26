@@ -60,8 +60,10 @@ interface Profile {
 interface AggregateStats {
   unique_bidders: number;
   approved_distributors: number;
-  total_subscription: number;
-  total_target: number;
+  total_subscription_inr: number;
+  total_subscription_usd: number;
+  total_target_inr: number;
+  total_target_usd: number;
 }
 
 export default function DistributorDashboard() {
