@@ -75,6 +75,7 @@ export default function DistributorDashboard() {
   const [allDeals, setAllDeals] = useState<Deal[]>([]);
   const [myBids, setMyBids] = useState<Bid[]>([]);
   const [aggregateStats, setAggregateStats] = useState<AggregateStats>({ unique_bidders: 0, approved_distributors: 0, total_subscription_inr: 0, total_subscription_usd: 0, total_target_inr: 0, total_target_usd: 0 });
+  const [indicatorLimits, setIndicatorLimits] = useState<{ limit_subscription_inr: number; limit_subscription_usd: number; limit_over_committed_inr: number; limit_over_committed_usd: number }>({ limit_subscription_inr: 0, limit_subscription_usd: 0, limit_over_committed_inr: 0, limit_over_committed_usd: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [bidAmount, setBidAmount] = useState("");
