@@ -216,6 +216,50 @@ const AdminDashboard = () => {
     fetchInviteConfig();
     fetchAllUsers();
     fetchDeals();
+    fetchIndicatorLimits();
+  };
+
+  const fetchIndicatorLimits = async () => {
+    const { data } = await supabase.from("dashboard_settings").select("setting_key, setting_value");
+    if (data) {
+      const next = { limit_subscription_inr: 0, limit_subscription_usd: 0, limit_over_committed_inr: 0, limit_over_committed_usd: 0 };
+      data.forEach((row: any) => {
+        if (row.setting_key in next) (next as any)[row.setting_key] = Number(row.setting_value) || 0;
+      });
+      setIndicatorLimits(next);
+      setEditingLimits({
+        limit_subscription_inr: next.limit_subscription_inr ? String(next.limit_subscription_inr) : "",
+        limit_subscription_usd: next.limit_subscription_usd ? String(next.limit_subscription_usd) : "",
+        limit_over_committed_inr: next.limit_over_committed_inr ? String(next.limit_over_committed_inr) : "",
+        limit_over_committed_usd: next.limit_over_committed_usd ? String(next.limit_over_committed_usd) : "",
+      });
+    }
+  };
+
+  const handleSaveIndicatorLimits = async () => {
+    setSavingLimits(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    const updates = [
+      { setting_key: "limit_subscription_inr", setting_value: parseFloat(editingLimits.limit_subscription_inr) || 0 },
+      { setting_key: "limit_subscription_usd", setting_value: parseFloat(editingLimits.limit_subscription_usd) || 0 },
+      { setting_key: "limit_over_committed_inr", setting_value: parseFloat(editingLimits.limit_over_committed_inr) || 0 },
+      { setting_key: "limit_over_committed_usd", setting_value: parseFloat(editingLimits.limit_over_committed_usd) || 0 },
+    ];
+    let hasError = false;
+    for (const u of updates) {
+      const { error } = await supabase
+        .from("dashboard_settings")
+        .update({ setting_value: u.setting_value, updated_by: user?.id })
+        .eq("setting_key", u.setting_key);
+      if (error) hasError = true;
+    }
+    setSavingLimits(false);
+    if (hasError) {
+      showErrorToast("Failed to update limits", { description: "Please try again." });
+    } else {
+      showSuccessToast("Indicator limits updated");
+      fetchIndicatorLimits();
+    }
   };
 
   const fetchAllUsers = async () => {
