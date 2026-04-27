@@ -672,13 +672,22 @@ export default function DistributorDashboard() {
                         const progress = deal.target_amount > 0 ? (deal.raised_amount / deal.target_amount) * 100 : 0;
                         const existingBid = myBids.find(b => b.deal_id === deal.id && b.bid_status !== "withdrawn");
                         return (
-                          <Card key={deal.id} className="border border-divider">
+                          <Card
+                            key={deal.id}
+                            className="border border-divider cursor-pointer hover:shadow-md hover:border-primary/40 transition-all"
+                            onClick={() => setViewDealDetail(deal)}
+                          >
                             <CardContent className="p-5">
-                              <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-start justify-between mb-3 gap-2">
                                 <h3 className="font-heading text-lg font-semibold text-foreground">{deal.title}</h3>
-                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-                                  Open
-                                </Badge>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <Badge className="bg-orange-500/15 text-orange-600 border border-orange-500/30 hover:bg-orange-500/20">
+                                    {dealBidCounts[deal.id] || 0} BIDS
+                                  </Badge>
+                                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                                    Open
+                                  </Badge>
+                                </div>
                               </div>
                               {deal.description && (
                                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{deal.description}</p>
@@ -700,7 +709,7 @@ export default function DistributorDashboard() {
                                 </div>
                                 <p className="text-xs text-muted-foreground text-right">{progress.toFixed(1)}% funded</p>
                               </div>
-                              <div className="mt-4 flex flex-col gap-2">
+                              <div className="mt-4 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
                                 {deal.document_url && (
                                   <Button
                                     variant="outline"
