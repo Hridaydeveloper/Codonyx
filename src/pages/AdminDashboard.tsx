@@ -1502,7 +1502,7 @@ const AdminDashboard = () => {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider">Bids</p>
-                          <p className="font-medium">{dealBids.filter((b: any) => b.deal_id === selectedDealDetail.id).length}</p>
+                          <p className="font-medium">{dealBids.filter((b: any) => b.deal_id === selectedDealDetail.id && b.bid_status !== 'withdrawn').length}</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider">Created</p>
