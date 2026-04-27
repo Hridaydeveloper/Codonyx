@@ -90,6 +90,9 @@ const AdminDashboard = () => {
   const [deals, setDeals] = useState<any[]>([]);
   const [dealBids, setDealBids] = useState<any[]>([]);
   const [aggregateStats, setAggregateStats] = useState<{ approved_distributors: number; unique_bidders: number; total_subscription_inr: number; total_subscription_usd: number; total_target_inr: number; total_target_usd: number }>({ approved_distributors: 0, unique_bidders: 0, total_subscription_inr: 0, total_subscription_usd: 0, total_target_inr: 0, total_target_usd: 0 });
+  const [indicatorLimits, setIndicatorLimits] = useState<{ limit_subscription_inr: number; limit_subscription_usd: number; limit_over_committed_inr: number; limit_over_committed_usd: number }>({ limit_subscription_inr: 0, limit_subscription_usd: 0, limit_over_committed_inr: 0, limit_over_committed_usd: 0 });
+  const [editingLimits, setEditingLimits] = useState<{ limit_subscription_inr: string; limit_subscription_usd: string; limit_over_committed_inr: string; limit_over_committed_usd: string }>({ limit_subscription_inr: "", limit_subscription_usd: "", limit_over_committed_inr: "", limit_over_committed_usd: "" });
+  const [savingLimits, setSavingLimits] = useState(false);
   const [loading, setLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
