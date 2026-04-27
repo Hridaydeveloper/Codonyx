@@ -1122,19 +1122,24 @@ const AdminDashboard = () => {
               {/* Deal Indicators */}
               {(() => {
                 // Targets per currency (fallback if no deals exist yet)
-                const targetInr = aggregateStats.total_target_inr || (20 * 10000000); // 20 Cr default
-                const targetUsd = aggregateStats.total_target_usd || 1000000; // $1M default
+                // Admin-configured limits (fallback to target sums when limit is 0)
+                const subInrLimit = indicatorLimits.limit_subscription_inr > 0 ? indicatorLimits.limit_subscription_inr : (aggregateStats.total_target_inr || (20 * 10000000));
+                const subUsdLimit = indicatorLimits.limit_subscription_usd > 0 ? indicatorLimits.limit_subscription_usd : (aggregateStats.total_target_usd || 1000000);
+                const overInrLimit = indicatorLimits.limit_over_committed_inr > 0 ? indicatorLimits.limit_over_committed_inr : (aggregateStats.total_target_inr || (20 * 10000000));
+                const overUsdLimit = indicatorLimits.limit_over_committed_usd > 0 ? indicatorLimits.limit_over_committed_usd : (aggregateStats.total_target_usd || 1000000);
+                const targetInrForOver = aggregateStats.total_target_inr || (20 * 10000000);
+                const targetUsdForOver = aggregateStats.total_target_usd || 1000000;
                 const totalBidders = aggregateStats.approved_distributors;
                 const subInr = aggregateStats.total_subscription_inr;
                 const subUsd = aggregateStats.total_subscription_usd;
-                const overInr = Math.max(0, subInr - targetInr);
-                const overUsd = Math.max(0, subUsd - targetUsd);
+                const overInr = Math.max(0, subInr - targetInrForOver);
+                const overUsd = Math.max(0, subUsd - targetUsdForOver);
 
                 const investorPercent = Math.min(100, (totalBidders / 250) * 100);
-                const subInrPercent = targetInr > 0 ? Math.min(100, (subInr / targetInr) * 100) : 0;
-                const subUsdPercent = targetUsd > 0 ? Math.min(100, (subUsd / targetUsd) * 100) : 0;
-                const overInrPercent = targetInr > 0 ? Math.min(100, (overInr / targetInr) * 100) : 0;
-                const overUsdPercent = targetUsd > 0 ? Math.min(100, (overUsd / targetUsd) * 100) : 0;
+                const subInrPercent = subInrLimit > 0 ? Math.min(100, (subInr / subInrLimit) * 100) : 0;
+                const subUsdPercent = subUsdLimit > 0 ? Math.min(100, (subUsd / subUsdLimit) * 100) : 0;
+                const overInrPercent = overInrLimit > 0 ? Math.min(100, (overInr / overInrLimit) * 100) : 0;
+                const overUsdPercent = overUsdLimit > 0 ? Math.min(100, (overUsd / overUsdLimit) * 100) : 0;
 
                 const formatInr = (val: number) => {
                   if (val >= 10000000) return `${(val / 10000000).toFixed(2)} Cr`;
