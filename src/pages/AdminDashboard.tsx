@@ -1217,6 +1217,67 @@ const AdminDashboard = () => {
                 );
               })()}
 
+              {/* Indicator Limits (Admin only) */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Indicator Limits</CardTitle>
+                  <CardDescription>
+                    Set the maximum value (denominator) used to calculate the circle progress for each indicator.
+                    Example: if Subscription (INR) value = 20,00,000 and limit = 2,00,00,000 → fill shows 10%.
+                    Leave 0 to fall back to the sum of deal targets.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Subscription Limit (INR)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="e.g. 20000000"
+                        value={editingLimits.limit_subscription_inr}
+                        onChange={(e) => setEditingLimits((p) => ({ ...p, limit_subscription_inr: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Subscription Limit (USD)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="e.g. 1000000"
+                        value={editingLimits.limit_subscription_usd}
+                        onChange={(e) => setEditingLimits((p) => ({ ...p, limit_subscription_usd: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Over Committed Limit (INR)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="e.g. 20000000"
+                        value={editingLimits.limit_over_committed_inr}
+                        onChange={(e) => setEditingLimits((p) => ({ ...p, limit_over_committed_inr: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Over Committed Limit (USD)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="e.g. 1000000"
+                        value={editingLimits.limit_over_committed_usd}
+                        onChange={(e) => setEditingLimits((p) => ({ ...p, limit_over_committed_usd: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <Button onClick={handleSaveIndicatorLimits} disabled={savingLimits}>
+                      {savingLimits ? "Saving..." : "Save Limits"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Create Deal */}
               <Card>
                 <CardHeader>
