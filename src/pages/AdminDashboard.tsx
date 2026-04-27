@@ -1411,7 +1411,7 @@ const AdminDashboard = () => {
                           </TableHeader>
                           <TableBody>
                             {visible.map((deal: any) => {
-                              const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id);
+                              const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id && b.bid_status !== 'withdrawn');
                               const cs = (deal.currency || "INR") === "USD" ? "$" : "₹";
                               return (
                                 <TableRow key={deal.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedDealDetail(deal)}>
@@ -1502,7 +1502,7 @@ const AdminDashboard = () => {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider">Bids</p>
-                          <p className="font-medium">{dealBids.filter((b: any) => b.deal_id === selectedDealDetail.id).length}</p>
+                          <p className="font-medium">{dealBids.filter((b: any) => b.deal_id === selectedDealDetail.id && b.bid_status !== 'withdrawn').length}</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider">Created</p>
