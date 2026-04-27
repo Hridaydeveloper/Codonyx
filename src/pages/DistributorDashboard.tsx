@@ -913,6 +913,71 @@ export default function DistributorDashboard() {
         </DialogContent>
       </Dialog>
 
+      {/* Deal Details Dialog */}
+      <Dialog open={!!viewDealDetail} onOpenChange={() => setViewDealDetail(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="break-words">{viewDealDetail?.title}</DialogTitle>
+            <DialogDescription>Deal details and current activity</DialogDescription>
+          </DialogHeader>
+          {viewDealDetail && (
+            <div className="space-y-4 py-2">
+              {viewDealDetail.description && (
+                <div>
+                  <Label className="text-muted-foreground">Description</Label>
+                  <p className="text-sm text-foreground mt-1 whitespace-pre-wrap break-words">{viewDealDetail.description}</p>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">Target</Label>
+                  <p className="font-semibold text-foreground">{formatCurrency(viewDealDetail.target_amount, viewDealDetail.currency)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Raised</Label>
+                  <p className="font-semibold text-primary">{formatCurrency(viewDealDetail.raised_amount, viewDealDetail.currency)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Currency</Label>
+                  <p className="font-medium">{viewDealDetail.currency || "INR"}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Active Bids</Label>
+                  <p className="font-semibold text-orange-600">{dealBidCounts[viewDealDetail.id] || 0}</p>
+                </div>
+                {viewDealDetail.min_bid_amount != null && (
+                  <div>
+                    <Label className="text-muted-foreground">Minimum Bid</Label>
+                    <p className="font-medium">{(viewDealDetail.currency || "INR") === "USD" ? "$" : "₹"}{Number(viewDealDetail.min_bid_amount).toLocaleString()}</p>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-muted-foreground">Status</Label>
+                  <p>
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 capitalize">
+                      {viewDealDetail.deal_status}
+                    </Badge>
+                  </p>
+                </div>
+              </div>
+              {viewDealDetail.document_url && (
+                <Button variant="outline" className="w-full" onClick={() => window.open(viewDealDetail.document_url!, '_blank')}>
+                  <FileText className="w-4 h-4 mr-2" /> View Document
+                </Button>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewDealDetail(null)}>Close</Button>
+            {viewDealDetail && !myBids.find(b => b.deal_id === viewDealDetail.id && b.bid_status !== "withdrawn") && (
+              <Button onClick={() => { setSelectedDeal(viewDealDetail); setViewDealDetail(null); }}>
+                Place Bid
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
