@@ -222,6 +222,16 @@ export default function DistributorDashboard() {
     // Fetch admin-configured indicator limits
     await fetchIndicatorLimits();
 
+    // Fetch active bid counts per deal (so distributors see total participants)
+    const { data: bidCountsData } = await supabase.rpc('get_deal_active_bid_counts');
+    if (bidCountsData) {
+      const counts: Record<string, number> = {};
+      (bidCountsData as any[]).forEach((row) => {
+        counts[row.deal_id] = Number(row.active_bids) || 0;
+      });
+      setDealBidCounts(counts);
+    }
+
     setIsLoading(false);
   };
 
