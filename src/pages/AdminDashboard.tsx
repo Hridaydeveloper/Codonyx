@@ -180,6 +180,9 @@ const AdminDashboard = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'invite_tokens' }, () => {
         fetchInviteConfig();
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'dashboard_settings' }, () => {
+        fetchIndicatorLimits();
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
