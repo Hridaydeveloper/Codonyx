@@ -217,6 +217,9 @@ export default function DistributorDashboard() {
       setAggregateStats(statsData as unknown as AggregateStats);
     }
 
+    // Fetch admin-configured indicator limits
+    await fetchIndicatorLimits();
+
     setIsLoading(false);
   };
 
