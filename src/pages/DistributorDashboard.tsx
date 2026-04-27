@@ -140,10 +140,24 @@ export default function DistributorDashboard() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'deal_bids' }, () => {
         if (user) void loadData(user.id);
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'dashboard_settings' }, () => {
+        void fetchIndicatorLimits();
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
   }, [profile, user]);
+
+  const fetchIndicatorLimits = async () => {
+    const { data } = await supabase.from("dashboard_settings").select("setting_key, setting_value");
+    if (data) {
+      const next = { limit_subscription_inr: 0, limit_subscription_usd: 0, limit_over_committed_inr: 0, limit_over_committed_usd: 0 };
+      data.forEach((row: any) => {
+        if (row.setting_key in next) (next as any)[row.setting_key] = Number(row.setting_value) || 0;
+      });
+      setIndicatorLimits(next);
+    }
+  };
 
   const loadData = async (userId: string) => {
     const { data: profileData } = await fetchOwnProfile<Profile>(
