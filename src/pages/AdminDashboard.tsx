@@ -1411,7 +1411,7 @@ const AdminDashboard = () => {
                           </TableHeader>
                           <TableBody>
                             {visible.map((deal: any) => {
-                              const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id);
+                              const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id && b.bid_status !== 'withdrawn');
                               const cs = (deal.currency || "INR") === "USD" ? "$" : "₹";
                               return (
                                 <TableRow key={deal.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedDealDetail(deal)}>
