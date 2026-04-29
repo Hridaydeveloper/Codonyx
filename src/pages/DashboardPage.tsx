@@ -123,6 +123,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { isReady, user } = useAuthReady();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const hasChecked = useRef(false);
   useAccountGuard();
