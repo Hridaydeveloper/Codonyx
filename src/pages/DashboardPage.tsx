@@ -153,6 +153,13 @@ export default function DashboardPage() {
       }
 
       setProfile(profileData);
+
+      const { data: hasAdminRole } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+      setIsAdmin(hasAdminRole === true);
+
       setIsLoading(false);
     };
 
