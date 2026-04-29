@@ -140,12 +140,17 @@ export function useConnections(currentProfileId: string | null) {
         await supabase.from("connections").delete().eq("id", existingConn.id);
       }
 
-      if (existingConn && !existingConn.withdrawn_at) {
+      if (existingConn && !existingConn.withdrawn_at && existingConn.status !== "rejected") {
         toast({
           title: "Already connected",
           description: "You already have an active connection with this person.",
         });
         return false;
+      }
+
+      // Legacy rejected rows without cooldown — delete so a fresh request can be created
+      if (existingConn && existingConn.status === "rejected" && !existingConn.withdrawn_at) {
+        await supabase.from("connections").delete().eq("id", existingConn.id);
       }
 
       // Optimistic update FIRST
