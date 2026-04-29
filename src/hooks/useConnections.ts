@@ -326,19 +326,20 @@ export function useConnections(currentProfileId: string | null) {
   };
 
   const rejectConnection = async (connectionId: string) => {
-    // Optimistic update
-    setConnections(prev => prev.map(c => c.id === connectionId ? { ...c, status: "rejected" as const } : c));
+    const now = new Date().toISOString();
+    // Optimistic update — also set withdrawn_at so a 3-week cooldown applies to the sender
+    setConnections(prev => prev.map(c => c.id === connectionId ? { ...c, status: "rejected" as const, withdrawn_at: now } : c));
     toast({ title: "Request Declined", description: "Connection request has been declined." });
 
     try {
       const { error } = await supabase
         .from("connections")
-        .update({ status: "rejected" })
+        .update({ status: "rejected" as any, withdrawn_at: now })
         .eq("id", connectionId);
 
       if (error) {
         // Rollback
-        setConnections(prev => prev.map(c => c.id === connectionId ? { ...c, status: "pending" as const } : c));
+        setConnections(prev => prev.map(c => c.id === connectionId ? { ...c, status: "pending" as const, withdrawn_at: null } : c));
         console.error("Error rejecting connection:", error);
         toast({ title: "Error", description: "Failed to reject connection request.", variant: "destructive" });
         return false;
