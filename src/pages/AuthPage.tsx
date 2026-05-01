@@ -338,6 +338,14 @@ export default function AuthPage() {
         toast({ title: "Password too short", description: "Password must be at least 6 characters.", variant: "destructive" });
         return;
       }
+      if (getResetPasswordScore(resetPassword) < 2) {
+        toast({
+          title: "Password too weak",
+          description: "Please choose a stronger password (mix uppercase, lowercase, numbers, or symbols).",
+          variant: "destructive",
+        });
+        return;
+      }
       if (resetPassword !== resetConfirmPassword) {
         toast({ title: "Passwords don't match", description: "Please make sure both passwords are the same.", variant: "destructive" });
         return;
