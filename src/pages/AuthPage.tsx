@@ -701,7 +701,7 @@ export default function AuthPage() {
             {resetStep === "password" && (
               <>
                 <div className="space-y-2">
-                  <Label>New Password</Label>
+                  <Label>New Password *</Label>
                   <div className="relative">
                     <Input
                       type={showResetPassword ? "text" : "password"}
@@ -718,9 +718,10 @@ export default function AuthPage() {
                       {showResetPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  <PasswordStrength password={resetPassword} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Confirm New Password</Label>
+                  <Label>Confirm New Password *</Label>
                   <Input
                     type={showResetPassword ? "text" : "password"}
                     placeholder="Re-enter new password"
