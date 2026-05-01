@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { applyRememberMePreference, REMEMBER_ME_KEY } from "@/lib/rememberMe";
 import { PasswordStrength } from "@/components/registration/PasswordStrength";
 
-// Mirrors PasswordStrength scoring; require at least "Medium" (score >= 2) for resets.
+// Mirrors PasswordStrength scoring; require "Very Strong" (score >= 4) for resets.
 function getResetPasswordScore(password: string): number {
   if (!password || password.length < 6) return 0;
   let s = 0;
