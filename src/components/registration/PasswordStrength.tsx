@@ -11,7 +11,7 @@ type StrengthLevel = {
   textColor: string;
 };
 
-function calculateStrength(password: string): StrengthLevel {
+export function calculateStrength(password: string): StrengthLevel {
   if (!password) {
     return { label: "", score: 0, color: "bg-muted", textColor: "text-muted-foreground" };
   }
