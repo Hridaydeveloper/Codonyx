@@ -12,7 +12,7 @@ import codonyxLogo from "@/assets/codonyx_logo.png";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
 import { RegistrationAvatarUpload } from "@/components/registration/RegistrationAvatarUpload";
 import { TermsCheckbox } from "@/components/registration/TermsCheckbox";
-import { PasswordStrength } from "@/components/registration/PasswordStrength";
+import { PasswordStrength, calculateStrength } from "@/components/registration/PasswordStrength";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 
 export default function RegisterLaboratoryPage() {
