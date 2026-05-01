@@ -112,8 +112,8 @@ export default function RegisterPage() {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (password.length < 6) {
-      toast({ title: "Password too short", description: "Password must be at least 6 characters.", variant: "destructive" });
+    if (calculateStrength(password).score < 4) {
+      toast({ title: "Password not strong enough", description: "Password must reach 'Very Strong'. Use 10+ characters with uppercase, lowercase, numbers, and a symbol.", variant: "destructive" });
       return;
     }
     if (!expertise.trim()) {
