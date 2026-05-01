@@ -533,6 +533,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-12 pr-12"
+                  maxLength={16}
                   required
                 />
                 <button
@@ -708,6 +709,7 @@ export default function AuthPage() {
                       placeholder="At least 6 characters"
                       value={resetPassword}
                       onChange={(e) => setResetPassword(e.target.value)}
+                      maxLength={16}
                       required
                     />
                     <button
@@ -727,6 +729,7 @@ export default function AuthPage() {
                     placeholder="Re-enter new password"
                     value={resetConfirmPassword}
                     onChange={(e) => setResetConfirmPassword(e.target.value)}
+                    maxLength={16}
                     required
                   />
                 </div>
