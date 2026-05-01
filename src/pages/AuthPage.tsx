@@ -13,6 +13,22 @@ import googleIcon from "@/assets/google-icon.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { applyRememberMePreference, REMEMBER_ME_KEY } from "@/lib/rememberMe";
+import { PasswordStrength } from "@/components/registration/PasswordStrength";
+
+// Mirrors PasswordStrength scoring; require at least "Medium" (score >= 2) for resets.
+function getResetPasswordScore(password: string): number {
+  if (!password || password.length < 6) return 0;
+  let s = 0;
+  if (password.length >= 6) s++;
+  if (password.length >= 10) s++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) s++;
+  if (/\d/.test(password)) s++;
+  if (/[^A-Za-z0-9]/.test(password)) s++;
+  if (s <= 2) return 1;
+  if (s === 3) return 2;
+  if (s === 4) return 3;
+  return 4;
+}
 
 const features = [
   {
