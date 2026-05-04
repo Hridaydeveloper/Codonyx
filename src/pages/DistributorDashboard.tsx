@@ -586,7 +586,8 @@ export default function DistributorDashboard() {
                   <>
                     <div className="grid gap-4 md:grid-cols-2">
                       {filteredDeals.slice(0, dealShowCount).map((deal) => {
-                        const progress = deal.target_amount > 0 ? (deal.raised_amount / deal.target_amount) * 100 : 0;
+                        const liveRaised = dealSubscriptions[deal.id] ?? deal.raised_amount;
+                        const progress = deal.target_amount > 0 ? (liveRaised / deal.target_amount) * 100 : 0;
                         const existingBid = myBids.find(b => b.deal_id === deal.id && b.bid_status !== "withdrawn");
                         return (
                           <Card
