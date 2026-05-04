@@ -617,7 +617,7 @@ export default function DistributorDashboard() {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                   <span className="text-muted-foreground">Raised</span>
-                                  <span className="font-semibold text-primary">{formatCurrency(deal.raised_amount, deal.currency)}</span>
+                                  <span className="font-semibold text-primary">{formatCurrency(liveRaised, deal.currency)}</span>
                                 </div>
                                 <div className="w-full bg-muted rounded-full h-2">
                                   <div
