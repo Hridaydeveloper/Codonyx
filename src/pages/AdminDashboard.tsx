@@ -774,9 +774,14 @@ const AdminDashboard = () => {
                             </CardDescription>
                           </div>
                         </div>
-                        <Badge 
-                          variant={user.user_type === "advisor" ? "default" : "secondary"}
-                          className="capitalize"
+                        <Badge
+                          className={`capitalize whitespace-nowrap shrink-0 border ${
+                            user.user_type === "laboratory"
+                              ? "bg-blue-500/10 text-blue-600 border-blue-500/30 hover:bg-blue-500/20"
+                              : user.user_type === "distributor"
+                              ? "bg-amber-500/10 text-amber-700 border-amber-500/30 hover:bg-amber-500/20"
+                              : "bg-primary/10 text-primary border-primary/30 hover:bg-primary/20"
+                          }`}
                         >
                           {user.user_type}
                         </Badge>
