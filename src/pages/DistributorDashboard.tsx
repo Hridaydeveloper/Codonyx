@@ -709,16 +709,22 @@ export default function DistributorDashboard() {
                 ) : (
                   <>
                     <div className="space-y-3">
-                      {filteredMyBids.slice(0, bidShowCount).map((bid) => (
-                        <div key={bid.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-divider rounded-xl">
+                      {filteredMyBids.slice(0, bidShowCount).map((bid) => {
+                        const bidDeal = allDeals.find(d => d.id === bid.deal_id);
+                        return (
+                        <div
+                          key={bid.id}
+                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-divider rounded-xl cursor-pointer hover:border-primary/40 hover:shadow-sm transition-all"
+                          onClick={() => bidDeal && setViewDealDetail(bidDeal)}
+                        >
                           <div className="min-w-0 flex-1">
                             <p className="font-medium text-foreground break-words">{bid.deal_title}</p>
                             <p className="text-sm text-muted-foreground">
                               {new Date(bid.created_at).toLocaleDateString()}
                             </p>
                           </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:justify-end">
-                            <span className="font-semibold text-foreground whitespace-nowrap">{formatCurrency(bid.bid_amount, allDeals.find(d => d.id === bid.deal_id)?.currency)}</span>
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:justify-end" onClick={(e) => e.stopPropagation()}>
+                            <span className="font-semibold text-foreground whitespace-nowrap">{formatCurrency(bid.bid_amount, bidDeal?.currency)}</span>
                             <Badge className={`${getStatusColor(bid.bid_status)} whitespace-nowrap`}>{getBidDisplayStatus(bid)}</Badge>
                             {canEditBid(bid) && (
                               <Button variant="outline" size="sm" onClick={() => handleEditBid(bid)}>
@@ -732,7 +738,8 @@ export default function DistributorDashboard() {
                             )}
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                     {filteredMyBids.length > bidShowCount && (
                       <div className="flex justify-center gap-2 mt-4">
