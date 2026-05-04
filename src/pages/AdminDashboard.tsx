@@ -316,6 +316,16 @@ const AdminDashboard = () => {
     if (statsData) {
       setAggregateStats(statsData as unknown as typeof aggregateStats);
     }
+
+    // Fetch live subscription totals per deal (sum of non-withdrawn bids)
+    const { data: subsData } = await supabase.rpc('get_deal_subscription_totals');
+    if (subsData) {
+      const subs: Record<string, number> = {};
+      (subsData as any[]).forEach((row) => {
+        subs[row.deal_id] = Number(row.total_subscription) || 0;
+      });
+      setDealSubscriptions(subs);
+    }
   };
 
   const handleDealDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
