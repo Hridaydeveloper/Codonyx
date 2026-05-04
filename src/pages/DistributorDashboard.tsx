@@ -93,6 +93,7 @@ export default function DistributorDashboard() {
   const [bidStatusFilter, setBidStatusFilter] = useState("all");
   const [bidCurrencyFilter, setBidCurrencyFilter] = useState("all");
   const [dealBidCounts, setDealBidCounts] = useState<Record<string, number>>({});
+  const [dealSubscriptions, setDealSubscriptions] = useState<Record<string, number>>({});
   const [viewDealDetail, setViewDealDetail] = useState<Deal | null>(null);
 
   const filteredDeals = useMemo(() => {
