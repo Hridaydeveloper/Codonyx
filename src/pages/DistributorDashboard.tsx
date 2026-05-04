@@ -233,6 +233,16 @@ export default function DistributorDashboard() {
       setDealBidCounts(counts);
     }
 
+    // Fetch subscription totals per deal (live raised amount per deal)
+    const { data: subsData } = await supabase.rpc('get_deal_subscription_totals');
+    if (subsData) {
+      const subs: Record<string, number> = {};
+      (subsData as any[]).forEach((row) => {
+        subs[row.deal_id] = Number(row.total_subscription) || 0;
+      });
+      setDealSubscriptions(subs);
+    }
+
     setIsLoading(false);
   };
 
