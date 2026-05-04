@@ -1415,6 +1415,7 @@ const AdminDashboard = () => {
                               <TableHead className="whitespace-nowrap">Notes</TableHead>
                               <TableHead className="whitespace-nowrap">Target</TableHead>
                               <TableHead className="whitespace-nowrap">Raised</TableHead>
+                              <TableHead className="whitespace-nowrap">Percentage</TableHead>
                               <TableHead className="whitespace-nowrap">Status</TableHead>
                               <TableHead className="whitespace-nowrap">Bids</TableHead>
                               <TableHead className="whitespace-nowrap">Actions</TableHead>
@@ -1424,6 +1425,8 @@ const AdminDashboard = () => {
                             {visible.map((deal: any) => {
                               const bidsForDeal = dealBids.filter((b: any) => b.deal_id === deal.id && b.bid_status !== 'withdrawn');
                               const cs = (deal.currency || "INR") === "USD" ? "$" : "₹";
+                              const liveRaised = dealSubscriptions[deal.id] ?? 0;
+                              const pct = Number(deal.target_amount) > 0 ? (liveRaised / Number(deal.target_amount)) * 100 : 0;
                               return (
                                 <TableRow key={deal.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedDealDetail(deal)}>
                                   <TableCell className="font-medium whitespace-nowrap">{deal.title}</TableCell>
@@ -1431,7 +1434,8 @@ const AdminDashboard = () => {
                                     {deal.description || <span className="italic text-muted-foreground/50">No description</span>}
                                   </TableCell>
                                   <TableCell className="whitespace-nowrap">{cs}{Number(deal.target_amount).toLocaleString()} <span className="text-xs text-muted-foreground">{deal.currency || "INR"}</span></TableCell>
-                                  <TableCell className="whitespace-nowrap">{cs}{Number(deal.raised_amount).toLocaleString()}</TableCell>
+                                  <TableCell className="whitespace-nowrap">{cs}{liveRaised.toLocaleString()}</TableCell>
+                                  <TableCell className="whitespace-nowrap font-medium text-primary">{pct.toFixed(1)}%</TableCell>
                                   <TableCell>
                                     <Badge className="capitalize" variant={deal.deal_status === "published" ? "default" : "secondary"}>
                                       {deal.deal_status}
