@@ -1503,7 +1503,11 @@ const AdminDashboard = () => {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider">Raised Amount</p>
-                          <p className="font-medium">{(selectedDealDetail.currency || "INR") === "USD" ? "$" : "₹"}{Number(selectedDealDetail.raised_amount).toLocaleString()}</p>
+                          <p className="font-medium">{(selectedDealDetail.currency || "INR") === "USD" ? "$" : "₹"}{Number(dealSubscriptions[selectedDealDetail.id] ?? 0).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">Percentage</p>
+                          <p className="font-medium text-primary">{(Number(selectedDealDetail.target_amount) > 0 ? ((dealSubscriptions[selectedDealDetail.id] ?? 0) / Number(selectedDealDetail.target_amount)) * 100 : 0).toFixed(1)}%</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider">Status</p>
