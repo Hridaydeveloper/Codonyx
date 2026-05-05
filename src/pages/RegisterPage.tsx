@@ -363,6 +363,27 @@ export default function RegisterPage() {
         </div>
       </div>
 
+      {/* Right Panel - Fixed (non-scrolling) */}
+      <div className="hidden lg:flex w-1/2 bg-foreground text-background p-12 xl:p-16 flex-col justify-center fixed right-0 top-0 bottom-0">
+        <div className="max-w-md mx-auto">
+          <div className="space-y-8">
+            {features.map((feature, index) => (
+              <div key={feature.title} className="flex items-start gap-4 group cursor-pointer" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="w-12 h-12 rounded-lg bg-background/10 flex items-center justify-center flex-shrink-0">
+                  <feature.icon className="w-5 h-5 text-background" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-display text-lg font-medium">{feature.title}</h3>
+                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-background/70 text-sm font-body">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
