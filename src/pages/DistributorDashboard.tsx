@@ -850,7 +850,7 @@ export default function DistributorDashboard() {
 
       {/* Deal Details Dialog */}
       <Dialog open={!!viewDealDetail} onOpenChange={() => setViewDealDetail(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="break-words">{viewDealDetail?.title}</DialogTitle>
             <DialogDescription>Deal details and current activity</DialogDescription>
