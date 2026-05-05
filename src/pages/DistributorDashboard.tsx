@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, TrendingUp, DollarSign, Briefcase, Target, Pencil, FileText, Users, Building2, ArrowRight, BookOpen } from "lucide-react";
+import { Loader2, TrendingUp, Wallet, Briefcase, Target, Pencil, FileText, Users, Building2, ArrowRight, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { useAuthReady } from "@/hooks/useAuthReady";
@@ -419,9 +419,16 @@ export default function DistributorDashboard() {
     );
   }
 
-  const totalCommitted = myBids
+  const committedByCurrency = myBids
     .filter(b => b.bid_status === "accepted" || b.bid_status === "pending")
-    .reduce((sum, b) => sum + b.bid_amount, 0);
+    .reduce((acc, b) => {
+      const deal = allDeals.find(d => d.id === b.deal_id);
+      const c = (deal?.currency || "INR") === "USD" ? "USD" : "INR";
+      acc[c] = (acc[c] || 0) + Number(b.bid_amount);
+      return acc;
+    }, {} as Record<"INR" | "USD", number>);
+  const totalCommittedINR = committedByCurrency.INR || 0;
+  const totalCommittedUSD = committedByCurrency.USD || 0;
 
   const activeBids = myBids.filter(b => b.bid_status === "accepted" && b.deal_status !== "closed").length;
   const acceptedBids = myBids.filter(b => b.bid_status === "accepted").length;
@@ -493,11 +500,14 @@ export default function DistributorDashboard() {
               </Card>
               <Card>
                 <CardContent className="p-5 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Wallet className="w-6 h-6 text-primary" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{formatCurrency(totalCommitted)}</p>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0">
+                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap">{formatCurrency(totalCommittedINR, "INR")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap">{formatCurrency(totalCommittedUSD, "USD")}</p>
+                    </div>
                     <p className="text-sm text-muted-foreground">Total Committed</p>
                   </div>
                 </CardContent>
@@ -855,25 +865,24 @@ export default function DistributorDashboard() {
             const pct = target > 0 ? (liveSubscription / target) * 100 : 0;
             return (
               <div className="space-y-5 py-2">
-                {/* Deal-specific indicators */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="rounded-xl border border-divider bg-amber-500/5 p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Investors Committed</p>
-                    <p className="text-2xl font-bold text-amber-600">{investorsCommitted}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">Active bids on this deal</p>
-                  </div>
-                  <div className="rounded-xl border border-divider bg-primary/5 p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Subscription ({dealCurr})</p>
-                    <p className="text-2xl font-bold text-primary break-all">{sym}{liveSubscription.toLocaleString()}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">{pct.toFixed(1)}% of target</p>
-                  </div>
-                  <div className="rounded-xl border border-divider bg-emerald-500/5 p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Over Subscription ({dealCurr})</p>
-                    <p className={`text-2xl font-bold break-all ${overSubscription > 0 ? "text-emerald-600" : "text-muted-foreground"}`}>
-                      {sym}{overSubscription.toLocaleString()}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground mt-1">Above target amount</p>
-                  </div>
+                {/* Deal-specific circular indicators */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <CircularIndicator
+                    label="Investors Committed"
+                    value={String(investorsCommitted)}
+                    progress={Math.min((investorsCommitted / 200) * 100, 100)}
+                  />
+                  <CircularIndicator
+                    label="Subscription"
+                    value={`${dealCurr}\n${formatCompact(liveSubscription, dealCurr)}`}
+                    progress={target > 0 ? Math.min((liveSubscription / target) * 100, 100) : 0}
+                    emphasized
+                  />
+                  <CircularIndicator
+                    label="Over Subscription"
+                    value={`${dealCurr}\n${formatCompact(overSubscription, dealCurr)}`}
+                    progress={target > 0 ? Math.min((overSubscription / target) * 100, 100) : 0}
+                  />
                 </div>
 
                 {/* Subscription progress bar */}
@@ -949,4 +958,83 @@ function getGreeting() {
   if (hour < 12) return "Good morning ☀️";
   if (hour < 17) return "Good afternoon 🌤️";
   return "Good evening 🌙";
+}
+
+function formatCompact(amount: number, currency: string) {
+  if (currency === "INR") {
+    if (amount >= 10000000) return `${(amount / 10000000).toFixed(2)} Cr`;
+    if (amount >= 100000) return `${(amount / 100000).toFixed(2)} L`;
+    if (amount >= 1000) return `${(amount / 1000).toFixed(1)} K`;
+    return amount.toLocaleString();
+  }
+  if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(2)} B`;
+  if (amount >= 1_000_000) return `${(amount / 1_000_000).toFixed(2)} M`;
+  if (amount >= 1_000) return `${(amount / 1_000).toFixed(1)} K`;
+  return amount.toLocaleString();
+}
+
+function CircularIndicator({
+  label,
+  value,
+  progress,
+  emphasized = false,
+}: {
+  label: string;
+  value: string;
+  progress: number;
+  emphasized?: boolean;
+}) {
+  const size = 120;
+  const stroke = emphasized ? 10 : 7;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clamped = Math.max(0, Math.min(100, progress));
+  const offset = circumference - (clamped / 100) * circumference;
+  const lines = value.split("\n");
+
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="hsl(var(--muted))"
+            strokeWidth={stroke}
+            fill="none"
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="hsl(var(--primary))"
+            strokeWidth={stroke}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="transition-all duration-700"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-2">
+          {lines.map((l, i) => (
+            <span
+              key={i}
+              className={`leading-tight ${
+                lines.length > 1 && i === 0
+                  ? "text-xs text-muted-foreground"
+                  : "text-sm sm:text-base font-bold text-foreground"
+              }`}
+            >
+              {l}
+            </span>
+          ))}
+        </div>
+      </div>
+      <p className="mt-2 text-xs sm:text-sm text-muted-foreground font-medium">
+        {label}
+      </p>
+    </div>
+  );
 }
