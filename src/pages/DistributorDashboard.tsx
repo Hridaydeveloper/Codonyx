@@ -850,7 +850,7 @@ export default function DistributorDashboard() {
 
       {/* Deal Details Dialog */}
       <Dialog open={!!viewDealDetail} onOpenChange={() => setViewDealDetail(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="break-words">{viewDealDetail?.title}</DialogTitle>
             <DialogDescription>Deal details and current activity</DialogDescription>
@@ -863,6 +863,7 @@ export default function DistributorDashboard() {
             const target = Number(viewDealDetail.target_amount) || 0;
             const overSubscription = Math.max(0, liveSubscription - target);
             const pct = target > 0 ? (liveSubscription / target) * 100 : 0;
+            const myBidOnDeal = myBids.find(b => b.deal_id === viewDealDetail.id && b.bid_status !== "withdrawn");
             return (
               <div className="space-y-5 py-2">
                 {/* Deal-specific circular indicators */}
@@ -899,6 +900,25 @@ export default function DistributorDashboard() {
                   </div>
                 </div>
 
+                {/* Highlighted Target + Your Bid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Target</p>
+                    <p className="font-bold text-lg text-primary break-words">{formatCurrency(target, dealCurr)}</p>
+                  </div>
+                  {myBidOnDeal ? (
+                    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">You've Bid</p>
+                      <p className="font-bold text-lg text-emerald-600 break-words">{formatCurrency(Number(myBidOnDeal.bid_amount), dealCurr)}</p>
+                      <p className="text-[11px] text-muted-foreground capitalize mt-0.5">Status: {myBidOnDeal.bid_status}</p>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-muted-foreground/30 p-3 flex items-center justify-center">
+                      <p className="text-xs text-muted-foreground">You haven't bid on this deal yet</p>
+                    </div>
+                  )}
+                </div>
+
                 {viewDealDetail.description && (
                   <div>
                     <Label className="text-muted-foreground">Description</Label>
@@ -906,10 +926,6 @@ export default function DistributorDashboard() {
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground">Target</Label>
-                    <p className="font-semibold text-foreground">{formatCurrency(target, dealCurr)}</p>
-                  </div>
                   <div>
                     <Label className="text-muted-foreground">Currency</Label>
                     <p className="font-medium">{dealCurr}</p>
