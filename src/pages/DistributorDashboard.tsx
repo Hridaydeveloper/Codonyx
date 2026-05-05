@@ -500,11 +500,14 @@ export default function DistributorDashboard() {
               </Card>
               <Card>
                 <CardContent className="p-5 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Wallet className="w-6 h-6 text-primary" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{formatCurrency(totalCommitted)}</p>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0">
+                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap">{formatCurrency(totalCommittedINR, "INR")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap">{formatCurrency(totalCommittedUSD, "USD")}</p>
+                    </div>
                     <p className="text-sm text-muted-foreground">Total Committed</p>
                   </div>
                 </CardContent>
