@@ -284,6 +284,33 @@ export default function RegisterDistributorPage() {
         </div>
       </div>
 
+      {/* Right Panel - Fixed (non-scrolling) */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-navy via-navy/95 to-primary/20 items-center justify-center p-16 fixed right-0 top-0 bottom-0">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-8">
+            <Truck className="w-10 h-10 text-emerald-glow" />
+          </div>
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            Become a Distribution Partner
+          </h2>
+          <p className="text-white/70 text-lg mb-8">
+            Join our network of distribution partners and gain access to exclusive deals in the molecular science and AI healthcare space.
+          </p>
+          <div className="space-y-4 text-left">
+            {[
+              "Access exclusive deals published by Codonyx",
+              "Place bids and commit amounts on opportunities",
+              "Track your commitments and deal progress",
+              "Dedicated distributor dashboard",
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-emerald-glow shrink-0" />
+                <span className="text-white/80">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
