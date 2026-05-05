@@ -2087,4 +2087,76 @@ const AdminDashboard = () => {
   );
 };
 
+function formatCompactAmount(amount: number, currency: string) {
+  if (currency === "INR") {
+    if (amount >= 10000000) return `${(amount / 10000000).toFixed(2)} Cr`;
+    if (amount >= 100000) return `${(amount / 100000).toFixed(2)} L`;
+    if (amount >= 1000) return `${(amount / 1000).toFixed(1)} K`;
+    return amount.toLocaleString();
+  }
+  if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(2)} B`;
+  if (amount >= 1_000_000) return `${(amount / 1_000_000).toFixed(2)} M`;
+  if (amount >= 1_000) return `${(amount / 1_000).toFixed(1)} K`;
+  return amount.toLocaleString();
+}
+
+function AdminCircularIndicator({
+  label,
+  value,
+  progress,
+  emphasized = false,
+}: {
+  label: string;
+  value: string;
+  progress: number;
+  emphasized?: boolean;
+}) {
+  const size = 110;
+  const stroke = emphasized ? 9 : 6;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clamped = Math.max(0, Math.min(100, progress));
+  const offset = circumference - (clamped / 100) * circumference;
+  const lines = value.split("\n");
+
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          <circle cx={size / 2} cy={size / 2} r={radius} stroke="hsl(var(--muted))" strokeWidth={stroke} fill="none" />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="hsl(var(--primary))"
+            strokeWidth={stroke}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="transition-all duration-700"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-2">
+          {lines.map((l, i) => (
+            <span
+              key={i}
+              className={`leading-tight ${
+                lines.length > 1 && i === 0
+                  ? "text-[10px] text-muted-foreground"
+                  : "text-xs sm:text-sm font-bold text-foreground"
+              }`}
+            >
+              {l}
+            </span>
+          ))}
+        </div>
+      </div>
+      <p className="mt-2 text-[11px] sm:text-xs text-muted-foreground font-medium">
+        {label}
+      </p>
+    </div>
+  );
+}
+
 export default AdminDashboard;
