@@ -899,20 +899,6 @@ export default function DistributorDashboard() {
                   </div>
                 </div>
 
-                {/* Subscription progress bar */}
-                <div>
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>Subscription Progress</span>
-                    <span>{pct.toFixed(1)}%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-primary h-2 transition-all"
-                      style={{ width: `${Math.min(pct, 100)}%` }}
-                    />
-                  </div>
-                </div>
-
                 {viewDealDetail.description && (
                   <div>
                     <Label className="text-muted-foreground">Description</Label>
