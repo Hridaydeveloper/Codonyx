@@ -283,6 +283,33 @@ export default function RegisterLaboratoryPage() {
         </div>
       </div>
 
+      {/* Right Panel - Fixed (non-scrolling) */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-navy via-navy/95 to-primary/20 items-center justify-center p-16 fixed right-0 top-0 bottom-0">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-8">
+            <FlaskConical className="w-10 h-10 text-emerald-glow" />
+          </div>
+          <h2 className="font-display text-3xl font-bold text-white mb-4">
+            Register Your Laboratory
+          </h2>
+          <p className="text-white/70 text-lg mb-8">
+            Join our platform and connect with world-class advisors in molecular science, AI healthcare, and beyond.
+          </p>
+          <div className="space-y-4 text-left">
+            {[
+              "Access expert advisors across 70+ countries",
+              "AI-powered advisor matching for your needs",
+              "Secure environment for confidential partnerships",
+              "Dedicated laboratory dashboard",
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-emerald-glow shrink-0" />
+                <span className="text-white/80">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
