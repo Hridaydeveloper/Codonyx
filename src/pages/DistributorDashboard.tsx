@@ -419,9 +419,16 @@ export default function DistributorDashboard() {
     );
   }
 
-  const totalCommitted = myBids
+  const committedByCurrency = myBids
     .filter(b => b.bid_status === "accepted" || b.bid_status === "pending")
-    .reduce((sum, b) => sum + b.bid_amount, 0);
+    .reduce((acc, b) => {
+      const deal = allDeals.find(d => d.id === b.deal_id);
+      const c = (deal?.currency || "INR") === "USD" ? "USD" : "INR";
+      acc[c] = (acc[c] || 0) + Number(b.bid_amount);
+      return acc;
+    }, {} as Record<"INR" | "USD", number>);
+  const totalCommittedINR = committedByCurrency.INR || 0;
+  const totalCommittedUSD = committedByCurrency.USD || 0;
 
   const activeBids = myBids.filter(b => b.bid_status === "accepted" && b.deal_status !== "closed").length;
   const acceptedBids = myBids.filter(b => b.bid_status === "accepted").length;
