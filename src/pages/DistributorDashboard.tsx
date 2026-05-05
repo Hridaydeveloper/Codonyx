@@ -865,24 +865,37 @@ export default function DistributorDashboard() {
             const pct = target > 0 ? (liveSubscription / target) * 100 : 0;
             return (
               <div className="space-y-5 py-2">
-                {/* Deal-specific indicators */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="rounded-xl border border-divider bg-amber-500/5 p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Investors Committed</p>
-                    <p className="text-2xl font-bold text-amber-600">{investorsCommitted}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">Active bids on this deal</p>
+                {/* Deal-specific circular indicators */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <CircularIndicator
+                    label="Investors Committed"
+                    value={String(investorsCommitted)}
+                    progress={Math.min((investorsCommitted / 200) * 100, 100)}
+                  />
+                  <CircularIndicator
+                    label="Subscription"
+                    value={`${dealCurr}\n${formatCompact(liveSubscription, dealCurr)}`}
+                    progress={target > 0 ? Math.min((liveSubscription / target) * 100, 100) : 0}
+                    emphasized
+                  />
+                  <CircularIndicator
+                    label="Over Subscription"
+                    value={`${dealCurr}\n${formatCompact(overSubscription, dealCurr)}`}
+                    progress={target > 0 ? Math.min((overSubscription / target) * 100, 100) : 0}
+                  />
+                </div>
+
+                {/* Subscription progress bar */}
+                <div>
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                    <span>Subscription Progress</span>
+                    <span>{pct.toFixed(1)}%</span>
                   </div>
-                  <div className="rounded-xl border border-divider bg-primary/5 p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Subscription ({dealCurr})</p>
-                    <p className="text-2xl font-bold text-primary break-all">{sym}{liveSubscription.toLocaleString()}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">{pct.toFixed(1)}% of target</p>
-                  </div>
-                  <div className="rounded-xl border border-divider bg-emerald-500/5 p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Over Subscription ({dealCurr})</p>
-                    <p className={`text-2xl font-bold break-all ${overSubscription > 0 ? "text-emerald-600" : "text-muted-foreground"}`}>
-                      {sym}{overSubscription.toLocaleString()}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground mt-1">Above target amount</p>
+                  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-primary h-2 transition-all"
+                      style={{ width: `${Math.min(pct, 100)}%` }}
+                    />
                   </div>
                 </div>
 
