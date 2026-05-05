@@ -1492,10 +1492,37 @@ const AdminDashboard = () => {
               {/* Deal Detail Dialog */}
               {selectedDealDetail && (
                 <Dialog open={!!selectedDealDetail} onOpenChange={(open) => !open && setSelectedDealDetail(null)}>
-                  <DialogContent className="max-w-lg">
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Deal Details</DialogTitle>
                     </DialogHeader>
+                    {(() => {
+                      const dealCurr = (selectedDealDetail.currency || "INR") as string;
+                      const target = Number(selectedDealDetail.target_amount) || 0;
+                      const liveRaised = dealSubscriptions[selectedDealDetail.id] ?? 0;
+                      const investorsCommitted = dealBids.filter((b: any) => b.deal_id === selectedDealDetail.id && b.bid_status !== 'withdrawn').length;
+                      const overSubscription = Math.max(0, liveRaised - target);
+                      return (
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                          <AdminCircularIndicator
+                            label="Investors Committed"
+                            value={String(investorsCommitted)}
+                            progress={Math.min((investorsCommitted / 200) * 100, 100)}
+                          />
+                          <AdminCircularIndicator
+                            label="Subscription"
+                            value={`${dealCurr}\n${formatCompactAmount(liveRaised, dealCurr)}`}
+                            progress={target > 0 ? Math.min((liveRaised / target) * 100, 100) : 0}
+                            emphasized
+                          />
+                          <AdminCircularIndicator
+                            label="Over Subscription"
+                            value={`${dealCurr}\n${formatCompactAmount(overSubscription, dealCurr)}`}
+                            progress={target > 0 ? Math.min((overSubscription / target) * 100, 100) : 0}
+                          />
+                        </div>
+                      );
+                    })()}
                     <div className="space-y-4">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
