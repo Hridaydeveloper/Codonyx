@@ -250,9 +250,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Panel - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col px-8 lg:px-16 xl:px-24 py-12 bg-background overflow-y-auto max-h-screen">
+    <div className="min-h-screen flex justify-center bg-background">
+      {/* Form */}
+      <div className="w-full flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background overflow-y-auto max-h-screen">
         <div className="max-w-md mx-auto w-full">
           <Link to="/" className="inline-block mb-8">
             <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
