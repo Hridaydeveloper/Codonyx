@@ -169,7 +169,7 @@ export default function RegisterLaboratoryPage() {
   return (
     <div className="min-h-screen flex">
       {/* Form */}
-      <div className="w-full xl:w-1/2 flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background overflow-y-auto max-h-screen">
+      <div className="w-full xl:w-1/2 flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background xl:overflow-y-auto xl:max-h-screen">
         <div className="max-w-md mx-auto w-full">
           <Link to="/" className="inline-block mb-8">
             <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
