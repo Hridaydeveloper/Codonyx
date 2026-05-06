@@ -163,9 +163,11 @@ export default function RegisterDistributorPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    // ✅ CHANGED: min-h-screen → h-screen, added overflow-hidden to lock page-level scroll
+    <div className="h-screen flex overflow-hidden">
       {/* Form */}
-      <div className="w-full lg:w-1/2 flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background overflow-y-auto max-h-screen">
+      {/* ✅ CHANGED: max-h-screen → h-screen so the left panel fills viewport and scrolls internally */}
+      <div className="w-full lg:w-1/2 flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background overflow-y-auto h-screen">
         <div className="max-w-md mx-auto w-full">
           <Link to="/" className="inline-block mb-8">
             <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
