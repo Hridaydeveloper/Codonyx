@@ -167,7 +167,7 @@ export default function RegisterDistributorPage() {
     <div className="h-screen flex overflow-hidden">
       {/* Form */}
       {/* ✅ CHANGED: max-h-screen → h-screen so the left panel fills viewport and scrolls internally */}
-      <div className="w-full lg:w-1/2 flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background overflow-y-auto h-screen">
+      <div className="w-full xl:w-1/2 flex flex-col px-6 sm:px-8 lg:px-16 py-12 bg-background overflow-y-auto h-screen">
         <div className="max-w-md mx-auto w-full">
           <Link to="/" className="inline-block mb-8">
             <img src={codonyxLogo} alt="Codonyx" className="h-12 w-auto" />
@@ -287,7 +287,7 @@ export default function RegisterDistributorPage() {
       </div>
 
       {/* Right Panel - Fixed (non-scrolling) */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-navy via-navy/95 to-primary/20 items-center justify-center p-16 fixed right-0 top-0 bottom-0">
+      <div className="hidden xl:flex w-1/2 bg-gradient-to-br from-navy via-navy/95 to-primary/20 items-center justify-center p-16 fixed right-0 top-0 bottom-0">
         <div className="max-w-md text-center">
           <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-8">
             <Truck className="w-10 h-10 text-emerald-glow" />
