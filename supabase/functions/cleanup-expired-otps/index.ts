@@ -10,23 +10,37 @@ serve(async (_req: Request) => {
 
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    const { error, count } = await supabaseAdmin
+    const { error: pwdError, count: pwdCount } = await supabaseAdmin
       .from("password_reset_otps")
       .delete({ count: "exact" })
       .lt("expires_at", oneDayAgo);
 
-    if (error) {
-      console.error("[cleanup-expired-otps] Delete error:", error);
+    if (pwdError) {
+      console.error("[cleanup-expired-otps] password_reset_otps delete error:", pwdError);
       return new Response(
-        JSON.stringify({ error: "Failed to clean up expired OTPs" }),
+        JSON.stringify({ error: "Failed to clean up expired password reset OTPs" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`[cleanup-expired-otps] Deleted ${count ?? 0} expired OTP(s) older than 1 day.`);
+    const { error: regError, count: regCount } = await supabaseAdmin
+      .from("registration_otps")
+      .delete({ count: "exact" })
+      .lt("expires_at", oneDayAgo);
+
+    if (regError) {
+      console.error("[cleanup-expired-otps] registration_otps delete error:", regError);
+      return new Response(
+        JSON.stringify({ error: "Failed to clean up expired registration OTPs" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const totalDeleted = (pwdCount ?? 0) + (regCount ?? 0);
+    console.log(`[cleanup-expired-otps] Deleted ${pwdCount ?? 0} password_reset + ${regCount ?? 0} registration OTP(s) older than 1 day.`);
 
     return new Response(
-      JSON.stringify({ success: true, deleted: count ?? 0 }),
+      JSON.stringify({ success: true, deleted: totalDeleted }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error: any) {
