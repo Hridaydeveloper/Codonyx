@@ -274,13 +274,7 @@ export function Navbar() {
                   Sign Out
                 </Button>
               </>
-            ) : (
-              <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="primary" className="w-full mt-4">
-                  Sign In
-                </Button>
-              </Link>
-            )}
+            ) : null}
           </div>
         </div>
       )}
