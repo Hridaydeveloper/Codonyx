@@ -698,7 +698,8 @@ export default function DistributorDashboard() {
 
 
             {/* My Bids */}
-            <Card>
+            <Card id="my-bids-section">
+
               <CardHeader>
                 <CardTitle>My Bids</CardTitle>
                 <CardDescription>Track all your bids and commitments</CardDescription>
