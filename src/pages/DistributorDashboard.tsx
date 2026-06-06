@@ -465,7 +465,7 @@ export default function DistributorDashboard() {
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              <Card>
+              <Card onClick={() => document.getElementById("deals-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
                 <CardContent className="p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                     <Briefcase className="w-6 h-6 text-primary" />
@@ -476,7 +476,7 @@ export default function DistributorDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card onClick={() => document.getElementById("deals-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
                 <CardContent className="p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
                     <Target className="w-6 h-6 text-amber-600" />
@@ -487,7 +487,7 @@ export default function DistributorDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card onClick={() => document.getElementById("my-bids-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
                 <CardContent className="p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-emerald-600" />
@@ -498,7 +498,7 @@ export default function DistributorDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card onClick={() => document.getElementById("my-bids-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
                 <CardContent className="p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <Wallet className="w-6 h-6 text-primary" />
@@ -513,6 +513,7 @@ export default function DistributorDashboard() {
                 </CardContent>
               </Card>
             </div>
+
 
             {/* Quick Actions — moved to top */}
             <div className="mb-8">
