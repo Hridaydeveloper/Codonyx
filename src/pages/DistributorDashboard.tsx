@@ -515,60 +515,23 @@ export default function DistributorDashboard() {
             </div>
 
 
-            {/* Quick Actions — moved to top */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4 px-1">
-                <BookOpen className="h-5 w-5 text-primary" />
-                <h2 className="font-heading text-lg font-semibold text-foreground">Quick Actions</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  { to: "/advisors", icon: Users, title: "Advisor Network", description: "Browse and connect with advisors", gradient: "from-blue-500/20 to-indigo-500/10", hoverGradient: "group-hover:from-blue-500/30 group-hover:to-indigo-500/20", tourId: "quick-network" },
-                  { to: "/laboratories", icon: Building2, title: "Laboratory Network", description: "Browse and connect with laboratories", gradient: "from-emerald-500/20 to-teal-500/10", hoverGradient: "group-hover:from-emerald-500/30 group-hover:to-teal-500/20", tourId: "" },
-                  { to: "#deals", icon: Briefcase, title: "Deals & Bids", description: "View deals and place bids", gradient: "from-amber-500/20 to-orange-500/10", hoverGradient: "group-hover:from-amber-500/30 group-hover:to-orange-500/20", tourId: "quick-deals" },
-                  { to: "/edit-profile", icon: Pencil, title: "Edit Profile", description: "Update your business details", gradient: "from-primary/20 to-primary/5", hoverGradient: "group-hover:from-primary/30 group-hover:to-primary/10", tourId: "quick-edit-profile" },
-                ].map((link) => {
-                  const cardContent = (
-                    <Card data-tour={link.tourId || undefined} className="group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden h-full">
-                      <CardContent className="p-0">
-                        <div className="flex items-center gap-4 p-5">
-                          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${link.gradient} ${link.hoverGradient} flex items-center justify-center transition-all duration-300 shrink-0`}>
-                            <link.icon className="w-6 h-6 text-primary" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-heading text-base font-semibold text-foreground mb-0.5 group-hover:text-primary transition-colors truncate">
-                              {link.title}
-                            </h3>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {link.description}
-                            </p>
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
-                            <ArrowRight className="w-4 h-4" />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                  if (link.to === "#deals") {
-                    return (
-                      <div key={link.to} onClick={() => document.getElementById("deals-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer">
-                        {cardContent}
-                      </div>
-                    );
-                  }
-                  return <Link key={link.to} to={link.to}>{cardContent}</Link>;
-                })}
-              </div>
-            </div>
-
-            {/* Deal Indicators removed — now per-deal indicators inside the deal detail dialog */}
-
             {/* Available Deals */}
             <Card id="deals-section" className="mb-8">
               <CardHeader>
-                <CardTitle>Available Deals</CardTitle>
-                <CardDescription>Published deals you can bid on</CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div>
+                    <CardTitle>Available Deals</CardTitle>
+                    <CardDescription>Published deals you can bid on</CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="self-start"
+                    onClick={() => document.getElementById("my-bids-section")?.scrollIntoView({ behavior: "smooth" })}
+                  >
+                    <Target className="w-4 h-4 mr-2" /> My Bids
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {/* Filters */}
@@ -665,16 +628,74 @@ export default function DistributorDashboard() {
                         );
                       })}
                     </div>
-                    {filteredDeals.length > dealShowCount && (
+                    {(filteredDeals.length > dealShowCount || dealShowCount > 15) && (
                       <div className="flex justify-center gap-2 mt-4">
-                        <Button variant="outline" size="sm" onClick={() => setDealShowCount(c => c + 15)}>Show More</Button>
-                        <Button variant="ghost" size="sm" onClick={() => setDealShowCount(filteredDeals.length)}>Show All ({filteredDeals.length})</Button>
+                        {filteredDeals.length > dealShowCount && (
+                          <>
+                            <Button variant="outline" size="sm" onClick={() => setDealShowCount(c => c + 15)}>Show More</Button>
+                            <Button variant="ghost" size="sm" onClick={() => setDealShowCount(filteredDeals.length)}>Show All ({filteredDeals.length})</Button>
+                          </>
+                        )}
+                        {dealShowCount > 15 && (
+                          <Button variant="ghost" size="sm" onClick={() => setDealShowCount(15)}>Show Less</Button>
+                        )}
                       </div>
                     )}
                   </>
                 )}
               </CardContent>
             </Card>
+
+            {/* Quick Actions */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4 px-1">
+                <BookOpen className="h-5 w-5 text-primary" />
+                <h2 className="font-heading text-lg font-semibold text-foreground">Quick Actions</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { to: "/advisors", icon: Users, title: "Advisor Network", description: "Browse and connect with advisors", gradient: "from-blue-500/20 to-indigo-500/10", hoverGradient: "group-hover:from-blue-500/30 group-hover:to-indigo-500/20", tourId: "quick-network" },
+                  { to: "/laboratories", icon: Building2, title: "Laboratory Network", description: "Browse and connect with laboratories", gradient: "from-emerald-500/20 to-teal-500/10", hoverGradient: "group-hover:from-emerald-500/30 group-hover:to-teal-500/20", tourId: "" },
+                  { to: "/connections", icon: Users, title: "My Connections", description: "Manage your network connections", gradient: "from-purple-500/20 to-pink-500/10", hoverGradient: "group-hover:from-purple-500/30 group-hover:to-pink-500/20", tourId: "" },
+                  { to: "#deals", icon: Briefcase, title: "Deals & Bids", description: "View deals and place bids", gradient: "from-amber-500/20 to-orange-500/10", hoverGradient: "group-hover:from-amber-500/30 group-hover:to-orange-500/20", tourId: "quick-deals" },
+                  { to: "/edit-profile", icon: Pencil, title: "Edit Profile", description: "Update your business details", gradient: "from-primary/20 to-primary/5", hoverGradient: "group-hover:from-primary/30 group-hover:to-primary/10", tourId: "quick-edit-profile" },
+                ].map((link) => {
+                  const cardContent = (
+                    <Card data-tour={link.tourId || undefined} className="group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden h-full">
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-4 p-5">
+                          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${link.gradient} ${link.hoverGradient} flex items-center justify-center transition-all duration-300 shrink-0`}>
+                            <link.icon className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-heading text-base font-semibold text-foreground mb-0.5 group-hover:text-primary transition-colors truncate">
+                              {link.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {link.description}
+                            </p>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                  if (link.to === "#deals") {
+                    return (
+                      <div key={link.to} onClick={() => document.getElementById("deals-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer">
+                        {cardContent}
+                      </div>
+                    );
+                  }
+                  return <Link key={link.to} to={link.to}>{cardContent}</Link>;
+                })}
+              </div>
+            </div>
+
+            {/* Deal Indicators removed — now per-deal indicators inside the deal detail dialog */}
+
 
             {/* My Bids */}
             <Card>
