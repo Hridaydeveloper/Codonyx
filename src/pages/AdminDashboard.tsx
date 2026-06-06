@@ -1763,12 +1763,20 @@ const AdminDashboard = () => {
                           </TableBody>
                         </Table>
                         </div>
-                        {filtered.length > bidShowCount && (
+                        {(filtered.length > bidShowCount || bidShowCount > 15) && (
                           <div className="flex justify-center gap-2 mt-4">
-                            <Button variant="outline" size="sm" onClick={() => setBidShowCount(c => c + 15)}>Show More</Button>
-                            <Button variant="ghost" size="sm" onClick={() => setBidShowCount(filtered.length)}>Show All ({filtered.length})</Button>
+                            {filtered.length > bidShowCount && (
+                              <>
+                                <Button variant="outline" size="sm" onClick={() => setBidShowCount(c => c + 15)}>Show More</Button>
+                                <Button variant="ghost" size="sm" onClick={() => setBidShowCount(filtered.length)}>Show All ({filtered.length})</Button>
+                              </>
+                            )}
+                            {bidShowCount > 15 && (
+                              <Button variant="ghost" size="sm" onClick={() => setBidShowCount(15)}>Show Less</Button>
+                            )}
                           </div>
                         )}
+
                       </>
                     );
                   })()}
