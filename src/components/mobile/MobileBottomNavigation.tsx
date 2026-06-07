@@ -136,9 +136,10 @@ export default function MobileBottomNavigation({
   notificationCount = 0,
   className = "",
   profileHref = "/dashboard",
+  isLoggedOut = false,
 }: MobileBottomNavigationProps) {
   const navigate = useNavigate();
-  const items = buildItems(userRole, profileHref);
+  const items = buildItems(userRole, profileHref, isLoggedOut);
 
   return (
     <nav
