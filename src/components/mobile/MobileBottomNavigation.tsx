@@ -176,16 +176,23 @@ export default function MobileBottomNavigation({
                 }
               >
                 <span className="relative inline-flex">
-                  <Icon
-                    className="h-6 w-6"
-                    strokeWidth={isActive ? 2.4 : 2}
-                    fill={isActive ? "currentColor" : "none"}
-                    style={
-                      isActive
-                        ? { fill: "currentColor", stroke: "currentColor" }
-                        : undefined
-                    }
-                  />
+                  {(() => {
+                    // Home icon: don't fill on active — keeps the door visible.
+                    // Other icons: fill on active for that LinkedIn-style "solid" look.
+                    const fillOnActive = item.key !== "home";
+                    return (
+                      <Icon
+                        className="h-6 w-6"
+                        strokeWidth={isActive ? 2.4 : 2}
+                        fill={isActive && fillOnActive ? "currentColor" : "none"}
+                        style={
+                          isActive && fillOnActive
+                            ? { fill: "currentColor", stroke: "currentColor" }
+                            : undefined
+                        }
+                      />
+                    );
+                  })()}
                   {showBadge && (
                     <span
                       className="absolute -top-1 -right-2 min-w-[16px] h-[16px] px-1
