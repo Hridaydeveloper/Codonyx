@@ -8,6 +8,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { ScrollToTopButton } from "./components/ScrollToTopButton";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
+import MobileBottomNavBar from "./components/mobile/MobileBottomNavBar";
 
 // Eagerly load critical pages for instant routing
 import Index from "./pages/Index";
@@ -109,6 +110,7 @@ const App = () => (
               </Routes>
             </ErrorBoundary>
           </Suspense>
+          <MobileBottomNavBar />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
