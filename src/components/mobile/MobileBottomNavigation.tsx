@@ -7,6 +7,7 @@ import {
   User,
   GraduationCap,
   Handshake,
+  Compass,
   LucideIcon,
 } from "lucide-react";
 
