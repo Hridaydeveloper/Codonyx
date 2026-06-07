@@ -46,6 +46,8 @@ interface MobileBottomNavigationProps {
   className?: string;
   /** Optional override for the profile route (defaults to /dashboard) */
   profileHref?: string;
+  /** When true, swap logged-in-only tabs for public ones (e.g. Labs -> Explore) and route Home to "/" */
+  isLoggedOut?: boolean;
 }
 
 interface NavItem {
