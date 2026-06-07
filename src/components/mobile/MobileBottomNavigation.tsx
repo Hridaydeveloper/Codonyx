@@ -83,13 +83,10 @@ function buildItems(role: MobileNavRole, profileHref: string, isLoggedOut = fals
   };
 
   if (role === "advisor") {
-    return [
-      home,
-      { key: "labs", label: "Labs", icon: FlaskConical, href: "/laboratories" },
-      connections,
-      notifications,
-      profile,
-    ];
+    const second: NavItem = isLoggedOut
+      ? { key: "labs", label: "Explore", icon: Compass, href: "/services" }
+      : { key: "labs", label: "Labs", icon: FlaskConical, href: "/laboratories" };
+    return [home, second, connections, notifications, profile];
   }
 
   if (role === "lab") {
