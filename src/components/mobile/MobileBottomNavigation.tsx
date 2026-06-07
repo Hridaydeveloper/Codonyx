@@ -56,8 +56,13 @@ interface NavItem {
   onClick?: (navigate: ReturnType<typeof useNavigate>) => void;
 }
 
-function buildItems(role: MobileNavRole, profileHref: string): NavItem[] {
-  const home: NavItem = { key: "home", label: "Home", icon: Home, href: "/" };
+function buildItems(role: MobileNavRole, profileHref: string, isLoggedOut = false): NavItem[] {
+  const home: NavItem = {
+    key: "home",
+    label: "Home",
+    icon: Home,
+    href: isLoggedOut ? "/" : "/dashboard",
+  };
   const connections: NavItem = {
     key: "connections",
     label: "Connections",
@@ -66,7 +71,7 @@ function buildItems(role: MobileNavRole, profileHref: string): NavItem[] {
   };
   const notifications: NavItem = {
     key: "notifications",
-    label: "Alerts",
+    label: "Notifications",
     icon: Bell,
     href: "/notifications",
   };
