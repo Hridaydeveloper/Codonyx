@@ -87,7 +87,7 @@ export default function MobileBottomNavBar() {
           const label = btn.getAttribute("aria-label");
           if (
             label === "Connections" ||
-            label === "Alerts" ||
+            label === "Notifications" ||
             label === "Profile" ||
             label === "Deals"
           ) {
@@ -97,7 +97,7 @@ export default function MobileBottomNavBar() {
           }
         }}
       >
-        <MobileBottomNavigation userRole="advisor" activeTab={activeTab} />
+        <MobileBottomNavigation userRole="advisor" activeTab={activeTab} isLoggedOut />
       </div>
     );
   }
@@ -107,6 +107,7 @@ export default function MobileBottomNavBar() {
       userRole={role}
       activeTab={activeTab}
       notificationCount={unreadCount}
+      profileHref={profileId ? `/profile/${profileId}` : "/dashboard"}
     />
   );
 }
