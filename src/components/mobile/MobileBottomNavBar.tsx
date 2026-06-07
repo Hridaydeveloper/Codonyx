@@ -23,17 +23,14 @@ import MobileBottomNavigation, {
 const HIDDEN_PREFIXES = ["/auth", "/register", "/reset-password", "/~oauth"];
 
 function routeToTab(pathname: string, role: MobileNavRole): MobileNavTab | null {
-  if (pathname === "/") return "home";
+  if (pathname === "/" || pathname.startsWith("/dashboard")) return "home";
   if (pathname.startsWith("/connections")) return "connections";
   if (pathname.startsWith("/notifications")) return "notifications";
+  if (pathname.startsWith("/services")) return "labs";
   if (pathname.startsWith("/laboratories")) return role === "advisor" ? "labs" : null;
   if (pathname.startsWith("/advisors")) return role === "lab" ? "advisors" : null;
   if (pathname.startsWith("/distributor-dashboard")) return role === "distributor" ? "deals" : "profile";
-  if (
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/edit-profile") ||
-    pathname.startsWith("/profile")
-  ) {
+  if (pathname.startsWith("/edit-profile") || pathname.startsWith("/profile")) {
     return "profile";
   }
   return null;
