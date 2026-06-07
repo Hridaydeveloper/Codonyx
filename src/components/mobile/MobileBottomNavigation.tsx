@@ -7,6 +7,7 @@ import {
   User,
   GraduationCap,
   Handshake,
+  Compass,
   LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +46,8 @@ interface MobileBottomNavigationProps {
   className?: string;
   /** Optional override for the profile route (defaults to /dashboard) */
   profileHref?: string;
+  /** When true, swap logged-in-only tabs for public ones (e.g. Labs -> Explore) and route Home to "/" */
+  isLoggedOut?: boolean;
 }
 
 interface NavItem {
@@ -55,8 +58,13 @@ interface NavItem {
   onClick?: (navigate: ReturnType<typeof useNavigate>) => void;
 }
 
-function buildItems(role: MobileNavRole, profileHref: string): NavItem[] {
-  const home: NavItem = { key: "home", label: "Home", icon: Home, href: "/" };
+function buildItems(role: MobileNavRole, profileHref: string, isLoggedOut = false): NavItem[] {
+  const home: NavItem = {
+    key: "home",
+    label: "Home",
+    icon: Home,
+    href: isLoggedOut ? "/" : "/dashboard",
+  };
   const connections: NavItem = {
     key: "connections",
     label: "Connections",
@@ -65,7 +73,7 @@ function buildItems(role: MobileNavRole, profileHref: string): NavItem[] {
   };
   const notifications: NavItem = {
     key: "notifications",
-    label: "Alerts",
+    label: "Notifications",
     icon: Bell,
     href: "/notifications",
   };
@@ -77,13 +85,10 @@ function buildItems(role: MobileNavRole, profileHref: string): NavItem[] {
   };
 
   if (role === "advisor") {
-    return [
-      home,
-      { key: "labs", label: "Labs", icon: FlaskConical, href: "/laboratories" },
-      connections,
-      notifications,
-      profile,
-    ];
+    const second: NavItem = isLoggedOut
+      ? { key: "labs", label: "Explore", icon: Compass, href: "/services" }
+      : { key: "labs", label: "Labs", icon: FlaskConical, href: "/laboratories" };
+    return [home, second, connections, notifications, profile];
   }
 
   if (role === "lab") {
@@ -131,9 +136,10 @@ export default function MobileBottomNavigation({
   notificationCount = 0,
   className = "",
   profileHref = "/dashboard",
+  isLoggedOut = false,
 }: MobileBottomNavigationProps) {
   const navigate = useNavigate();
-  const items = buildItems(userRole, profileHref);
+  const items = buildItems(userRole, profileHref, isLoggedOut);
 
   return (
     <nav
@@ -170,16 +176,23 @@ export default function MobileBottomNavigation({
                 }
               >
                 <span className="relative inline-flex">
-                  <Icon
-                    className="h-6 w-6"
-                    strokeWidth={isActive ? 2.4 : 2}
-                    fill={isActive ? "currentColor" : "none"}
-                    style={
-                      isActive
-                        ? { fill: "currentColor", stroke: "currentColor" }
-                        : undefined
-                    }
-                  />
+                  {(() => {
+                    // Home icon: don't fill on active — keeps the door visible.
+                    // Other icons: fill on active for that LinkedIn-style "solid" look.
+                    const fillOnActive = item.key !== "home";
+                    return (
+                      <Icon
+                        className="h-6 w-6"
+                        strokeWidth={isActive ? 2.4 : 2}
+                        fill={isActive && fillOnActive ? "currentColor" : "none"}
+                        style={
+                          isActive && fillOnActive
+                            ? { fill: "currentColor", stroke: "currentColor" }
+                            : undefined
+                        }
+                      />
+                    );
+                  })()}
                   {showBadge && (
                     <span
                       className="absolute -top-1 -right-2 min-w-[16px] h-[16px] px-1
