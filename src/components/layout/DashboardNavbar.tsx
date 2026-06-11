@@ -271,6 +271,19 @@ export function DashboardNavbar() {
               )}
             </Link>
             <Link
+              to="/notifications"
+              className="flex items-center gap-2 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-primary transition-colors py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Bell className="h-4 w-4" />
+              Notifications
+              {unreadCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+            <Link
               to="/publications"
               className="flex items-center gap-2 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-primary transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
