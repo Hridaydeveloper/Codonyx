@@ -29,6 +29,7 @@ export function DashboardNavbar() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingConnectionCount, setPendingConnectionCount] = useState(0);
+  const { unreadCount } = useNotifications(profile?.id || null);
 
   const navLinks = [
     { name: "HOME", href: "/" },
