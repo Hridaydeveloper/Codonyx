@@ -179,7 +179,9 @@ export default function MobileBottomNavigation({
                   {(() => {
                     // Home icon: don't fill on active — keeps the door visible.
                     // Other icons: fill on active for that LinkedIn-style "solid" look.
-                    const fillOnActive = item.key !== "home";
+                    // Home & Compass (Explore) icons: don't fill on active —
+                    // filling turns their inner detail into a solid black blob.
+                    const fillOnActive = item.key !== "home" && item.icon !== Compass;
                     return (
                       <Icon
                         className="h-6 w-6"
