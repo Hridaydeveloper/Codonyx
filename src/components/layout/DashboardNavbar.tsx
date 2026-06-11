@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Menu, X, LogOut, User, Shield, Users, FileText, Pencil } from "lucide-react";
+import { Menu, X, LogOut, User, Shield, Users, FileText, Pencil, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { useNotifications } from "@/hooks/useNotifications";
 
 interface Profile {
   id: string;
