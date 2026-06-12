@@ -14,6 +14,7 @@ import { RegistrationAvatarUpload } from "@/components/registration/Registration
 import { TermsCheckbox } from "@/components/registration/TermsCheckbox";
 import { PasswordStrength, calculateStrength } from "@/components/registration/PasswordStrength";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
+import { notifyAdminsOfNewRegistration } from "@/lib/notifyAdmins";
 
 const features = [
   {
