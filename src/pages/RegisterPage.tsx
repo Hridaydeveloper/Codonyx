@@ -192,6 +192,8 @@ export default function RegisterPage() {
         },
       }).catch((err) => console.error("Failed to send confirmation email:", err));
 
+      await notifyAdminsOfNewRegistration({ fullName, userType: "advisor" });
+
       await supabase.auth.signOut({ scope: "local" });
       setIsRegistered(true);
     } catch (error) {
