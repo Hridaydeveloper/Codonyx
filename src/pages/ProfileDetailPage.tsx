@@ -147,6 +147,27 @@ export default function ProfileDetailPage() {
         return;
       }
 
+      // Reciprocal visibility enforcement (admins bypass; own profile always allowed)
+      const { data: hasAdminRole } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+
+      const viewerType = currentProfile?.user_type;
+      const targetType = (data as Profile).user_type;
+      const isOwn = currentProfile?.id === id;
+
+      if (!hasAdminRole && !isOwn && viewerType && targetType) {
+        const blocked =
+          (viewerType === "advisor" && targetType === "laboratory") ||
+          (viewerType === "laboratory" && targetType === "advisor");
+        if (blocked) {
+          setIsLoading(false);
+          setProfile(null);
+          return;
+        }
+      }
+
       setProfile(data as Profile);
       setIsLoading(false);
     };
@@ -200,7 +221,27 @@ export default function ProfileDetailPage() {
     );
   }
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-muted">
+        <DashboardNavbar />
+        <main className="pt-24 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto bg-background rounded-2xl border border-divider p-10 text-center">
+              <h1 className="font-heading text-2xl font-semibold text-foreground mb-3">
+                Access Restricted
+              </h1>
+              <p className="text-muted-foreground mb-6">
+                You don't have permission to view this profile. Advisors and Laboratories cannot view each other's profiles.
+              </p>
+              <Button onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const isAdvisor = profile.user_type === "advisor";
   const isLaboratory = profile.user_type === "laboratory";
