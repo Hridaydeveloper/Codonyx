@@ -147,6 +147,27 @@ export default function ProfileDetailPage() {
         return;
       }
 
+      // Reciprocal visibility enforcement (admins bypass; own profile always allowed)
+      const { data: hasAdminRole } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+
+      const viewerType = currentProfile?.user_type;
+      const targetType = (data as Profile).user_type;
+      const isOwn = currentProfile?.id === id;
+
+      if (!hasAdminRole && !isOwn && viewerType && targetType) {
+        const blocked =
+          (viewerType === "advisor" && targetType === "laboratory") ||
+          (viewerType === "laboratory" && targetType === "advisor");
+        if (blocked) {
+          setIsLoading(false);
+          setProfile(null);
+          return;
+        }
+      }
+
       setProfile(data as Profile);
       setIsLoading(false);
     };
