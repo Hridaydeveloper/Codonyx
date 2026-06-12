@@ -159,8 +159,8 @@ export default function ProfileDetailPage() {
 
       if (!hasAdminRole && !isOwn && viewerType && targetType) {
         const blocked =
-          (viewerType === "advisor" && targetType === "laboratory") ||
-          (viewerType === "laboratory" && targetType === "advisor");
+          (viewerType === "advisor" && targetType === "advisor") ||
+          (viewerType === "laboratory" && targetType === "laboratory");
         if (blocked) {
           setIsLoading(false);
           setProfile(null);
