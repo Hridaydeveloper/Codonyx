@@ -134,6 +134,8 @@ export default function RegisterDistributorPage() {
         },
       }).catch((err) => console.error("Failed to send confirmation email:", err));
 
+      await notifyAdminsOfNewRegistration({ fullName, userType: "distributor" });
+
       await supabase.auth.signOut({ scope: "local" });
       setIsRegistered(true);
     } catch (error) {
