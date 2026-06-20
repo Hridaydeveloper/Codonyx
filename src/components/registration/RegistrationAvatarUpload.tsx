@@ -4,6 +4,7 @@ import { ImageCropper } from "@/components/ui/image-cropper";
 import { toast } from "@/hooks/use-toast";
 import { Upload, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { validateImage, IMAGE_ACCEPT_ATTR } from "@/lib/uploadValidation";
 
 interface RegistrationAvatarUploadProps {
   avatarUrl: string;
