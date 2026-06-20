@@ -404,6 +404,7 @@ export default function EditProfilePage() {
                       value={organisation}
                       onChange={(e) => setOrganisation(e.target.value)}
                       placeholder="Company or institution"
+                      maxLength={TEXT_LIMITS.organisation}
                     />
                   </div>
 
@@ -414,6 +415,7 @@ export default function EditProfilePage() {
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="e.g., New York City"
+                      maxLength={TEXT_LIMITS.location}
                     />
                   </div>
                 </div>
