@@ -255,13 +255,15 @@ export default function RegisterDistributorPage() {
 
             <div className="space-y-2">
               <Label className="text-xs uppercase tracking-wider font-medium">Verification Document *</Label>
-              <p className="text-xs text-muted-foreground">Upload a business registration certificate, GST certificate, or company ID for verification.</p>
+              <p className="text-xs text-muted-foreground">Upload a business registration certificate, GST certificate, or company ID for verification. PDF, DOC, DOCX, PPT, PPTX · max 30 MB.</p>
               <label className="cursor-pointer">
-                <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" className="hidden" onChange={(e) => {
+                <input type="file" accept={DOCUMENT_ACCEPT_ATTR} className="hidden" onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    if (file.size > 10 * 1024 * 1024) {
-                      toast({ title: "File too large", description: "Max 10MB.", variant: "destructive" });
+                    const v = validateDocument(file);
+                    if (!v.ok) {
+                      toast({ title: "Invalid file", description: v.error, variant: "destructive" });
+                      e.target.value = "";
                       return;
                     }
                     setVerificationDoc(file);
