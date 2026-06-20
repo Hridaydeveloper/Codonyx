@@ -1336,7 +1336,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="space-y-2">
                       <Label>Document (optional)</Label>
-                      <Input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png" onChange={handleDealDocumentChange} />
+                      <Input type="file" accept={DOCUMENT_ACCEPT_ATTR} onChange={handleDealDocumentChange} />
                       {newDealDocFile && <p className="text-xs text-muted-foreground">Selected: {newDealDocFile.name}</p>}
                     </div>
                   </div>
