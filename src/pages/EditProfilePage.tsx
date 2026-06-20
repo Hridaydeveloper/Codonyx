@@ -15,6 +15,7 @@ import { BackButton } from "@/components/layout/BackButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCropper } from "@/components/ui/image-cropper";
 import { format } from "date-fns";
+import { validateImage, compressImage, IMAGE_ACCEPT_ATTR, TEXT_LIMITS } from "@/lib/uploadValidation";
 
 interface Profile {
   full_name: string;
