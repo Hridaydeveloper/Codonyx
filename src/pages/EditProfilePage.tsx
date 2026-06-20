@@ -379,6 +379,7 @@ export default function EditProfilePage() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Enter your full name"
+                      maxLength={TEXT_LIMITS.fullName}
                       required
                     />
                   </div>
@@ -390,6 +391,7 @@ export default function EditProfilePage() {
                       value={headline}
                       onChange={(e) => setHeadline(e.target.value)}
                       placeholder="e.g., CEO at TechCorp"
+                      maxLength={TEXT_LIMITS.headline}
                     />
                   </div>
                 </div>
