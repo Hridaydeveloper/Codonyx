@@ -336,7 +336,7 @@ export default function EditProfilePage() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept={IMAGE_ACCEPT_ATTR}
                     className="hidden"
                     onChange={handleAvatarSelect}
                   />
