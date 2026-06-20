@@ -206,6 +206,7 @@ export function AddPublicationDialog({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter publication title"
+              maxLength={TEXT_LIMITS.title}
               required
             />
           </div>
@@ -218,6 +219,7 @@ export function AddPublicationDialog({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of the publication..."
               rows={3}
+              maxLength={TEXT_LIMITS.description}
             />
           </div>
 
