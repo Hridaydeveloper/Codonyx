@@ -333,8 +333,10 @@ const AdminDashboard = () => {
   const handleDealDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Max 20MB.", variant: "destructive" });
+      const v = validateDocument(file);
+      if (!v.ok) {
+        toast({ title: "Invalid file", description: v.error, variant: "destructive" });
+        e.target.value = "";
         return;
       }
       setNewDealDocFile(file);
