@@ -12,6 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { validateImage, compressImage, IMAGE_ACCEPT_ATTR } from "@/lib/uploadValidation";
 
 interface BannerImage {
   id: string;
