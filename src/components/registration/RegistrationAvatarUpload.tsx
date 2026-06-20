@@ -51,7 +51,7 @@ export function RegistrationAvatarUpload({ avatarUrl, onAvatarChange }: Registra
             <AvatarFallback className="bg-muted"><User className="h-6 w-6 text-muted-foreground" /></AvatarFallback>
           </Avatar>
           <label className="cursor-pointer">
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+            <input ref={fileInputRef} type="file" accept={IMAGE_ACCEPT_ATTR} className="hidden" onChange={handleFileSelect} />
             <div className="flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors">
               <Upload className="h-4 w-4" /> Upload Photo
             </div>
