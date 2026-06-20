@@ -428,6 +428,7 @@ export default function EditProfilePage() {
                       value={contactNumber}
                       onChange={(e) => setContactNumber(e.target.value)}
                       placeholder="Your phone number"
+                      maxLength={TEXT_LIMITS.contactNumber}
                     />
                   </div>
 
@@ -440,6 +441,7 @@ export default function EditProfilePage() {
                       value={linkedinUrl}
                       onChange={(e) => setLinkedinUrl(e.target.value)}
                       placeholder="https://linkedin.com/in/yourprofile"
+                      maxLength={TEXT_LIMITS.url}
                     />
                   </div>
                 </div>
