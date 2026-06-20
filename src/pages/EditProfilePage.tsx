@@ -164,8 +164,10 @@ export default function EditProfilePage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Compress before upload (saves bandwidth + storage). Falls back to original on failure.
+      const optimized = await compressImage(croppedBlob, { maxDimension: 800, quality: 0.85 });
       const fileName = `${session.user.id}/avatar.jpg`;
-      const file = new File([croppedBlob], "avatar.jpg", { type: "image/jpeg" });
+      const file = new File([optimized], "avatar.jpg", { type: "image/jpeg" });
 
       // Attempt upload with automatic retry on first failure (handles first-time path creation)
       let uploadError: any = null;
