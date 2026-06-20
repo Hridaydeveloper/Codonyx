@@ -12,6 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { validateImage, compressImage, IMAGE_ACCEPT_ATTR } from "@/lib/uploadValidation";
 
 interface BannerImage {
   id: string;
@@ -62,16 +63,19 @@ export function BannerImagesManager() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Maximum size is 5MB.", variant: "destructive" });
+    const v = validateImage(file);
+    if (!v.ok) {
+      toast({ title: "Invalid image", description: v.error, variant: "destructive" });
+      e.target.value = "";
       return;
     }
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
+      const compressed = await compressImage(file, { maxDimension: 1920, quality: 0.85 });
+      const ext = (file.type === "image/png" ? "png" : "jpg");
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("banner-images").upload(path, file, {
-        cacheControl: "3600", upsert: false,
+      const { error: upErr } = await supabase.storage.from("banner-images").upload(path, compressed, {
+        cacheControl: "3600", upsert: false, contentType: compressed.type || file.type,
       });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("banner-images").getPublicUrl(path);
@@ -152,8 +156,8 @@ export function BannerImagesManager() {
             </div>
 
             <TabsContent value="upload">
-              <Label htmlFor="file" className="block mb-2">Image file (max 5MB)</Label>
-              <Input id="file" type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+              <Label htmlFor="file" className="block mb-2">Image file (JPG, PNG, WEBP · max 4 MB)</Label>
+              <Input id="file" type="file" accept={IMAGE_ACCEPT_ATTR} onChange={handleFileUpload} disabled={uploading} />
               {uploading && <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Uploading…</p>}
             </TabsContent>
 

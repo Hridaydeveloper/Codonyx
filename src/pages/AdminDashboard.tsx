@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { validateDocument, DOCUMENT_ACCEPT_ATTR } from "@/lib/uploadValidation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -332,8 +333,10 @@ const AdminDashboard = () => {
   const handleDealDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Max 20MB.", variant: "destructive" });
+      const v = validateDocument(file);
+      if (!v.ok) {
+        toast({ title: "Invalid file", description: v.error, variant: "destructive" });
+        e.target.value = "";
         return;
       }
       setNewDealDocFile(file);
@@ -1333,7 +1336,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="space-y-2">
                       <Label>Document (optional)</Label>
-                      <Input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png" onChange={handleDealDocumentChange} />
+                      <Input type="file" accept={DOCUMENT_ACCEPT_ATTR} onChange={handleDealDocumentChange} />
                       {newDealDocFile && <p className="text-xs text-muted-foreground">Selected: {newDealDocFile.name}</p>}
                     </div>
                   </div>
