@@ -36,9 +36,10 @@ export function RegistrationAvatarUpload({ avatarUrl, onAvatarChange }: Registra
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleCropComplete = (croppedBlob: Blob) => {
-    const previewUrl = URL.createObjectURL(croppedBlob);
-    onAvatarChange(previewUrl, croppedBlob);
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    const optimized = await compressImage(croppedBlob, { maxDimension: 800, quality: 0.85 });
+    const previewUrl = URL.createObjectURL(optimized);
+    onAvatarChange(previewUrl, optimized);
   };
 
   return (
