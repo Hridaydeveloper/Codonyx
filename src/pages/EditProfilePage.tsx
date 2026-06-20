@@ -454,7 +454,9 @@ export default function EditProfilePage() {
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell others about yourself, your experience, and expertise..."
                     rows={4}
+                    maxLength={TEXT_LIMITS.bio}
                   />
+                  <p className="text-xs text-muted-foreground text-right">{bio.length}/{TEXT_LIMITS.bio}</p>
                 </div>
 
                 {/* Advisor Specific Fields */}
