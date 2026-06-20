@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, Link as LinkIcon } from "lucide-react";
+import { validateDocument, DOCUMENT_ACCEPT_ATTR, TEXT_LIMITS } from "@/lib/uploadValidation";
 
 interface Publication {
   id: string;
