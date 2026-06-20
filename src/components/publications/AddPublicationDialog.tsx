@@ -261,7 +261,7 @@ export function AddPublicationDialog({
             <Label htmlFor="file">
               <span className="flex items-center gap-1.5">
                 <Upload className="h-3.5 w-3.5" />
-                Attachment (PDF, DOCX, PPTX)
+                Attachment (PDF, DOC, DOCX, PPT, PPTX · max 30 MB)
               </span>
             </Label>
             {existingFileUrl && !file && (
@@ -276,8 +276,20 @@ export function AddPublicationDialog({
             <Input
               id="file"
               type="file"
-              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              accept={DOCUMENT_ACCEPT_ATTR}
+              onChange={(e) => {
+                const f = e.target.files?.[0] || null;
+                if (f) {
+                  const v = validateDocument(f);
+                  if (!v.ok) {
+                    toast({ title: "Invalid file", description: v.error, variant: "destructive" });
+                    e.target.value = "";
+                    setFile(null);
+                    return;
+                  }
+                }
+                setFile(f);
+              }}
               className="cursor-pointer"
             />
           </div>
