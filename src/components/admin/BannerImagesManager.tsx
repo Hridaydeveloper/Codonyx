@@ -157,7 +157,7 @@ export function BannerImagesManager() {
 
             <TabsContent value="upload">
               <Label htmlFor="file" className="block mb-2">Image file (max 5MB)</Label>
-              <Input id="file" type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+              <Input id="file" type="file" accept={IMAGE_ACCEPT_ATTR} onChange={handleFileUpload} disabled={uploading} />
               {uploading && <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Uploading…</p>}
             </TabsContent>
 
