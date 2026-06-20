@@ -108,6 +108,13 @@ export function AddPublicationDialog({
 
       // Upload file if provided
       if (file) {
+        const v = validateDocument(file);
+        if (!v.ok) {
+          toast({ title: "Invalid file", description: v.error, variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+
         const fileExt = file.name.split(".").pop();
         const fileName = `${session.user.id}/${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
 
@@ -122,6 +129,18 @@ export function AddPublicationDialog({
           .getPublicUrl(fileName);
 
         fileUrl = urlData.publicUrl;
+
+        // Delete the previous file when replacing on edit, to avoid orphans.
+        if (isEditing && existingFileUrl) {
+          const marker = "/publications/";
+          const idx = existingFileUrl.indexOf(marker);
+          if (idx !== -1) {
+            const oldPath = existingFileUrl.slice(idx + marker.length).split("?")[0];
+            if (oldPath && oldPath !== fileName) {
+              await supabase.storage.from("publications").remove([oldPath]);
+            }
+          }
+        }
       }
 
       const publicationData = {
