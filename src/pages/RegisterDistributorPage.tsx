@@ -14,6 +14,7 @@ import { TermsCheckbox } from "@/components/registration/TermsCheckbox";
 import { PasswordStrength, calculateStrength } from "@/components/registration/PasswordStrength";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 import { notifyAdminsOfNewRegistration } from "@/lib/notifyAdmins";
+import { validateDocument, DOCUMENT_ACCEPT_ATTR, TEXT_LIMITS } from "@/lib/uploadValidation";
 
 export default function RegisterDistributorPage() {
   const navigate = useNavigate();
