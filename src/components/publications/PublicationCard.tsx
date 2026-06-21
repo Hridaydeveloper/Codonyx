@@ -59,18 +59,29 @@ export function PublicationCard({
   getTypeLabel,
   isOwner = false,
 }: PublicationCardProps) {
+  const navigate = useNavigate();
   const formattedDate = new Date(publication.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 
+  const goToDetail = () => navigate(`/publications/${publication.id}`);
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
+
   return (
-    <Card className="group hover:shadow-md hover:border-primary/30 transition-all border-border overflow-hidden">
-      <Link
-        to={`/publications/${publication.id}`}
-        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
-      >
+    <Card
+      onClick={goToDetail}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          goToDetail();
+        }
+      }}
+      className="group hover:shadow-md hover:border-primary/30 transition-all border-border cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    >
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4 flex-1 min-w-0">
