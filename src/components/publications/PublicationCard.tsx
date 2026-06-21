@@ -143,12 +143,15 @@ export function PublicationCard({
           </div>
 
           {isOwner && (
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-1 shrink-0" onClick={stop}>
               <Button
                 size="icon"
                 variant="ghost"
                 className="h-9 w-9 text-muted-foreground hover:text-foreground"
-                onClick={() => onEdit?.(publication)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.(publication);
+                }}
               >
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -158,11 +161,12 @@ export function PublicationCard({
                     size="icon"
                     variant="ghost"
                     className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                    onClick={stop}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent onClick={stop}>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete Publication</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -172,7 +176,10 @@ export function PublicationCard({
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => onDelete?.(publication.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(publication.id);
+                      }}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
                       Delete
