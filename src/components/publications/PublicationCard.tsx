@@ -118,6 +118,7 @@ export function PublicationCard({
                     href={publication.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={stop}
                     className="flex items-center gap-1 text-xs text-primary hover:underline"
                   >
                     <Paperclip className="h-3.5 w-3.5" />
@@ -130,6 +131,7 @@ export function PublicationCard({
                     href={publication.external_url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={stop}
                     className="flex items-center gap-1 text-xs text-primary hover:underline"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
