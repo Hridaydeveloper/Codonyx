@@ -66,7 +66,11 @@ export function PublicationCard({
   });
 
   return (
-    <Card className="group hover:shadow-md transition-shadow border-border">
+    <Card className="group hover:shadow-md hover:border-primary/30 transition-all border-border overflow-hidden">
+      <Link
+        to={`/publications/${publication.id}`}
+        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
+      >
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4 flex-1 min-w-0">
