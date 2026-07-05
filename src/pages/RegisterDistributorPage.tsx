@@ -64,8 +64,8 @@ export default function RegisterDistributorPage() {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (calculateStrength(password).score < 4) {
-      toast({ title: "Password not strong enough", description: "Password must reach 'Very Strong'. Use 10+ characters with uppercase, lowercase, numbers, and a symbol.", variant: "destructive" });
+    if (calculateStrength(password).score < MIN_PASSWORD_SCORE) {
+      toast({ title: "Password not strong enough", description: PASSWORD_REQUIREMENT_MESSAGE, variant: "destructive" });
       return;
     }
     if (!distributionCapacity.trim()) {
