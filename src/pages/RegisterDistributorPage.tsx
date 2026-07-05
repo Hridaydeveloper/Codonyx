@@ -11,7 +11,7 @@ import codonyxLogo from "@/assets/codonyx_logo.png";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
 import { RegistrationAvatarUpload } from "@/components/registration/RegistrationAvatarUpload";
 import { TermsCheckbox } from "@/components/registration/TermsCheckbox";
-import { PasswordStrength, calculateStrength } from "@/components/registration/PasswordStrength";
+import { PasswordStrength, calculateStrength, MIN_PASSWORD_SCORE, PASSWORD_REQUIREMENT_MESSAGE } from "@/components/registration/PasswordStrength";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 import { notifyAdminsOfNewRegistration } from "@/lib/notifyAdmins";
 import { validateDocument, DOCUMENT_ACCEPT_ATTR, TEXT_LIMITS } from "@/lib/uploadValidation";
