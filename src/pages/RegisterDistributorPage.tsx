@@ -194,7 +194,7 @@ export default function RegisterDistributorPage() {
             Register to become a Codonyx distribution partner and access deals.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} onInvalid={handleInvalid} className="space-y-5">
             <RegistrationAvatarUpload
               avatarUrl={avatarUrl}
               onAvatarChange={(url, blob) => { setAvatarUrl(url); setAvatarBlob(blob); }}
