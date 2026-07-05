@@ -197,7 +197,7 @@ export default function RegisterLaboratoryPage() {
             Register your laboratory to connect with expert advisors.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} onInvalid={handleInvalid} className="space-y-5">
             <RegistrationAvatarUpload
               avatarUrl={avatarUrl}
               onAvatarChange={(url, blob) => { setAvatarUrl(url); setAvatarBlob(blob); }}
