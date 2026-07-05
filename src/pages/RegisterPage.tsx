@@ -280,7 +280,7 @@ export default function RegisterPage() {
             Complete your registration to join the advisor network.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} onInvalid={handleInvalid} className="space-y-5">
             <RegistrationAvatarUpload
               avatarUrl={avatarUrl}
               onAvatarChange={(url, blob) => { setAvatarUrl(url); setAvatarBlob(blob); }}
