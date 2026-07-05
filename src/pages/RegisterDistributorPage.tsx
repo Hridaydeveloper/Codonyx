@@ -41,6 +41,18 @@ export default function RegisterDistributorPage() {
 
   // Avatar handled by RegistrationAvatarUpload component
 
+  const invalidToastRef = useRef(false);
+  const handleInvalid = (_e: React.FormEvent<HTMLFormElement>) => {
+    if (invalidToastRef.current) return;
+    invalidToastRef.current = true;
+    toast({
+      title: "Missing required fields",
+      description: "Please fill all fields marked with * to submit the registration.",
+      variant: "destructive",
+    });
+    setTimeout(() => { invalidToastRef.current = false; }, 1500);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
