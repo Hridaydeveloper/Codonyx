@@ -86,7 +86,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
         ))}
       </ul>
       <p className="text-[11px] text-muted-foreground">
-        Example: <span className="font-mono">Codonyx@2026!</span>
+        Example: <span className="font-mono">Codonyx@2026!</span> — but don't use this exact password.
       </p>
     </div>
   );
