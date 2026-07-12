@@ -70,9 +70,14 @@ export function useAccountGuard(intervalMs = 30_000) {
     check();
     // Then periodically
     intervalRef.current = setInterval(check, intervalMs);
+    // Also re-check when the tab regains focus, so a cross-device sign-out is
+    // detected as soon as the user returns to this tab.
+    const onFocus = () => { void check(); };
+    window.addEventListener("focus", onFocus);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      window.removeEventListener("focus", onFocus);
     };
   }, [navigate, intervalMs]);
 }
