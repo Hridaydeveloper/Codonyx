@@ -37,16 +37,14 @@ export async function fetchOwnProfile<T>(userId: string, select: string, retryCo
 const SUPABASE_TOKEN_KEY = "sb-ismtjnkzgfsrcstlyops-auth-token";
 
 /**
- * Fully sign the user out: clear cached tokens from local/session storage,
- * revoke the session on the server (global scope so other devices are also
- * signed out), and fall back to a local sign-out if the network call fails.
+ * Sign the user out from THIS device only. Other devices where the same
+ * account is logged in remain signed in. Clears cached tokens from local
+ * and session storage on this device.
  */
 export async function signOutEverywhere() {
   try {
-    await supabase.auth.signOut({ scope: "global" });
-  } catch {
-    try { await supabase.auth.signOut({ scope: "local" }); } catch { /* noop */ }
-  }
+    await supabase.auth.signOut({ scope: "local" });
+  } catch { /* noop */ }
   try { localStorage.removeItem(SUPABASE_TOKEN_KEY); } catch { /* noop */ }
   try { sessionStorage.removeItem(SUPABASE_TOKEN_KEY); } catch { /* noop */ }
 }
