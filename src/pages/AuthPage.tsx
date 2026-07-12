@@ -100,25 +100,28 @@ export default function AuthPage() {
     showAccountNotFoundToast(isDeactivated);
   };
 
-  const isSessionApproved = async (userId: string): Promise<{ approved: boolean; deactivated: boolean }> => {
+  const isSessionApproved = async (userId: string): Promise<{ approved: boolean; deactivated: boolean; userType?: string }> => {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("approval_status")
+      .select("approval_status, user_type")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (!profile) return { approved: false, deactivated: false };
     if (profile.approval_status === "deactivated") return { approved: false, deactivated: true };
-    return { approved: profile.approval_status === "approved", deactivated: false };
+    return { approved: profile.approval_status === "approved", deactivated: false, userType: profile.user_type };
   };
 
+  const routeForUserType = (userType?: string) =>
+    userType === "distributor" ? "/distributor-dashboard" : "/dashboard";
+
   const validateApprovedSession = async (userId: string) => {
-    const { approved, deactivated } = await isSessionApproved(userId);
+    const { approved, deactivated, userType } = await isSessionApproved(userId);
     if (!approved) {
       await signOutUnauthorized(deactivated);
-      return false;
+      return { ok: false as const };
     }
-    return true;
+    return { ok: true as const, userType };
   };
 
   useEffect(() => {
@@ -140,10 +143,10 @@ export default function AuthPage() {
           : null;
 
         if (session) {
-          const approved = await validateApprovedSession(session.user.id);
+          const result = await validateApprovedSession(session.user.id);
           if (cancelled) return;
-          if (approved) {
-            navigate("/dashboard", { replace: true });
+          if (result.ok) {
+            navigate(routeForUserType(result.userType), { replace: true });
             return;
           }
         }
@@ -170,10 +173,10 @@ export default function AuthPage() {
       // IMPORTANT: Do NOT await inside onAuthStateChange to prevent deadlocks.
       // Fire-and-forget the validation.
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        isSessionApproved(session.user.id).then(({ approved, deactivated }) => {
+        isSessionApproved(session.user.id).then(({ approved, deactivated, userType }) => {
           if (cancelled) return;
           if (approved) {
-            navigate("/dashboard", { replace: true });
+            navigate(routeForUserType(userType), { replace: true });
           } else {
             signOutUnauthorized(deactivated);
             setIsCheckingAuth(false);
@@ -225,9 +228,14 @@ export default function AuthPage() {
       if (data.session) {
         // Persist the user's "Remember Me" choice for this session.
         applyRememberMePreference(rememberMe);
-        // Navigate immediately for instant UX. The dashboard's account guard
-        // (useAccountGuard) validates approval status and signs out if needed.
-        navigate("/dashboard", { replace: true });
+        // Look up user_type so distributors go directly to their dashboard
+        // instead of hopping through /dashboard first.
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("user_type")
+          .eq("user_id", data.session.user.id)
+          .maybeSingle();
+        navigate(routeForUserType(prof?.user_type), { replace: true });
       } else {
         isFormSigningIn.current = false;
       }
