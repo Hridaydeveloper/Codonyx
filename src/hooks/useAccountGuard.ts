@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { fetchOwnProfile } from "@/lib/auth";
+import { fetchOwnProfile, isSessionRevoked, signOutEverywhere } from "@/lib/auth";
 
 /**
  * Periodically checks if the logged-in user's account is still approved.
@@ -20,6 +20,16 @@ export function useAccountGuard(intervalMs = 30_000) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Detect cross-device sign-out: if the refresh token was revoked on
+      // another device, our local session is stale — force sign-out here too.
+      if (await isSessionRevoked()) {
+        isHandlingRef.current = true;
+        await signOutEverywhere();
+        toast({ title: "Signed out", description: "Your session ended (signed out from another device)." });
+        navigate("/auth", { replace: true });
+        return;
+      }
+
       const { data: profile, error } = await fetchOwnProfile<{ approval_status: "pending" | "approved" | "rejected" | "deactivated" }>(
         session.user.id,
         "approval_status",
@@ -27,6 +37,8 @@ export function useAccountGuard(intervalMs = 30_000) {
       );
 
       if (error) return; // network error — skip
+
+
 
       if (!profile) {
         isHandlingRef.current = true;
@@ -58,9 +70,14 @@ export function useAccountGuard(intervalMs = 30_000) {
     check();
     // Then periodically
     intervalRef.current = setInterval(check, intervalMs);
+    // Also re-check when the tab regains focus, so a cross-device sign-out is
+    // detected as soon as the user returns to this tab.
+    const onFocus = () => { void check(); };
+    window.addEventListener("focus", onFocus);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      window.removeEventListener("focus", onFocus);
     };
   }, [navigate, intervalMs]);
 }

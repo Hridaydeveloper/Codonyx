@@ -127,15 +127,15 @@ export function Navbar() {
   }, [location.pathname]);
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch {
-      try {
-        await supabase.auth.signOut({ scope: "local" });
-      } catch {
-        // ignore
-      }
-    }
+    const { signOutEverywhere } = await import("@/lib/auth");
+    // Clear local cache immediately so the UI doesn't show stale profile info
+    // if navigation happens before the auth listener fires.
+    profileFetched.current = false;
+    cachedProfile = null;
+    cachedUserId = null;
+    setProfile(null);
+    setIsLoggedIn(false);
+    await signOutEverywhere();
     navigate("/auth", { replace: true });
   };
 

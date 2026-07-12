@@ -73,15 +73,8 @@ export function DashboardNavbar() {
   }, []);
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch {
-      try {
-        await supabase.auth.signOut({ scope: "local" });
-      } catch {
-        // ignore
-      }
-    }
+    const { signOutEverywhere } = await import("@/lib/auth");
+    await signOutEverywhere();
     navigate("/auth", { replace: true });
   };
 

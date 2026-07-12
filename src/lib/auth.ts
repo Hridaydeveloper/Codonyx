@@ -33,3 +33,41 @@ export async function fetchOwnProfile<T>(userId: string, select: string, retryCo
 
   return { data: null, error: lastError };
 }
+
+const SUPABASE_TOKEN_KEY = "sb-ismtjnkzgfsrcstlyops-auth-token";
+
+/**
+ * Fully sign the user out: clear cached tokens from local/session storage,
+ * revoke the session on the server (global scope so other devices are also
+ * signed out), and fall back to a local sign-out if the network call fails.
+ */
+export async function signOutEverywhere() {
+  try {
+    await supabase.auth.signOut({ scope: "global" });
+  } catch {
+    try { await supabase.auth.signOut({ scope: "local" }); } catch { /* noop */ }
+  }
+  try { localStorage.removeItem(SUPABASE_TOKEN_KEY); } catch { /* noop */ }
+  try { sessionStorage.removeItem(SUPABASE_TOKEN_KEY); } catch { /* noop */ }
+}
+
+/**
+ * Verify the current session is still valid on the server. Returns true when
+ * the session was revoked (e.g. signed out from another device) so callers
+ * can force a local sign-out. Returns false on network errors so transient
+ * failures don't kick the user out.
+ */
+export async function isSessionRevoked(): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      // AuthApiError with status 401/403 means the refresh token was revoked.
+      const status = (error as { status?: number }).status;
+      if (status === 401 || status === 403) return true;
+      return false;
+    }
+    return !data?.user;
+  } catch {
+    return false;
+  }
+}
