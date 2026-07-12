@@ -143,10 +143,10 @@ export default function AuthPage() {
           : null;
 
         if (session) {
-          const approved = await validateApprovedSession(session.user.id);
+          const result = await validateApprovedSession(session.user.id);
           if (cancelled) return;
-          if (approved) {
-            navigate("/dashboard", { replace: true });
+          if (result.ok) {
+            navigate(routeForUserType(result.userType), { replace: true });
             return;
           }
         }
@@ -173,10 +173,10 @@ export default function AuthPage() {
       // IMPORTANT: Do NOT await inside onAuthStateChange to prevent deadlocks.
       // Fire-and-forget the validation.
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        isSessionApproved(session.user.id).then(({ approved, deactivated }) => {
+        isSessionApproved(session.user.id).then(({ approved, deactivated, userType }) => {
           if (cancelled) return;
           if (approved) {
-            navigate("/dashboard", { replace: true });
+            navigate(routeForUserType(userType), { replace: true });
           } else {
             signOutUnauthorized(deactivated);
             setIsCheckingAuth(false);
