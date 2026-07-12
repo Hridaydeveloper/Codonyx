@@ -42,6 +42,17 @@ export function Navbar() {
   const profileFetched = useRef(!!cachedProfile);
 
   const fetchProfile = useCallback(async (userId: string) => {
+    // If we have a cached profile for a DIFFERENT user, wipe it — the account
+    // switched (e.g. sign out + sign in as someone else) and we must not show
+    // the previous user's info.
+    if (cachedUserId && cachedUserId !== userId) {
+      cachedProfile = null;
+      cachedUserId = null;
+      profileFetched.current = false;
+      setProfile(null);
+      setIsLoggedIn(false);
+    }
+
     // Skip if already fetched for this user
     if (cachedUserId === userId && cachedProfile) {
       setProfile(cachedProfile);
@@ -49,7 +60,7 @@ export function Navbar() {
       profileFetched.current = true;
       return;
     }
-    if (profileFetched.current) return;
+    if (profileFetched.current && cachedUserId === userId) return;
     profileFetched.current = true;
     try {
       const { data } = await supabase
