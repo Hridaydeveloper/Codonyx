@@ -100,25 +100,28 @@ export default function AuthPage() {
     showAccountNotFoundToast(isDeactivated);
   };
 
-  const isSessionApproved = async (userId: string): Promise<{ approved: boolean; deactivated: boolean }> => {
+  const isSessionApproved = async (userId: string): Promise<{ approved: boolean; deactivated: boolean; userType?: string }> => {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("approval_status")
+      .select("approval_status, user_type")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (!profile) return { approved: false, deactivated: false };
     if (profile.approval_status === "deactivated") return { approved: false, deactivated: true };
-    return { approved: profile.approval_status === "approved", deactivated: false };
+    return { approved: profile.approval_status === "approved", deactivated: false, userType: profile.user_type };
   };
 
+  const routeForUserType = (userType?: string) =>
+    userType === "distributor" ? "/distributor-dashboard" : "/dashboard";
+
   const validateApprovedSession = async (userId: string) => {
-    const { approved, deactivated } = await isSessionApproved(userId);
+    const { approved, deactivated, userType } = await isSessionApproved(userId);
     if (!approved) {
       await signOutUnauthorized(deactivated);
-      return false;
+      return { ok: false as const };
     }
-    return true;
+    return { ok: true as const, userType };
   };
 
   useEffect(() => {
