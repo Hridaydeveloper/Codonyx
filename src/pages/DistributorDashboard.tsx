@@ -505,8 +505,8 @@ export default function DistributorDashboard() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0">
-                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap">{formatCurrency(totalCommittedINR, "INR")}</p>
-                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap">{formatCurrency(totalCommittedUSD, "USD")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap" title={formatCurrency(totalCommittedINR, "INR")}>₹{formatCompact(totalCommittedINR, "INR")}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap" title={formatCurrency(totalCommittedUSD, "USD")}>${formatCompact(totalCommittedUSD, "USD")}</p>
                     </div>
                     <p className="text-sm text-muted-foreground">Total Committed</p>
                   </div>
