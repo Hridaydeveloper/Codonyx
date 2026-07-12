@@ -228,9 +228,14 @@ export default function AuthPage() {
       if (data.session) {
         // Persist the user's "Remember Me" choice for this session.
         applyRememberMePreference(rememberMe);
-        // Navigate immediately for instant UX. The dashboard's account guard
-        // (useAccountGuard) validates approval status and signs out if needed.
-        navigate("/dashboard", { replace: true });
+        // Look up user_type so distributors go directly to their dashboard
+        // instead of hopping through /dashboard first.
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("user_type")
+          .eq("user_id", data.session.user.id)
+          .maybeSingle();
+        navigate(routeForUserType(prof?.user_type), { replace: true });
       } else {
         isFormSigningIn.current = false;
       }
