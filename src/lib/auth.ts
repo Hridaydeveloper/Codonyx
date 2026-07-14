@@ -42,11 +42,37 @@ const SUPABASE_TOKEN_KEY = "sb-ismtjnkzgfsrcstlyops-auth-token";
  * and session storage on this device.
  */
 export async function signOutEverywhere() {
+  // Mark sign-out in progress so any in-flight auth events (TOKEN_REFRESHED,
+  // SIGNED_IN from a racing tab, etc.) can be ignored by listeners.
+  try { sessionStorage.setItem("codonyx-signing-out", "1"); } catch { /* noop */ }
+
   try {
     await supabase.auth.signOut({ scope: "local" });
   } catch { /* noop */ }
-  try { localStorage.removeItem(SUPABASE_TOKEN_KEY); } catch { /* noop */ }
-  try { sessionStorage.removeItem(SUPABASE_TOKEN_KEY); } catch { /* noop */ }
+
+  // Wipe every Supabase auth token key from both storages. This defeats the
+  // rememberMe proxy that can otherwise re-mirror a stale token back into
+  // localStorage after sign-out.
+  const wipe = (store: Storage) => {
+    try {
+      const keys: string[] = [];
+      for (let i = 0; i < store.length; i += 1) {
+        const k = store.key(i);
+        if (k && (k.startsWith("sb-") || k === SUPABASE_TOKEN_KEY || k === "codonyx-remember-me")) {
+          keys.push(k);
+        }
+      }
+      keys.forEach((k) => store.removeItem(k));
+    } catch { /* noop */ }
+  };
+  wipe(localStorage);
+  wipe(sessionStorage);
+
+  // Hard-reload to /auth so no in-memory Supabase client state (cached user,
+  // pending refresh timers) can restore the previous session.
+  try {
+    window.location.replace("/auth");
+  } catch { /* noop */ }
 }
 
 /**
