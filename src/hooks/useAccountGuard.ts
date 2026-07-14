@@ -2,11 +2,16 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { fetchOwnProfile, isSessionRevoked, signOutEverywhere } from "@/lib/auth";
+import { fetchOwnProfile } from "@/lib/auth";
 
 /**
  * Periodically checks if the logged-in user's account is still approved.
  * If the account is deactivated/deleted, shows a warning and redirects to /auth.
+ *
+ * NOTE: Sign-out is intentionally local-scope only (see signOutEverywhere in
+ * @/lib/auth), so signing out on one device must NOT terminate the session on
+ * another device. We therefore do not probe the server for token revocation
+ * here — that path used to kick the other device out on transient 401s.
  */
 export function useAccountGuard(intervalMs = 30_000) {
   const navigate = useNavigate();
@@ -19,16 +24,6 @@ export function useAccountGuard(intervalMs = 30_000) {
 
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-
-      // Detect cross-device sign-out: if the refresh token was revoked on
-      // another device, our local session is stale — force sign-out here too.
-      if (await isSessionRevoked()) {
-        isHandlingRef.current = true;
-        await signOutEverywhere();
-        toast({ title: "Signed out", description: "Your session ended (signed out from another device)." });
-        navigate("/auth", { replace: true });
-        return;
-      }
 
       const { data: profile, error } = await fetchOwnProfile<{ approval_status: "pending" | "approved" | "rejected" | "deactivated" }>(
         session.user.id,
