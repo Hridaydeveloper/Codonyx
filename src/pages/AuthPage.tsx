@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from "@/components/ui/checkbox";
 import { applyRememberMePreference, REMEMBER_ME_KEY } from "@/lib/rememberMe";
 import { PasswordStrength } from "@/components/registration/PasswordStrength";
+import { clearSignOutInProgress, clearStoredAuthState, markSignOutInProgress } from "@/lib/authStorage";
 
 // Mirrors PasswordStrength scoring; require at least "Strong" (score >= 3) for resets.
 function getResetPasswordScore(password: string): number {
@@ -92,11 +93,13 @@ export default function AuthPage() {
   };
 
   const signOutUnauthorized = async (isDeactivated = false) => {
+    markSignOutInProgress();
     try {
       await supabase.auth.signOut({ scope: "local" });
     } catch {
       await supabase.auth.signOut({ scope: "local" });
     }
+    clearStoredAuthState({ includeRemember: false });
     showAccountNotFoundToast(isDeactivated);
   };
 
@@ -195,6 +198,8 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearSignOutInProgress();
+    clearStoredAuthState({ includeRemember: false });
     setIsLoading(true);
     hasShownUnauthorizedToast.current = false;
     isFormSigningIn.current = true;
@@ -412,6 +417,8 @@ export default function AuthPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    clearSignOutInProgress();
+    clearStoredAuthState({ includeRemember: false });
     hasShownUnauthorizedToast.current = false;
     setIsGoogleLoading(true);
 
