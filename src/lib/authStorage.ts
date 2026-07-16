@@ -1,4 +1,4 @@
-const FALLBACK_PROJECT_REF = "ismtjnkzgfsrcstlyops";
+const FALLBACK_PROJECT_REF = "mbalhtajoruhzhraxnxc";
 
 export const REMEMBER_ME_KEY = "codonyx-remember-me";
 export const SIGNING_OUT_KEY = "codonyx-signing-out";
