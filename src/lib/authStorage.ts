@@ -81,7 +81,7 @@ export function installAuthStorageGuard() {
   const originalSetItem = Storage.prototype.setItem;
   const originalRemoveItem = Storage.prototype.removeItem;
 
-  Storage.prototype.setItem = function setItemGuard(key: string, value: string) {
+  Storage.prototype.setItem = function setItemGuard(this: Storage, key: string, value: string) {
     const storageKey = String(key);
 
     if (isSignOutInProgress() && isAuthStorageKey(storageKey)) {
@@ -104,7 +104,7 @@ export function installAuthStorageGuard() {
     }
   };
 
-  Storage.prototype.removeItem = function removeItemGuard(key: string) {
+  Storage.prototype.removeItem = function removeItemGuard(this: Storage, key: string) {
     const storageKey = String(key);
     originalRemoveItem.call(this, storageKey);
 
