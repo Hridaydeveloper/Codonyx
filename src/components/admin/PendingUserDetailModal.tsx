@@ -119,12 +119,13 @@ export function PendingUserDetailModal({
           {/* Profile Header */}
           <div className="bg-muted rounded-xl p-6">
             <div className="flex flex-col md:flex-row gap-6">
-              <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                <AvatarImage src={user.avatar_url || undefined} alt={user.full_name} />
-                <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
-                  {getInitials(user.full_name)}
-                </AvatarFallback>
-              </Avatar>
+              <AvatarLightbox
+                src={user.avatar_url}
+                alt={user.full_name}
+                fallback={getInitials(user.full_name)}
+                className="h-24 w-24 border-4 border-background shadow-lg"
+                fallbackClassName="text-2xl bg-primary text-primary-foreground"
+              />
 
               <div className="flex-1">
                 <h2 className="font-heading text-2xl font-semibold text-foreground">
