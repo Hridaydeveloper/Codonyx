@@ -345,13 +345,27 @@ const AdminDashboard = () => {
 
   const handleCreateDeal = async () => {
     if (!newDealTitle || !newDealTarget) return;
-    
+
+    const trimmedTitle = newDealTitle.trim();
+
+    // Block duplicate titles (case-insensitive) so admins can't create
+    // two deals sharing the exact same name.
+    const { data: existing } = await supabase
+      .from("deals")
+      .select("id")
+      .ilike("title", trimmedTitle)
+      .limit(1);
+    if (existing && existing.length > 0) {
+      showErrorToast("Duplicate deal title", { description: "A deal with this title already exists. Please choose a different title.", duration: 5000 });
+      return;
+    }
+
     const targetAmount = parseFloat(newDealTarget);
     if (newDealMinBid && parseFloat(newDealMinBid) >= targetAmount) {
       showErrorToast("Invalid Minimum Bid", { description: "Minimum Bid Amount must be less than the Target Amount.", duration: 5000 });
       return;
     }
-    
+
     const { data: { user } } = await supabase.auth.getUser();
 
     let documentUrl: string | null = null;

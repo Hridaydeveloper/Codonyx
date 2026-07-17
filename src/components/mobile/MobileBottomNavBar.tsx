@@ -22,7 +22,11 @@ import MobileBottomNavigation, {
 
 const HIDDEN_PREFIXES = ["/auth", "/register", "/reset-password", "/~oauth"];
 
-function routeToTab(pathname: string, role: MobileNavRole): MobileNavTab | null {
+function routeToTab(
+  pathname: string,
+  role: MobileNavRole,
+  ownProfileId: string | null,
+): MobileNavTab | null {
   if (pathname === "/" || pathname.startsWith("/dashboard")) return "home";
   if (pathname.startsWith("/connections")) return "connections";
   if (pathname.startsWith("/notifications")) return "notifications";
@@ -30,8 +34,12 @@ function routeToTab(pathname: string, role: MobileNavRole): MobileNavTab | null 
   if (pathname.startsWith("/laboratories")) return role === "advisor" ? "labs" : null;
   if (pathname.startsWith("/advisors")) return role === "lab" ? "advisors" : null;
   if (pathname.startsWith("/distributor-dashboard")) return role === "distributor" ? "deals" : "profile";
-  if (pathname.startsWith("/edit-profile") || pathname.startsWith("/profile")) {
-    return "profile";
+  if (pathname.startsWith("/edit-profile")) return "profile";
+  if (pathname.startsWith("/profile/")) {
+    // Only highlight the Profile tab when the user is viewing THEIR OWN
+    // profile — visiting anyone else's profile must not auto-select it.
+    const id = pathname.split("/profile/")[1]?.split("/")[0];
+    return ownProfileId && id === ownProfileId ? "profile" : null;
   }
   return null;
 }
@@ -71,9 +79,11 @@ export default function MobileBottomNavBar() {
   const { unreadCount } = useNotifications(profileId);
 
   const activeTab = useMemo<MobileNavTab>(() => {
-    const t = routeToTab(location.pathname, role);
-    return t ?? "home";
-  }, [location.pathname, role]);
+    // When on a route that doesn't map to any tab (e.g. viewing another
+    // user's profile), return a sentinel so no tab appears selected.
+    const t = routeToTab(location.pathname, role, profileId);
+    return (t ?? "__none__") as MobileNavTab;
+  }, [location.pathname, role, profileId]);
 
   if (isHidden || !isReady) return null;
 
