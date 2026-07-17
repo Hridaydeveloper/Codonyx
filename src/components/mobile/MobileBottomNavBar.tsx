@@ -79,8 +79,10 @@ export default function MobileBottomNavBar() {
   const { unreadCount } = useNotifications(profileId);
 
   const activeTab = useMemo<MobileNavTab>(() => {
+    // When on a route that doesn't map to any tab (e.g. viewing another
+    // user's profile), return a sentinel so no tab appears selected.
     const t = routeToTab(location.pathname, role, profileId);
-    return t ?? "home";
+    return (t ?? "__none__") as MobileNavTab;
   }, [location.pathname, role, profileId]);
 
   if (isHidden || !isReady) return null;
