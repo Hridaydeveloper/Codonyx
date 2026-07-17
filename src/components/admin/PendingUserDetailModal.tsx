@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarLightbox } from "@/components/ui/avatar-lightbox";
 import { Check, X, MapPin, Mail, Phone, Building2, GraduationCap, Briefcase, Globe, Users, Calendar, Beaker, Wrench, Linkedin, Clock, FileText, Truck } from "lucide-react";
 import { format } from "date-fns";
 
