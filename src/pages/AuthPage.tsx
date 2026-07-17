@@ -83,6 +83,10 @@ export default function AuthPage() {
   const hasShownUnauthorizedToast = useRef(false);
 
   const showAccountNotFoundToast = (isDeactivated = false) => {
+    // Always clear the Google button spinner — the OAuth promise may never
+    // resolve after we sign the session out, otherwise "Continue with
+    // Google" stays stuck in an infinite loading state.
+    setIsGoogleLoading(false);
     if (hasShownUnauthorizedToast.current) return;
     hasShownUnauthorizedToast.current = true;
     toast({
