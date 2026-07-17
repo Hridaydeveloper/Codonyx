@@ -75,7 +75,7 @@ export function useNotifications(profileId: string | null) {
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "notifications",
           filter: `profile_id=eq.${profileId}`,
