@@ -79,9 +79,9 @@ export default function MobileBottomNavBar() {
   const { unreadCount } = useNotifications(profileId);
 
   const activeTab = useMemo<MobileNavTab>(() => {
-    const t = routeToTab(location.pathname, role);
+    const t = routeToTab(location.pathname, role, profileId);
     return t ?? "home";
-  }, [location.pathname, role]);
+  }, [location.pathname, role, profileId]);
 
   if (isHidden || !isReady) return null;
 
