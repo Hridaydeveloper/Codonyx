@@ -114,7 +114,8 @@ export function useNotifications(profileId: string | null) {
       .from("notifications")
       .update({ is_read: true })
       .eq("id", notificationId);
-  }, []);
+    emitSync();
+  }, [emitSync]);
 
   const markAllAsRead = useCallback(async () => {
     if (!profileId) return;
@@ -127,7 +128,8 @@ export function useNotifications(profileId: string | null) {
       .update({ is_read: true })
       .eq("profile_id", profileId)
       .eq("is_read", false);
-  }, [profileId]);
+    emitSync();
+  }, [profileId, emitSync]);
 
   return {
     notifications,
