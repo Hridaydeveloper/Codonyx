@@ -66,7 +66,7 @@ export function useNotifications(profileId: string | null) {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Realtime subscription
+  // Realtime subscription + cross-instance sync (same tab)
   useEffect(() => {
     if (!profileId) return;
 
@@ -86,10 +86,23 @@ export function useNotifications(profileId: string | null) {
       )
       .subscribe();
 
+    const onLocalSync = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { profileId?: string } | undefined;
+      if (!detail || detail.profileId === profileId) fetchNotifications();
+    };
+    window.addEventListener("codonyx:notifications-sync", onLocalSync);
+
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener("codonyx:notifications-sync", onLocalSync);
     };
   }, [profileId, fetchNotifications]);
+
+  const emitSync = useCallback(() => {
+    window.dispatchEvent(
+      new CustomEvent("codonyx:notifications-sync", { detail: { profileId } })
+    );
+  }, [profileId]);
 
   const markAsRead = useCallback(async (notificationId: string) => {
     setNotifications(prev =>
