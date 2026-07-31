@@ -9,6 +9,7 @@ import { ScrollToTopButton } from "./components/ScrollToTopButton";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 import MobileBottomNavBar from "./components/mobile/MobileBottomNavBar";
+import PushPermissionManager from "./components/notifications/PushPermissionManager";
 
 // Eagerly load critical pages for instant routing
 import Index from "./pages/Index";
@@ -71,6 +72,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <PushPermissionManager />
           <ScrollToTopButton />
           <Suspense fallback={<PageLoader />}>
             <ErrorBoundary>

@@ -11,6 +11,7 @@ import codonyxLogo from "@/assets/codonyx_logo.png";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
 import { RegistrationAvatarUpload } from "@/components/registration/RegistrationAvatarUpload";
 import { TermsCheckbox } from "@/components/registration/TermsCheckbox";
+import { PhoneNumberInput } from "@/components/registration/PhoneNumberInput";
 import { PasswordStrength, calculateStrength, MIN_PASSWORD_SCORE, PASSWORD_REQUIREMENT_MESSAGE } from "@/components/registration/PasswordStrength";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 import { notifyAdminsOfNewRegistration } from "@/lib/notifyAdmins";
@@ -236,7 +237,7 @@ export default function RegisterDistributorPage() {
 
             <div className="space-y-2">
               <Label htmlFor="contactNumber" className="text-xs uppercase tracking-wider font-medium">Phone Number *</Label>
-              <Input id="contactNumber" type="tel" placeholder="Enter phone number" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} className="h-12" required />
+              <PhoneNumberInput id="contactNumber" value={contactNumber} onChange={setContactNumber} required />
             </div>
 
             <div className="space-y-2">

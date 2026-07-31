@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { showSystemNotification } from "@/lib/browserPush";
 
 export interface Notification {
   id: string;
@@ -80,7 +81,18 @@ export function useNotifications(profileId: string | null) {
           table: "notifications",
           filter: `profile_id=eq.${profileId}`,
         },
-        () => {
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const row = payload.new as Partial<Notification>;
+            if (row && !row.is_read) {
+              showSystemNotification({
+                title: row.title || "New notification",
+                body: row.message || "",
+                link: row.link ? `${window.location.origin}${row.link}` : `${window.location.origin}/notifications`,
+                tag: row.id,
+              });
+            }
+          }
           fetchNotifications();
         }
       )
