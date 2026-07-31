@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import PhoneInputBase from "react-phone-number-input";
 import type { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -18,7 +19,7 @@ interface PhoneNumberInputProps {
 /**
  * International phone input with country flag, dial-code selector and
  * automatic formatting. The country selector follows the form's Country
- * field but can still be changed manually.
+ * field but can still be changed manually afterwards.
  */
 export function PhoneNumberInput({
   id,
@@ -29,13 +30,22 @@ export function PhoneNumberInput({
   required,
   className,
 }: PhoneNumberInputProps) {
+  const [selectedCountry, setSelectedCountry] = useState<Country | undefined>(
+    (country || undefined) as Country | undefined
+  );
+
+  // Auto-update the dial code when the form's Country field changes.
+  useEffect(() => {
+    if (country) setSelectedCountry(country as Country);
+  }, [country]);
+
   return (
     <PhoneInputBase
       id={id}
       international
       withCountryCallingCode
-      defaultCountry={(country || undefined) as Country | undefined}
-      country={(country || undefined) as Country | undefined}
+      country={selectedCountry}
+      onCountryChange={(c) => setSelectedCountry(c || undefined)}
       value={value || undefined}
       onChange={(v) => onChange(v || "")}
       placeholder={placeholder}
