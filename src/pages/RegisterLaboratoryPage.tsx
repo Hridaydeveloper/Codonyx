@@ -12,6 +12,8 @@ import codonyxLogo from "@/assets/codonyx_logo.png";
 import EmailVerificationField from "@/components/registration/EmailVerificationField";
 import { RegistrationAvatarUpload } from "@/components/registration/RegistrationAvatarUpload";
 import { TermsCheckbox } from "@/components/registration/TermsCheckbox";
+import { CountryCitySelect } from "@/components/registration/CountryCitySelect";
+import { PhoneNumberInput } from "@/components/registration/PhoneNumberInput";
 import { PasswordStrength, calculateStrength, MIN_PASSWORD_SCORE, PASSWORD_REQUIREMENT_MESSAGE } from "@/components/registration/PasswordStrength";
 import { ensureRegistrationUser } from "@/lib/ensureRegistrationUser";
 import { notifyAdminsOfNewRegistration } from "@/lib/notifyAdmins";
@@ -31,6 +33,7 @@ export default function RegisterLaboratoryPage() {
   const [organisation, setOrganisation] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+  const [countryIso, setCountryIso] = useState("");
   const [bio, setBio] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
