@@ -318,20 +318,16 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="country" className="text-xs uppercase tracking-wider font-medium">Country *</Label>
-                <Input id="country" placeholder="Enter your country" value={country} onChange={(e) => setCountry(e.target.value)} className="h-12" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="city" className="text-xs uppercase tracking-wider font-medium">City *</Label>
-                <Input id="city" placeholder="Enter your city" value={city} onChange={(e) => setCity(e.target.value)} className="h-12" required />
-              </div>
-            </div>
+            <CountryCitySelect
+              country={country}
+              city={city}
+              onCountryChange={(name, iso) => { setCountry(name); setCountryIso(iso); }}
+              onCityChange={setCity}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="contactNumber" className="text-xs uppercase tracking-wider font-medium">Contact Number *</Label>
-              <Input id="contactNumber" type="tel" placeholder="Enter your phone number" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} className="h-12" required />
+              <PhoneNumberInput id="contactNumber" value={contactNumber} onChange={setContactNumber} country={countryIso} required />
             </div>
 
             <div className="space-y-2">
