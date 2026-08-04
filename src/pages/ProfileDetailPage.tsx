@@ -1,3 +1,4 @@
+import { formatPhoneDisplay, countryFlagFromLocation } from "@/lib/phoneDisplay";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
