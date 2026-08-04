@@ -1,3 +1,4 @@
+import { formatPhoneDisplay, countryFlagFromLocation } from "@/lib/phoneDisplay";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -140,6 +141,9 @@ export function PendingUserDetailModal({
                   {user.location && (
                     <span className="flex items-center gap-1 text-sm">
                       <MapPin className="h-4 w-4" />
+                      {countryFlagFromLocation(user.location) && (
+                        <span aria-hidden>{countryFlagFromLocation(user.location)}</span>
+                      )}
                       {user.location}
                     </span>
                   )}
@@ -166,7 +170,7 @@ export function PendingUserDetailModal({
               {user.contact_number && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="h-4 w-4" />
-                  {user.contact_number}
+                  {formatPhoneDisplay(user.contact_number)}
                 </div>
               )}
               {isLaboratory && user.website_url && (

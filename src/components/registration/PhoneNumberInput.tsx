@@ -3,6 +3,7 @@ import PhoneInputBase from "react-phone-number-input";
 import type { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import "./phone-input.css";
+import { CountrySelectDropdown } from "./CountrySelectDropdown";
 import { cn } from "@/lib/utils";
 
 interface PhoneNumberInputProps {
@@ -46,6 +47,7 @@ export function PhoneNumberInput({
       withCountryCallingCode
       country={selectedCountry}
       onCountryChange={(c) => setSelectedCountry(c || undefined)}
+      countrySelectComponent={CountrySelectDropdown}
       value={value || undefined}
       onChange={(v) => onChange(v || "")}
       placeholder={placeholder}
