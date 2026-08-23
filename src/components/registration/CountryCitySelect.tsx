@@ -51,7 +51,7 @@ export function SearchableSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover" align="start">
-        <Command>
+        <Command filter={rankedFilter}>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList className="max-h-64">
             <CommandEmpty>{emptyText}</CommandEmpty>
