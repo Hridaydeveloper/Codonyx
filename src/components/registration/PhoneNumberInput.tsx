@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PhoneInputBase from "react-phone-number-input";
+import PhoneInputBase, { getCountryCallingCode } from "react-phone-number-input";
 import type { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import "./phone-input.css";
@@ -36,8 +36,19 @@ export function PhoneNumberInput({
   );
 
   // Auto-update the dial code when the form's Country field changes.
+  // The prefix is written into the value so it is visible immediately,
+  // while the user can still switch the country manually afterwards.
   useEffect(() => {
-    if (country) setSelectedCountry(country as Country);
+    if (!country) return;
+    setSelectedCountry(country as Country);
+    try {
+      const dial = `+${getCountryCallingCode(country as Country)}`;
+      const digitsOnly = (value || "").replace(/^\+\d+/, "");
+      if (!value || !digitsOnly) onChange(dial);
+    } catch {
+      /* unknown country code — ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);
 
   return (
