@@ -122,7 +122,7 @@ export function CountryCitySelect({
     () =>
       Country.getAllCountries().map((c) => ({
         value: c.name,
-        label: `${c.flag} ${c.name}`,
+        label: `${c.flag || emojiFlag(c.isoCode)} ${c.name}`,
         iso: c.isoCode,
       })),
     []
