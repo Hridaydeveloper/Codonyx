@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PhoneInputBase from "react-phone-number-input";
+import PhoneInputBase, { getCountryCallingCode } from "react-phone-number-input";
 import type { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import "./phone-input.css";
