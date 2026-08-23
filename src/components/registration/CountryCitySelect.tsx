@@ -1,4 +1,7 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
+
+const MAX_VISIBLE = 100;
+
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { Country, City } from "country-state-city";
 import { cn } from "@/lib/utils";
