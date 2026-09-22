@@ -1,4 +1,5 @@
-import { formatPhoneDisplay, countryFlagFromLocation } from "@/lib/phoneDisplay";
+import { formatPhoneDisplay, countryIsoFromLocation } from "@/lib/phoneDisplay";
+import { CountryFlag } from "@/components/registration/CountrySelectDropdown";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -141,8 +142,8 @@ export function PendingUserDetailModal({
                   {user.location && (
                     <span className="flex items-center gap-1 text-sm">
                       <MapPin className="h-4 w-4" />
-                      {countryFlagFromLocation(user.location) && (
-                        <span aria-hidden>{countryFlagFromLocation(user.location)}</span>
+                      {countryIsoFromLocation(user.location) && (
+                        <CountryFlag country={countryIsoFromLocation(user.location)} />
                       )}
                       {user.location}
                     </span>
