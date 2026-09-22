@@ -1,4 +1,5 @@
-import { formatPhoneDisplay, countryFlagFromLocation } from "@/lib/phoneDisplay";
+import { formatPhoneDisplay, countryIsoFromLocation } from "@/lib/phoneDisplay";
+import { CountryFlag } from "@/components/registration/CountrySelectDropdown";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -295,8 +296,8 @@ export default function ProfileDetailPage() {
                           {profile.location && (
                             <span className="flex items-center gap-1 text-sm">
                               <MapPin className="h-4 w-4" />
-                              {countryFlagFromLocation(profile.location) && (
-                                <span aria-hidden>{countryFlagFromLocation(profile.location)}</span>
+                              {countryIsoFromLocation(profile.location) && (
+                                <CountryFlag country={countryIsoFromLocation(profile.location)} />
                               )}
                               {profile.location}
                             </span>
