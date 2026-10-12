@@ -1,3 +1,4 @@
+import codonyxIcon from "@/assets/codonyx_icon_color.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -115,6 +116,7 @@ export function DashboardNavbar() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
+            <img src={codonyxIcon} alt="" className="h-9 w-9 object-contain" />
             <span className="font-heading text-2xl font-semibold text-foreground tracking-tight">
               Codonyx
             </span>
