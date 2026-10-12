@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Linkedin, Mail } from "lucide-react";
-import codonyxLogo from "@/assets/codonyx_logo.png";
+import codonyxLogo from "@/assets/codonyx_icon_white.svg";
 
 const footerLinks = {
   solutions: [
