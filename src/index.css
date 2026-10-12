@@ -16,28 +16,34 @@ html, body {
 
 @layer base {
   :root {
-    /* CODONYX Enterprise Theme — Deep Navy + Emerald Green */
+    /* CODONYX brand: Navy #0B2D5B (11,45,91), Red #E10611 (225,6,17). */
+    --brand-navy: 214.5 78.43137254901961% 20%;
+    --brand-red: 356.98630136986304 94.8051948051948% 45.294117647058826%;
+    --brand-red-tint-50: 356.98630136986304 78.49462365591405% 97.26470588235294%;
+    --brand-red-tint-100: 356.98630136986304 78.49462365591405% 94.52941176470588%;
+    --brand-red-tint-200: 356.98630136986304 78.494623655914% 89.05882352941177%;
+    --brand-red-tint-300: 356.98630136986304 78.49462365591401% 80.8529411764706%;
     --background: 0 0% 100%;
-    --foreground: 220 30% 10%;
+    --foreground: var(--brand-navy);
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 10%;
+    --card-foreground: var(--brand-navy);
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 10%;
+    --popover-foreground: var(--brand-navy);
 
-    /* Emerald Green — Primary Brand Color */
-    --primary: 160 84% 29%;
+    /* Exact red is shared by existing primary and legacy green utilities. */
+    --primary: var(--brand-red);
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 160 80% 34%;
+    --primary-hover: var(--brand-red);
 
     --secondary: 220 20% 96%;
-    --secondary-foreground: 220 30% 10%;
+    --secondary-foreground: var(--brand-navy);
 
     --muted: 220 15% 95%;
     --muted-foreground: 220 10% 45%;
 
-    --accent: 160 84% 29%;
+    --accent: var(--brand-red);
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -45,15 +51,15 @@ html, body {
 
     --border: 220 15% 90%;
     --input: 220 15% 90%;
-    --ring: 160 84% 29%;
+    --ring: var(--brand-red);
 
     --radius: 0.5rem;
 
     /* Custom CODONYX tokens */
-    --navy: 220 40% 13%;
-    --navy-light: 220 35% 20%;
-    --navy-medium: 220 30% 25%;
-    --emerald-glow: 160 80% 45%;
+    --navy: var(--brand-navy);
+    --navy-light: var(--brand-navy);
+    --navy-medium: var(--brand-navy);
+    --emerald-glow: var(--brand-red);
     --surface-elevated: 220 15% 97%;
     --text-subtle: 220 10% 55%;
     --divider: 220 15% 92%;
@@ -67,28 +73,28 @@ html, body {
 
     /* Sidebar */
     --sidebar-background: 220 15% 97%;
-    --sidebar-foreground: 220 30% 10%;
-    --sidebar-primary: 160 84% 29%;
+    --sidebar-foreground: var(--brand-navy);
+    --sidebar-primary: var(--brand-red);
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 95%;
-    --sidebar-accent-foreground: 220 30% 10%;
+    --sidebar-accent-foreground: var(--brand-navy);
     --sidebar-border: 220 15% 92%;
-    --sidebar-ring: 160 84% 29%;
+    --sidebar-ring: var(--brand-red);
   }
 
   .dark {
-    --background: 220 40% 6%;
+    --background: var(--brand-navy);
     --foreground: 0 0% 98%;
 
-    --card: 220 35% 9%;
+    --card: var(--brand-navy);
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 35% 9%;
+    --popover: var(--brand-navy);
     --popover-foreground: 0 0% 98%;
 
-    --primary: 160 70% 42%;
+    --primary: var(--brand-red);
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 160 65% 48%;
+    --primary-hover: var(--brand-red);
 
     --secondary: 220 30% 14%;
     --secondary-foreground: 0 0% 98%;
@@ -104,24 +110,24 @@ html, body {
 
     --border: 220 25% 18%;
     --input: 220 25% 18%;
-    --ring: 160 70% 42%;
+    --ring: var(--brand-red);
 
-    --navy: 220 40% 8%;
-    --navy-light: 220 35% 15%;
-    --navy-medium: 220 30% 20%;
-    --emerald-glow: 160 80% 50%;
+    --navy: var(--brand-navy);
+    --navy-light: var(--brand-navy);
+    --navy-medium: var(--brand-navy);
+    --emerald-glow: var(--brand-red);
     --surface-elevated: 220 30% 10%;
     --text-subtle: 220 10% 50%;
     --divider: 220 25% 18%;
 
-    --sidebar-background: 220 35% 9%;
+    --sidebar-background: var(--brand-navy);
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 160 70% 42%;
+    --sidebar-primary: var(--brand-red);
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 25% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 220 25% 18%;
-    --sidebar-ring: 160 70% 42%;
+    --sidebar-ring: var(--brand-red);
   }
 }
 

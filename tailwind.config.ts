@@ -20,6 +20,29 @@ export default {
         mono: ['"DM Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
+        // Legacy color names remain compatible; all green UI uses brand red.
+        ...Object.fromEntries(
+          ["green", "emerald", "teal", "lime"].map((name) => [
+            name,
+            {
+              ...Object.fromEntries(
+                [50, 100, 200, 300].map((shade) => [shade, `hsl(var(--brand-red-tint-${shade}) / <alpha-value>)`]),
+              ),
+              ...Object.fromEntries(
+                [400, 500, 600, 700, 800, 900, 950].map((shade) => [shade, "hsl(var(--brand-red) / <alpha-value>)"]),
+              ),
+              ...(name === "emerald" ? { glow: "hsl(var(--brand-red) / <alpha-value>)" } : {}),
+            },
+          ]),
+        ),
+        ...Object.fromEntries(
+          ["blue", "sky", "cyan", "indigo", "slate"].map((name) => [
+            name,
+            Object.fromEntries(
+              [700, 800, 900, 950].map((shade) => [shade, "hsl(var(--brand-navy) / <alpha-value>)"]),
+            ),
+          ]),
+        ),
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -58,9 +81,6 @@ export default {
           DEFAULT: "hsl(var(--navy))",
           light: "hsl(var(--navy-light))",
           medium: "hsl(var(--navy-medium))",
-        },
-        emerald: {
-          glow: "hsl(var(--emerald-glow))",
         },
         surface: {
           elevated: "hsl(var(--surface-elevated))",
