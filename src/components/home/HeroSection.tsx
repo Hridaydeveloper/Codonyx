@@ -19,8 +19,8 @@ function StatCounter({ end, suffix, label, enabled }: { end: number; suffix: str
   );
 }
 
-// Temporarily paused: enable this flag to restore automatic banner rotation.
-const BANNER_SLIDESHOW_ENABLED = false;
+// Presentation-only flag: set to false to pause the banner slideshow again.
+const BANNER_SLIDESHOW_ENABLED = true;
 
 export function HeroSection() {
   const { banners } = useBannerImages();
@@ -30,24 +30,32 @@ export function HeroSection() {
   );
 
   const [currentImage, setCurrentImage] = useState(0);
+  const [brokenSrcs, setBrokenSrcs] = useState<Set<string>>(new Set());
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!BANNER_SLIDESHOW_ENABLED || heroImages.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
+  // Skip banner images that fail to load so a broken upload never blanks the hero.
+  const rotationImages = useMemo(
+    () => heroImages.filter(({ src }) => !brokenSrcs.has(src)),
+    [heroImages, brokenSrcs]
+  );
 
   useEffect(() => {
-    if (currentImage >= heroImages.length) setCurrentImage(0);
-  }, [heroImages.length, currentImage]);
+    if (!BANNER_SLIDESHOW_ENABLED || rotationImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % rotationImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [rotationImages.length]);
+
+  useEffect(() => {
+    if (currentImage >= rotationImages.length) setCurrentImage(0);
+  }, [rotationImages.length, currentImage]);
 
   useEffect(() => {
     heroImages.forEach(({ src }) => {
       const img = new Image();
+      img.onerror = () => setBrokenSrcs((prev) => new Set(prev).add(src));
       img.src = src;
     });
   }, [heroImages]);
@@ -62,7 +70,6 @@ export function HeroSection() {
     return () => obs.disconnect();
   }, []);
 
-  const banner = heroImages[currentImage];
 
   return (
     <section className="home-hero">
@@ -91,7 +98,20 @@ export function HeroSection() {
             </Link>
           ))}
         </div>
-        {banner && <figure className="home-banner"><img src={banner.src} alt={banner.alt} loading="eager" decoding="async" fetchPriority="high" /></figure>}
+        <figure className="home-banner" aria-roledescription="carousel">
+          {rotationImages.map((image, index) => (
+            <img
+              key={image.src}
+              src={image.src}
+              alt={index === currentImage ? image.alt : ""}
+              aria-hidden={index !== currentImage}
+              loading="eager"
+              decoding="async"
+              fetchPriority={index === 0 ? "high" : undefined}
+              className={index === currentImage ? "home-banner-img is-active" : "home-banner-img"}
+            />
+          ))}
+        </figure>
         <div ref={statsRef} className="home-stats">
           <StatCounter end={80} suffix="%" label="Clinical Decisions via Diagnostics" enabled={statsVisible} />
           <StatCounter end={150} suffix="B+" label="AI Healthcare Market by 2030" enabled={statsVisible} />
