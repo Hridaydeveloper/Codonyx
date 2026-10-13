@@ -99,7 +99,7 @@ export function HeroSection() {
           ))}
         </div>
         <figure className="home-banner" aria-roledescription="carousel">
-          {heroImages.map((image, index) => (
+          {rotationImages.map((image, index) => (
             <img
               key={image.src}
               src={image.src}
