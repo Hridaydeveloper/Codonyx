@@ -30,24 +30,32 @@ export function HeroSection() {
   );
 
   const [currentImage, setCurrentImage] = useState(0);
+  const [brokenSrcs, setBrokenSrcs] = useState<Set<string>>(new Set());
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!BANNER_SLIDESHOW_ENABLED || heroImages.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
+  // Skip banner images that fail to load so a broken upload never blanks the hero.
+  const rotationImages = useMemo(
+    () => heroImages.filter(({ src }) => !brokenSrcs.has(src)),
+    [heroImages, brokenSrcs]
+  );
 
   useEffect(() => {
-    if (currentImage >= heroImages.length) setCurrentImage(0);
-  }, [heroImages.length, currentImage]);
+    if (!BANNER_SLIDESHOW_ENABLED || rotationImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % rotationImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [rotationImages.length]);
+
+  useEffect(() => {
+    if (currentImage >= rotationImages.length) setCurrentImage(0);
+  }, [rotationImages.length, currentImage]);
 
   useEffect(() => {
     heroImages.forEach(({ src }) => {
       const img = new Image();
+      img.onerror = () => setBrokenSrcs((prev) => new Set(prev).add(src));
       img.src = src;
     });
   }, [heroImages]);
