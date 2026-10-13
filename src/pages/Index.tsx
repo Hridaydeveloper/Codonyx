@@ -31,7 +31,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="homepage min-h-screen bg-background">
       <Navbar />
       <main>
         <HeroSection />

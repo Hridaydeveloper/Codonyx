@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, User, LogOut } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_icon_white.svg";
+import codonyxColorLogo from "@/assets/codonyx_icon_color.svg";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -159,7 +160,7 @@ export function Navbar() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" onClick={() => handleNavClick("/")} className="flex items-center gap-3">
-            <img src={codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" fetchPriority="high" decoding="sync" />
+            <img src={location.pathname === "/" ? codonyxColorLogo : codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" fetchPriority="high" decoding="sync" />
             <span className="font-heading text-2xl font-semibold text-white tracking-tight">
               Codonyx
             </span>
@@ -242,12 +243,15 @@ export function Navbar() {
                 </Button>
               </Link>
             )}
-            <button
-              className="p-2 text-white"
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              className="text-primary-foreground"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
