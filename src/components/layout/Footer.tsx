@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Linkedin, Mail } from "lucide-react";
 import codonyxLogo from "@/assets/codonyx_icon_white.svg";
+import codonyxColorLogo from "@/assets/codonyx_icon_color.svg";
 
 const footerLinks = {
   solutions: [
@@ -31,7 +32,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-3">
-              <img src={codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" />
+              <img src={location.pathname === "/" ? codonyxColorLogo : codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" />
               <span className="font-heading text-2xl font-semibold text-white tracking-tight">
                 Codonyx
               </span>
