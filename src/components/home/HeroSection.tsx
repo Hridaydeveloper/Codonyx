@@ -62,7 +62,6 @@ export function HeroSection() {
     return () => obs.disconnect();
   }, []);
 
-  const banner = heroImages[currentImage];
 
   return (
     <section className="home-hero">
