@@ -19,8 +19,8 @@ function StatCounter({ end, suffix, label, enabled }: { end: number; suffix: str
   );
 }
 
-// Temporarily paused: enable this flag to restore automatic banner rotation.
-const BANNER_SLIDESHOW_ENABLED = false;
+// Presentation-only flag: set to false to pause the banner slideshow again.
+const BANNER_SLIDESHOW_ENABLED = true;
 
 export function HeroSection() {
   const { banners } = useBannerImages();
@@ -91,7 +91,20 @@ export function HeroSection() {
             </Link>
           ))}
         </div>
-        {banner && <figure className="home-banner"><img src={banner.src} alt={banner.alt} loading="eager" decoding="async" fetchPriority="high" /></figure>}
+        <figure className="home-banner" aria-roledescription="carousel">
+          {heroImages.map((image, index) => (
+            <img
+              key={image.src}
+              src={image.src}
+              alt={index === currentImage ? image.alt : ""}
+              aria-hidden={index !== currentImage}
+              loading={index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={index === 0 ? "high" : undefined}
+              className={index === currentImage ? "home-banner-img is-active" : "home-banner-img"}
+            />
+          ))}
+        </figure>
         <div ref={statsRef} className="home-stats">
           <StatCounter end={80} suffix="%" label="Clinical Decisions via Diagnostics" enabled={statsVisible} />
           <StatCounter end={150} suffix="B+" label="AI Healthcare Market by 2030" enabled={statsVisible} />
