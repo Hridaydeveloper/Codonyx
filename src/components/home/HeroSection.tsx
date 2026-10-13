@@ -97,7 +97,7 @@ export function HeroSection() {
               src={image.src}
               alt={index === currentImage ? image.alt : ""}
               aria-hidden={index !== currentImage}
-              loading={index === 0 ? "eager" : "lazy"}
+              loading="eager"
               decoding="async"
               fetchPriority={index === 0 ? "high" : undefined}
               className={index === currentImage ? "home-banner-img is-active" : "home-banner-img"}
