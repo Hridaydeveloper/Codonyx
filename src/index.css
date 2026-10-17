@@ -413,23 +413,23 @@ input[type="password"]::-ms-clear {
 }
 .homepage > nav > div > div > a > span { color: hsl(var(--foreground)); }
 .homepage > nav .hidden.lg\:flex.items-center.gap-8 {
-  gap: 4px;
-  padding: 5px;
-  border: 1px solid hsl(var(--divider));
-  border-radius: 999px;
-  background: hsl(var(--surface-elevated));
+  gap: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 .homepage > nav .hidden.lg\:flex.items-center.gap-8 a {
   color: hsl(var(--foreground));
-  background: hsl(var(--background));
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-weight: 400;
-  text-transform: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 500;
+  text-transform: uppercase;
   letter-spacing: 0;
 }
 .homepage > nav a:hover { color: hsl(var(--primary)); }
-.homepage > nav button { border-radius: 999px; }
+.homepage > nav button { border-radius: var(--radius); }
 .homepage > nav .lg\:hidden > button { color: hsl(var(--foreground)); }
 .homepage > nav > .lg\:hidden {
   background: hsl(var(--background));
