@@ -75,14 +75,13 @@ export function TagInput({ value, onChange, placeholder, id, suggestionField }: 
   const hasDropdownItems = filteredSuggestions.length > 0 || showOther;
 
   const colors = [
-    "bg-teal-400",
-    "bg-emerald-400",
-    "bg-amber-400",
-    "bg-sky-400",
-    "bg-rose-400",
-    "bg-violet-400",
-    "bg-orange-400",
-    "bg-lime-400",
+    "keyword-chip--teal",
+    "keyword-chip--green",
+    "keyword-chip--yellow",
+    "keyword-chip--cyan",
+    "keyword-chip--pink",
+    "keyword-chip--purple",
+    "keyword-chip--orange",
   ];
 
   return (
@@ -175,13 +174,13 @@ export function TagInput({ value, onChange, placeholder, id, suggestionField }: 
               <Badge
                 key={index}
                 variant="secondary"
-                className={`px-3 py-1 text-sm font-medium gap-1.5 ${colorClass} text-black hover:opacity-90`}
+                className={`keyword-chip px-3 py-1 text-sm font-medium gap-1.5 ${colorClass} text-foreground hover:opacity-90`}
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => removeTag(tag)}
-                  className="ml-1 hover:text-black/70 transition-colors"
+                  className="ml-1 hover:text-foreground/70 transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>

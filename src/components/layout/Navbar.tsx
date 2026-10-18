@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, User, LogOut } from "lucide-react";
-import codonyxLogo from "@/assets/codonyx_icon_white.svg";
 import codonyxColorLogo from "@/assets/codonyx_icon_color.svg";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -155,12 +154,12 @@ export function Navbar() {
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-navy/95 backdrop-blur-sm border-b border-white/10">
+    <nav className="site-navbar fixed top-0 left-0 right-0 z-50 bg-navy/95 backdrop-blur-sm border-b border-white/10">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" onClick={() => handleNavClick("/")} className="flex items-center gap-3">
-            <img src={location.pathname === "/" ? codonyxColorLogo : codonyxLogo} alt="Codonyx" className="h-10 w-10 object-contain" fetchPriority="high" decoding="sync" />
+            <img src={codonyxColorLogo} alt="Codonyx" className="h-10 w-10 object-contain" fetchPriority="high" decoding="sync" />
             <span className="font-heading text-2xl font-semibold text-white tracking-tight">
               Codonyx
             </span>

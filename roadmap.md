@@ -1,5 +1,6 @@
-# Homepage redesign
+# Shared visual updates
 
-- [x] Restyle existing homepage content on white with reference-like typography.
-- [x] Temporarily pause banner sliding without changing banner management.
-- [x] Verify homepage layout and links; preserve other pages.
+- [x] Restore the reference-inspired multi-color keyword chips.
+- [x] Apply the homepage's white navigation and footer styling site-wide.
+- [x] Remove the blue overlays from About Us and Contact Us banners.
+- [x] Verify the updated shared styling and page banners.
