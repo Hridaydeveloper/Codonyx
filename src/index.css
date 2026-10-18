@@ -64,6 +64,15 @@ html, body {
     --text-subtle: 220 10% 55%;
     --divider: 220 15% 92%;
 
+    /* Soft reference-inspired colors for keyword chips only. */
+    --keyword-chip-teal: 169 48% 84%;
+    --keyword-chip-green: 143 42% 85%;
+    --keyword-chip-yellow: 47 84% 82%;
+    --keyword-chip-cyan: 190 58% 84%;
+    --keyword-chip-pink: 342 58% 88%;
+    --keyword-chip-purple: 274 44% 87%;
+    --keyword-chip-orange: 25 78% 84%;
+
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -492,3 +501,49 @@ input[type="password"]::-ms-clear {
 @media (prefers-reduced-motion: reduce) {
   .homepage *, .homepage *::before, .homepage *::after { animation: none !important; transition: none !important; }
 }
+
+/* Shared site navigation and footer follow the white homepage presentation. */
+.site-navbar {
+  background: hsl(var(--background) / .97);
+  border-color: hsl(var(--divider));
+}
+.site-navbar > div > div > a > span { color: hsl(var(--foreground)); }
+.site-navbar .hidden.lg\:flex.items-center.gap-8 { gap: 32px; }
+.site-navbar .hidden.lg\:flex.items-center.gap-8 a {
+  color: hsl(var(--muted-foreground));
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.site-navbar .hidden.lg\:flex.items-center.gap-8 a:hover,
+.site-navbar > div > div > a:hover { color: hsl(var(--primary)); }
+.site-navbar .lg\:hidden.bg-navy { background: hsl(var(--background)); }
+.site-navbar .lg\:hidden.border-white\/10 { border-color: hsl(var(--divider)); }
+.site-navbar .lg\:hidden a,
+.site-navbar .lg\:hidden .text-white,
+.site-navbar .lg\:hidden button[aria-label="Open menu"],
+.site-navbar .lg\:hidden button[aria-label="Close menu"] { color: hsl(var(--foreground)); }
+.site-navbar .lg\:hidden [class*="text-white/"] { color: hsl(var(--muted-foreground)); }
+.site-navbar button { border-radius: var(--radius); }
+
+.site-footer {
+  background: hsl(var(--background));
+  border-color: hsl(var(--divider));
+}
+.site-footer .text-white { color: hsl(var(--foreground)); }
+.site-footer [class*="text-white/"] { color: hsl(var(--muted-foreground)); }
+.site-footer [class*="bg-white/"] { background: hsl(var(--muted)); }
+.site-footer [class*="border-white/"] { border-color: hsl(var(--divider)); }
+.site-footer a:hover { color: hsl(var(--primary)); }
+
+.keyword-chip { color: hsl(var(--brand-navy)); }
+.keyword-chip--teal { background-color: hsl(var(--keyword-chip-teal)); }
+.keyword-chip--green { background-color: hsl(var(--keyword-chip-green)); }
+.keyword-chip--yellow { background-color: hsl(var(--keyword-chip-yellow)); }
+.keyword-chip--cyan { background-color: hsl(var(--keyword-chip-cyan)); }
+.keyword-chip--pink { background-color: hsl(var(--keyword-chip-pink)); }
+.keyword-chip--purple { background-color: hsl(var(--keyword-chip-purple)); }
+.keyword-chip--orange { background-color: hsl(var(--keyword-chip-orange)); }
