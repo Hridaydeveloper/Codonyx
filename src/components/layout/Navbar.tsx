@@ -188,7 +188,7 @@ export function Navbar() {
             {isLoggedIn && profile ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-transparent p-0 hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
