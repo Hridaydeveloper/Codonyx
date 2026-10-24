@@ -111,7 +111,7 @@ serve(async (req: Request) => {
         </p>
         ${renderOtpCode(code)}
         <p style="color:#64748b;font-size:14px;line-height:1.6;margin:8px 0 0;text-align:center;">
-          This code will expire in <strong style="color:#059669;">10 minutes</strong>.
+          This code will expire in <strong style="color:#E10611;">10 minutes</strong>.
         </p>
         <p style="color:#94a3b8;font-size:13px;margin:18px 0 0;text-align:center;line-height:1.5;">
           If you didn't request this, you can safely ignore this email — your password won't change.

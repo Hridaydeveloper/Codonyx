@@ -72,8 +72,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Avatar: real image if provided, otherwise gradient initial circle
     const avatarBlock = senderAvatarUrl
-      ? `<img src="${escapeHtml(senderAvatarUrl)}" alt="${escapeHtml(senderName)}" width="84" height="84" style="display:block;width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid #ffffff;box-shadow:0 4px 14px rgba(5,150,105,0.25);" />`
-      : `<div style="width:84px;height:84px;background:linear-gradient(135deg,#10b981,#047857);border-radius:50%;text-align:center;line-height:84px;border:3px solid #ffffff;box-shadow:0 4px 14px rgba(5,150,105,0.25);">
+      ? `<img src="${escapeHtml(senderAvatarUrl)}" alt="${escapeHtml(senderName)}" width="84" height="84" style="display:block;width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid #ffffff;box-shadow:0 4px 14px rgba(11,45,91,0.25);" />`
+      : `<div style="width:84px;height:84px;background:linear-gradient(135deg,#123E7C,#0B2D5B);border-radius:50%;text-align:center;line-height:84px;border:3px solid #ffffff;box-shadow:0 4px 14px rgba(11,45,91,0.25);">
            <span style="color:#ffffff;font-size:34px;font-weight:700;line-height:84px;">${escapeHtml(initial)}</span>
          </div>`;
 
@@ -84,20 +84,20 @@ const handler = async (req: Request): Promise<Response> => {
       </p>
 
       <!-- Sender card -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(145deg,#f0fdf4 0%,#ecfdf5 100%);border-radius:14px;border:1px solid #bbf7d0;margin:0 0 28px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(145deg,#F4F8FD 0%,#EFF4FB 100%);border-radius:14px;border:1px solid #D7E3F4;margin:0 0 28px;">
         <tr><td style="padding:24px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td width="84" valign="top" style="padding-right:18px;">${avatarBlock}</td>
               <td valign="top">
-                <p style="margin:0 0 4px;color:#065f46;font-size:18px;font-weight:700;line-height:1.3;">${escapeHtml(senderName)}</p>
+                <p style="margin:0 0 4px;color:#0B2D5B;font-size:18px;font-weight:700;line-height:1.3;">${escapeHtml(senderName)}</p>
                 ${userTypeLabel ? `<p style="margin:0 0 8px;">${renderPill(userTypeLabel)}</p>` : ""}
                 ${senderTitle ? `<p style="margin:6px 0 2px;color:#0f172a;font-size:14px;font-weight:500;line-height:1.4;">${escapeHtml(senderTitle)}</p>` : ""}
                 ${senderOrganization ? `<p style="margin:0;color:#64748b;font-size:13px;line-height:1.4;">${escapeHtml(senderOrganization)}</p>` : ""}
               </td>
             </tr>
           </table>
-          ${senderBio ? `<div style="border-top:1px solid #bbf7d0;margin-top:18px;padding-top:16px;">
+          ${senderBio ? `<div style="border-top:1px solid #D7E3F4;margin-top:18px;padding-top:16px;">
             <p style="color:#475569;margin:0;font-size:13px;line-height:1.65;font-style:italic;">"${escapeHtml(senderBio.length > 240 ? senderBio.slice(0, 240) + "…" : senderBio)}"</p>
           </div>` : ""}
         </td></tr>
@@ -106,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
       ${renderCtaButton("Review Connection Request", connectionPageUrl)}
 
       <p style="color:#94a3b8;font-size:13px;margin:18px 0 0;text-align:center;line-height:1.5;">
-        Or <a href="${connectionPageUrl}" style="color:#059669;text-decoration:none;font-weight:500;">view all pending requests</a> on your connections page.
+        Or <a href="${connectionPageUrl}" style="color:#E10611;text-decoration:none;font-weight:500;">view all pending requests</a> on your connections page.
       </p>
     `;
 

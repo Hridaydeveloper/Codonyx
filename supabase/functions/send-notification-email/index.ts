@@ -44,24 +44,24 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
     case "connection_accepted": {
       const initial = (data.senderName || "U").charAt(0).toUpperCase();
       const avatarBlock = data.senderAvatarUrl
-        ? `<img src="${escapeHtml(data.senderAvatarUrl)}" alt="${escapeHtml(data.senderName || "")}" width="72" height="72" style="display:block;width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid #ffffff;box-shadow:0 4px 12px rgba(5,150,105,0.2);" />`
-        : `<div style="width:72px;height:72px;background:linear-gradient(135deg,#10b981,#047857);border-radius:50%;text-align:center;line-height:72px;border:3px solid #ffffff;box-shadow:0 4px 12px rgba(5,150,105,0.2);">
+        ? `<img src="${escapeHtml(data.senderAvatarUrl)}" alt="${escapeHtml(data.senderName || "")}" width="72" height="72" style="display:block;width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid #ffffff;box-shadow:0 4px 12px rgba(11,45,91,0.2);" />`
+        : `<div style="width:72px;height:72px;background:linear-gradient(135deg,#123E7C,#0B2D5B);border-radius:50%;text-align:center;line-height:72px;border:3px solid #ffffff;box-shadow:0 4px 12px rgba(11,45,91,0.2);">
              <span style="color:#ffffff;font-size:28px;font-weight:700;line-height:72px;">${escapeHtml(initial)}</span>
            </div>`;
 
       const body = `
         <p style="color:#0f172a;font-size:17px;font-weight:600;margin:0 0 8px;">Great news, ${escapeHtml(data.recipientName)}! 🎉</p>
         <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 26px;">
-          <strong style="color:#059669;">${escapeHtml(data.senderName || "")}</strong> accepted your connection request. You're now part of each other's professional network on ${BRAND.name}.
+          <strong style="color:#E10611;">${escapeHtml(data.senderName || "")}</strong> accepted your connection request. You're now part of each other's professional network on ${BRAND.name}.
         </p>
 
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(145deg,#f0fdf4 0%,#ecfdf5 100%);border-radius:14px;border:1px solid #bbf7d0;margin:0 0 28px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(145deg,#F4F8FD 0%,#EFF4FB 100%);border-radius:14px;border:1px solid #D7E3F4;margin:0 0 28px;">
           <tr><td style="padding:22px;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td width="72" valign="top" style="padding-right:16px;">${avatarBlock}</td>
                 <td valign="top">
-                  <p style="margin:0 0 4px;color:#065f46;font-size:17px;font-weight:700;">${escapeHtml(data.senderName || "")}</p>
+                  <p style="margin:0 0 4px;color:#0B2D5B;font-size:17px;font-weight:700;">${escapeHtml(data.senderName || "")}</p>
                   ${data.senderUserType ? `<p style="margin:0 0 6px;">${renderPill(roleLabel(data.senderUserType))}</p>` : ""}
                   ${data.senderHeadline ? `<p style="margin:4px 0 2px;color:#0f172a;font-size:13px;font-weight:500;">${escapeHtml(data.senderHeadline)}</p>` : ""}
                   ${data.senderOrganisation ? `<p style="margin:0;color:#64748b;font-size:13px;">${escapeHtml(data.senderOrganisation)}</p>` : ""}
@@ -90,10 +90,10 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
       const body = `
         <p style="color:#0f172a;font-size:17px;font-weight:600;margin:0 0 8px;">Welcome aboard, ${escapeHtml(data.recipientName)}! 🎊</p>
         <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 22px;">
-          Your account has been <strong style="color:#059669;">verified successfully</strong>. You can now sign in using the credentials you set during registration.
+          Your account has been <strong style="color:#E10611;">verified successfully</strong>. You can now sign in using the credentials you set during registration.
         </p>
 
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0;margin:0 0 28px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EFF4FB;border-radius:12px;border:1px solid #D7E3F4;margin:0 0 28px;">
           <tr><td style="padding:18px 22px;">
             <p style="margin:0 0 4px;color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Your Role</p>
             <p style="margin:0;">${renderPill(roleLabel(data.userType))}</p>
@@ -148,7 +148,7 @@ function getEmailContent(data: NotificationRequest): { subject: string; html: st
       const body = `
         <p style="color:#0f172a;font-size:17px;font-weight:600;margin:0 0 8px;">Thanks for joining us, ${escapeHtml(data.recipientName)}!</p>
         <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 22px;">
-          We've received your registration as a <strong style="color:#059669;">${roleLabel(data.userType)}</strong>. Our team is currently reviewing your application.
+          We've received your registration as a <strong style="color:#E10611;">${roleLabel(data.userType)}</strong>. Our team is currently reviewing your application.
         </p>
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fffbeb;border-radius:12px;border:1px solid #fde68a;margin:0 0 24px;">

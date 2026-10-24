@@ -66,7 +66,7 @@ const handler = async (req: Request): Promise<Response> => {
     const fieldRow = (label: string, value: string, isLink = false) => `
       <tr><td style="padding:14px 0;border-bottom:1px solid #f1f5f9;">
         <p style="margin:0 0 4px;color:#94a3b8;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;">${escapeHtml(label)}</p>
-        <p style="margin:0;color:#0f172a;font-size:15px;line-height:1.5;">${isLink ? `<a href="mailto:${escapeHtml(value)}" style="color:#059669;text-decoration:none;">${escapeHtml(value)}</a>` : escapeHtml(value)}</p>
+        <p style="margin:0;color:#0f172a;font-size:15px;line-height:1.5;">${isLink ? `<a href="mailto:${escapeHtml(value)}" style="color:#E10611;text-decoration:none;">${escapeHtml(value)}</a>` : escapeHtml(value)}</p>
       </td></tr>`;
 
     const messageHtml = escapeHtml(message).replace(/\n/g, "<br>");
