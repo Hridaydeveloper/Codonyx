@@ -448,10 +448,10 @@ export default function DistributorDashboard() {
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/3 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
               <div className="relative z-10">
                 <p className="text-muted-foreground text-sm sm:text-base mb-1">{getGreeting()}</p>
-                <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground mb-3">
+                <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground mb-3 break-words">
                   Welcome back, {profile?.full_name?.split(" ")[0]}!
                 </h1>
-                <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-sm sm:text-base">
+                <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-sm sm:text-base break-words">
                   <span>You're logged in as</span>
                   <Badge variant="outline" className="capitalize font-medium text-primary border-primary/30 bg-primary/5 text-sm px-3 py-0.5">
                     Distribution Partner
@@ -466,47 +466,47 @@ export default function DistributorDashboard() {
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <Card onClick={() => document.getElementById("deals-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
-                <CardContent className="p-5 flex items-center gap-4">
+                <CardContent className="min-w-0 p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                     <Briefcase className="w-6 h-6 text-primary" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{deals.length}</p>
+                  <div className="min-w-0">
+                    <p className="text-2xl font-bold text-foreground break-words">{deals.length}</p>
                     <p className="text-sm text-muted-foreground">Available Deals</p>
                   </div>
                 </CardContent>
               </Card>
               <Card onClick={() => document.getElementById("deals-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
-                <CardContent className="p-5 flex items-center gap-4">
+                <CardContent className="min-w-0 p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
                     <Target className="w-6 h-6 text-amber-600" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{activeBids}</p>
+                  <div className="min-w-0">
+                    <p className="text-2xl font-bold text-foreground break-words">{activeBids}</p>
                     <p className="text-sm text-muted-foreground">Active Bids</p>
                   </div>
                 </CardContent>
               </Card>
               <Card onClick={() => document.getElementById("my-bids-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
-                <CardContent className="p-5 flex items-center gap-4">
+                <CardContent className="min-w-0 p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{acceptedBids}</p>
+                  <div className="min-w-0">
+                    <p className="text-2xl font-bold text-foreground break-words">{acceptedBids}</p>
                     <p className="text-sm text-muted-foreground">Submitted Bids</p>
                   </div>
                 </CardContent>
               </Card>
               <Card onClick={() => document.getElementById("my-bids-section")?.scrollIntoView({ behavior: "smooth" })} className="cursor-pointer hover:shadow-md hover:border-primary/40 transition-all">
-                <CardContent className="p-5 flex items-center gap-4">
+                <CardContent className="min-w-0 p-5 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <Wallet className="w-6 h-6 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0">
-                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap" title={formatCurrency(totalCommittedINR, "INR")}>₹{formatCompact(totalCommittedINR, "INR")}</p>
-                      <p className="text-xl sm:text-2xl font-bold text-foreground whitespace-nowrap" title={formatCurrency(totalCommittedUSD, "USD")}>${formatCompact(totalCommittedUSD, "USD")}</p>
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0 min-w-0">
+                      <p className="text-lg sm:text-2xl font-bold text-foreground break-words" title={formatCurrency(totalCommittedINR, "INR")}>₹{formatCompact(totalCommittedINR, "INR")}</p>
+                      <p className="text-lg sm:text-2xl font-bold text-foreground break-words" title={formatCurrency(totalCommittedUSD, "USD")}>${formatCompact(totalCommittedUSD, "USD")}</p>
                     </div>
                     <p className="text-sm text-muted-foreground">Total Committed</p>
                   </div>
@@ -569,10 +569,10 @@ export default function DistributorDashboard() {
                             className="border border-divider cursor-pointer hover:shadow-md hover:border-primary/40 transition-all"
                             onClick={() => setViewDealDetail(deal)}
                           >
-                            <CardContent className="p-5">
-                              <div className="flex items-start justify-between mb-3 gap-2">
-                                <h3 className="font-heading text-lg font-semibold text-foreground">{deal.title}</h3>
-                                <div className="flex items-center gap-2 flex-shrink-0">
+                            <CardContent className="p-5 min-w-0">
+                              <div className="flex flex-wrap items-start justify-between mb-3 gap-2">
+                                <h3 className="min-w-0 flex-1 font-heading text-lg font-semibold text-foreground break-words">{deal.title}</h3>
+                                <div className="flex flex-wrap items-center gap-2">
                                   <Badge className="bg-orange-500/15 text-orange-600 border border-orange-500/30 hover:bg-orange-500/20">
                                     {dealBidCounts[deal.id] || 0} BIDS
                                   </Badge>
@@ -582,16 +582,16 @@ export default function DistributorDashboard() {
                                 </div>
                               </div>
                               {deal.description && (
-                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{deal.description}</p>
+                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2 break-words">{deal.description}</p>
                               )}
                               <div className="space-y-3">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-muted-foreground">Target</span>
-                                  <span className="font-semibold text-foreground">{formatCurrency(deal.target_amount, deal.currency)}</span>
+                                  <span className="min-w-0 max-w-[65%] text-right font-semibold text-foreground break-words">{formatCurrency(deal.target_amount, deal.currency)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                   <span className="text-muted-foreground">Raised</span>
-                                  <span className="font-semibold text-primary">{formatCurrency(liveRaised, deal.currency)}</span>
+                                  <span className="min-w-0 max-w-[65%] text-right font-semibold text-primary break-words">{formatCurrency(liveRaised, deal.currency)}</span>
                                 </div>
                                 <div className="w-full bg-muted rounded-full h-2">
                                   <div
@@ -613,7 +613,7 @@ export default function DistributorDashboard() {
                                   </Button>
                                 )}
                                 {existingBid ? (
-                                  <p className="text-sm text-muted-foreground">
+                                    <p className="text-sm text-muted-foreground break-words">
                                     You've bid <span className="font-semibold text-foreground">{formatCurrency(existingBid.bid_amount, deal.currency)}</span>
                                     {" "}<Badge className={getStatusColor(existingBid.bid_status)}>{existingBid.bid_status === "accepted" ? "Submitted" : existingBid.bid_status}</Badge>
                                   </p>
@@ -757,7 +757,7 @@ export default function DistributorDashboard() {
                             </p>
                           </div>
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:justify-end" onClick={(e) => e.stopPropagation()}>
-                            <span className="font-semibold text-foreground whitespace-nowrap">{formatCurrency(bid.bid_amount, bidDeal?.currency)}</span>
+                            <span className="font-semibold text-foreground break-words">{formatCurrency(bid.bid_amount, bidDeal?.currency)}</span>
                             <Badge className={`${getStatusColor(bid.bid_status)} whitespace-nowrap`}>{getBidDisplayStatus(bid)}</Badge>
                             {canEditBid(bid) && (
                               <Button variant="outline" size="sm" onClick={() => handleEditBid(bid)}>
