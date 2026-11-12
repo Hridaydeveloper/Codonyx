@@ -41,15 +41,27 @@ export function renderEmailLayout(opts: LayoutOptions): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-apple-disable-message-reformatting">
   <title>${escapeHtml(opts.headerTitle)}</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .email-outer { padding: 16px 8px !important; }
+      .email-shell { width: 100% !important; border-radius: 12px !important; }
+      .email-header { padding: 32px 18px !important; }
+      .email-header-title { font-size: 23px !important; }
+      .email-body { padding: 28px 20px !important; text-align: center !important; }
+      .email-body p, .email-body div, .email-body td { text-align: center !important; overflow-wrap: anywhere !important; }
+      .email-footer { padding: 24px 20px !important; text-align: center !important; }
+      .email-cta { margin-left: auto !important; margin-right: auto !important; }
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;font-family:'Segoe UI','Helvetica Neue',Roboto,Arial,sans-serif;background-color:#f1f5f9;color:#0f172a;-webkit-font-smoothing:antialiased;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(preheader)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f5f9;padding:40px 16px;">
+  <table class="email-outer" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f5f9;padding:40px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(11,45,91,0.08),0 2px 8px rgba(11,45,91,0.04);">
+      <table class="email-shell" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(11,45,91,0.08),0 2px 8px rgba(11,45,91,0.04);">
 
         <!-- Header (navy brand gradient with logo) -->
-        <tr><td align="center" style="background:linear-gradient(135deg,#081F3F 0%,#0B2D5B 50%,#123E7C 100%);padding:44px 32px 40px;text-align:center;">
+        <tr><td class="email-header" align="center" bgcolor="#0B2D5B" style="background-color:#0B2D5B;background:linear-gradient(135deg,#081F3F 0%,#0B2D5B 50%,#123E7C 100%);padding:44px 32px 40px;text-align:center;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
             <tr><td align="center" style="padding-bottom:18px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
@@ -59,8 +71,8 @@ export function renderEmailLayout(opts: LayoutOptions): string {
               </table>
             </td></tr>
             <tr><td align="center" style="text-align:center;">
-              <h1 style="color:#ffffff;margin:0;font-size:26px;font-weight:700;letter-spacing:-0.3px;line-height:1.25;text-align:center;">${escapeHtml(opts.headerTitle)}</h1>
-              ${opts.headerSubtitle ? `<p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:15px;line-height:1.5;text-align:center;">${escapeHtml(opts.headerSubtitle)}</p>` : ""}
+              <h1 class="email-header-title" style="color:#ffffff !important;margin:0;font-size:26px;font-weight:700;line-height:1.25;text-align:center;">${escapeHtml(opts.headerTitle)}</h1>
+              ${opts.headerSubtitle ? `<p style="color:#ffffff !important;margin:10px 0 0;font-size:15px;line-height:1.5;text-align:center;">${escapeHtml(opts.headerSubtitle)}</p>` : ""}
             </td></tr>
           </table>
           <!-- Red accent divider -->
@@ -70,11 +82,11 @@ export function renderEmailLayout(opts: LayoutOptions): string {
         </td></tr>
 
         <!-- Body -->
-        <tr><td style="padding:40px 36px 36px;">
+        <tr><td class="email-body" style="padding:40px 36px 36px;color:#334155;">
           ${opts.body}
         </td></tr>
 
-        ${opts.footerNote ? `<tr><td style="padding:0 36px 28px;">
+        ${opts.footerNote ? `<tr><td class="email-body" style="padding:0 36px 28px;">
           <div style="background-color:#f8fafc;border-left:3px solid #E10611;border-radius:8px;padding:14px 18px;">
             <p style="margin:0;color:#475569;font-size:13px;line-height:1.6;">${opts.footerNote}</p>
           </div>
@@ -86,7 +98,7 @@ export function renderEmailLayout(opts: LayoutOptions): string {
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="padding:32px 36px;text-align:center;background-color:#fafbfc;">
+        <tr><td class="email-footer" style="padding:32px 36px;text-align:center;background-color:#fafbfc;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 6px;">
             <tr><td align="center" style="padding-bottom:8px;">
               <img src="${BRAND.logoUrl}" alt="Codonyx" width="28" height="28" style="display:block;width:28px;height:28px;border-radius:6px;margin:0 auto;" />
@@ -115,7 +127,7 @@ export function renderEmailLayout(opts: LayoutOptions): string {
 
 /** Render a CTA button with consistent branding. */
 export function renderCtaButton(label: string, href: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0;">
+  return `<table class="email-cta" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0;">
     <tr><td align="center">
       <a href="${href}" style="display:inline-block;background:linear-gradient(135deg,#0B2D5B 0%,#123E7C 100%);color:#ffffff !important;text-decoration:none;padding:15px 38px;border-radius:10px;font-size:15px;font-weight:600;letter-spacing:0.2px;box-shadow:0 4px 14px rgba(11,45,91,0.35);">
         ${escapeHtml(label)}
