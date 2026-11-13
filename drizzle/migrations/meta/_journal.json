@@ -8,6 +8,13 @@
       "when": 1794550895915,
       "tag": "0000_tighten_selected_security_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794551000726,
+      "tag": "0001_secure_notification_inserts",
+      "breakpoints": true
     }
   ]
 }
