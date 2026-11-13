@@ -65,8 +65,8 @@ const BecomeAdvisorPage = () => {
                 If you are a seasoned professional in life sciences, biotechnology, pharmaceutical development,
                 or AI-driven healthcare and wish to contribute as an advisor, please reach out to us.
               </p>
-              <Link to="/contact" className="flex justify-center sm:inline-flex">
-                <Button variant="primary" size="lg" className="max-w-full gap-2 whitespace-normal text-center text-base px-8 py-4">
+              <Link to="/contact" className="flex w-full justify-center sm:inline-flex sm:w-auto">
+                <Button variant="primary" size="lg" className="w-full max-w-xl gap-2 whitespace-normal text-center text-base px-8 py-4 sm:w-auto">
                   <Mail className="w-5 h-5" />
                   Contact Us for Registration
                 </Button>

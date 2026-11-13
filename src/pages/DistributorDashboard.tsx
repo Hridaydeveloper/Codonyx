@@ -459,7 +459,7 @@ export default function DistributorDashboard() {
                     <Briefcase className="w-6 h-6 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-2xl font-bold text-foreground break-words">{deals.length}</p>
+                    <p className="min-w-0 text-2xl font-bold leading-tight text-foreground break-words">{deals.length}</p>
                     <p className="text-sm text-muted-foreground">Available Deals</p>
                   </div>
                 </CardContent>
@@ -470,7 +470,7 @@ export default function DistributorDashboard() {
                     <Target className="w-6 h-6 text-amber-600" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-2xl font-bold text-foreground break-words">{activeBids}</p>
+                    <p className="min-w-0 text-2xl font-bold leading-tight text-foreground break-words">{activeBids}</p>
                     <p className="text-sm text-muted-foreground">Active Bids</p>
                   </div>
                 </CardContent>
@@ -481,7 +481,7 @@ export default function DistributorDashboard() {
                     <TrendingUp className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-2xl font-bold text-foreground break-words">{acceptedBids}</p>
+                    <p className="min-w-0 text-2xl font-bold leading-tight text-foreground break-words">{acceptedBids}</p>
                     <p className="text-sm text-muted-foreground">Submitted Bids</p>
                   </div>
                 </CardContent>
@@ -492,9 +492,9 @@ export default function DistributorDashboard() {
                     <Wallet className="w-6 h-6 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0 min-w-0">
-                      <p className="text-lg sm:text-2xl font-bold text-foreground break-words" title={formatCurrency(totalCommittedINR, "INR")}>₹{formatCompact(totalCommittedINR, "INR")}</p>
-                      <p className="text-lg sm:text-2xl font-bold text-foreground break-words" title={formatCurrency(totalCommittedUSD, "USD")}>${formatCompact(totalCommittedUSD, "USD")}</p>
+                    <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <p className="min-w-0 text-lg font-bold leading-tight text-foreground break-words sm:text-2xl" title={formatCurrency(totalCommittedINR, "INR")}>₹{formatCompact(totalCommittedINR, "INR")}</p>
+                      <p className="min-w-0 text-lg font-bold leading-tight text-foreground break-words sm:text-2xl" title={formatCurrency(totalCommittedUSD, "USD")}>${formatCompact(totalCommittedUSD, "USD")}</p>
                     </div>
                     <p className="text-sm text-muted-foreground">Total Committed</p>
                   </div>
@@ -640,7 +640,7 @@ export default function DistributorDashboard() {
                 <BookOpen className="h-5 w-5 text-primary" />
                 <h2 className="font-heading text-lg font-semibold text-foreground">Quick Actions</h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   { to: "/advisors", icon: Users, title: "Advisor Network", description: "Browse and connect with advisors", gradient: "from-blue-500/20 to-indigo-500/10", hoverGradient: "group-hover:from-blue-500/30 group-hover:to-indigo-500/20", tourId: "quick-network" },
                   { to: "/laboratories", icon: Building2, title: "Laboratory Network", description: "Browse and connect with laboratories", gradient: "from-emerald-500/20 to-teal-500/10", hoverGradient: "group-hover:from-emerald-500/30 group-hover:to-teal-500/20", tourId: "" },
@@ -651,19 +651,19 @@ export default function DistributorDashboard() {
                   const cardContent = (
                     <Card data-tour={link.tourId || undefined} className="group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 border-divider cursor-pointer bg-background overflow-hidden h-full">
                       <CardContent className="p-0">
-                        <div className="flex items-center gap-4 p-5">
+                        <div className="flex items-start gap-4 p-5 sm:items-center">
                           <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${link.gradient} ${link.hoverGradient} flex items-center justify-center transition-all duration-300 shrink-0`}>
                             <link.icon className="w-6 h-6 text-primary" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-heading text-base font-semibold text-foreground mb-0.5 group-hover:text-primary transition-colors truncate">
+                            <h3 className="font-heading text-base font-semibold text-foreground mb-0.5 break-words group-hover:text-primary transition-colors">
                               {link.title}
                             </h3>
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p className="text-xs text-muted-foreground break-words">
                               {link.description}
                             </p>
                           </div>
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0 mt-1 sm:mt-0">
                             <ArrowRight className="w-4 h-4" />
                           </div>
                         </div>
@@ -846,7 +846,7 @@ export default function DistributorDashboard() {
             return (
               <div className="space-y-4 py-4">
                 {/* Deal transparency: target & min bid */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">Target Amount</p>
                     <p className="text-base font-bold text-primary break-words">{editSym}{editTarget.toLocaleString()}</p>
@@ -908,7 +908,7 @@ export default function DistributorDashboard() {
             return (
               <div className="space-y-5 py-2">
                 {/* Deal-specific circular indicators */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <CircularIndicator
                     label="Investors Committed"
                     value={String(investorsCommitted)}
@@ -976,7 +976,7 @@ export default function DistributorDashboard() {
                     <p className="text-sm text-foreground mt-1 whitespace-pre-wrap break-words">{viewDealDetail.description}</p>
                   </div>
                 )}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label className="text-muted-foreground">Currency</Label>
                     <p className="font-medium">{dealCurr}</p>
