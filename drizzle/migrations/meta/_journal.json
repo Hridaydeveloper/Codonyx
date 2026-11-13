@@ -22,6 +22,13 @@
       "when": 1794551050030,
       "tag": "0002_complete_notification_write_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794551089588,
+      "tag": "0003_secure_bid_notifications",
+      "breakpoints": true
     }
   ]
 }
