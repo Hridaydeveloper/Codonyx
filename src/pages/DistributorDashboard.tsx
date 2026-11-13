@@ -846,7 +846,7 @@ export default function DistributorDashboard() {
             return (
               <div className="space-y-4 py-4">
                 {/* Deal transparency: target & min bid */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">Target Amount</p>
                     <p className="text-base font-bold text-primary break-words">{editSym}{editTarget.toLocaleString()}</p>
@@ -908,7 +908,7 @@ export default function DistributorDashboard() {
             return (
               <div className="space-y-5 py-2">
                 {/* Deal-specific circular indicators */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <CircularIndicator
                     label="Investors Committed"
                     value={String(investorsCommitted)}
@@ -976,7 +976,7 @@ export default function DistributorDashboard() {
                     <p className="text-sm text-foreground mt-1 whitespace-pre-wrap break-words">{viewDealDetail.description}</p>
                   </div>
                 )}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label className="text-muted-foreground">Currency</Label>
                     <p className="font-medium">{dealCurr}</p>
