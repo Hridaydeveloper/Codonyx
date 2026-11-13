@@ -15,6 +15,13 @@
       "when": 1794551000726,
       "tag": "0001_secure_notification_inserts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794551050030,
+      "tag": "0002_complete_notification_write_checks",
+      "breakpoints": true
     }
   ]
 }
