@@ -710,6 +710,8 @@ export type Database = {
         Returns: boolean
       }
       is_user_approved: { Args: { _user_id: string }; Returns: boolean }
+      notify_admins_of_bid: { Args: { _bid_id: string }; Returns: undefined }
+      notify_admins_of_registration: { Args: never; Returns: undefined }
       validate_invite_token_lookup: {
         Args: { _token: string }
         Returns: {

@@ -153,7 +153,7 @@ export default function RegisterLaboratoryPage() {
         },
       }).catch((err) => console.error("Failed to send confirmation email:", err));
 
-      await notifyAdminsOfNewRegistration({ fullName, userType: "laboratory" });
+      await notifyAdminsOfNewRegistration();
 
       await supabase.auth.signOut({ scope: "local" });
       setIsRegistered(true);

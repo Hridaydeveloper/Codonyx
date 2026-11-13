@@ -278,12 +278,12 @@ export default function DistributorDashboard() {
     }
 
     setIsSubmittingBid(true);
-    const { error } = await supabase.from("deal_bids").insert({
+    const { data: submittedBid, error } = await supabase.from("deal_bids").insert({
       deal_id: selectedDeal.id,
       distributor_profile_id: profile.id,
       bid_amount: amount,
       notes: bidNotes || null,
-    });
+    }).select("id").single();
 
     if (error) {
       toast({ title: "Failed to place bid", description: error.message, variant: "destructive" });
@@ -292,23 +292,11 @@ export default function DistributorDashboard() {
 
       // Notify all admins about the new bid (best-effort, non-blocking)
       try {
-        const currencySymbol = (selectedDeal.currency || "INR") === "USD" ? "$" : "₹";
-        const formattedAmount = `${currencySymbol}${amount.toLocaleString()}`;
-        const distributorName = profile.full_name || "A distributor";
-        const message = `${distributorName} (Distributor) bid on "${selectedDeal.title}" deal. Bidding amount: ${formattedAmount}.`;
-
-        // Use SECURITY DEFINER RPC because user_roles has restricted RLS for non-admins
-        const { data: adminProfileRows } = await supabase.rpc("get_admin_profile_ids");
-        const rows = ((adminProfileRows as { profile_id: string }[] | null) || []).map((ap) => ({
-          profile_id: ap.profile_id,
-          type: "new_bid",
-          title: "New Bid Placed",
-          message,
-          link: "/admin",
-          related_profile_id: profile.id,
-        }));
-        if (rows.length > 0) {
-          await supabase.from("notifications").insert(rows);
+        if (submittedBid?.id) {
+          const { error: notificationError } = await supabase.rpc("notify_admins_of_bid", {
+            _bid_id: submittedBid.id,
+          });
+          if (notificationError) throw notificationError;
         }
       } catch (e) {
         console.error("Failed to send admin bid notifications:", e);
